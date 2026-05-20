@@ -2090,7 +2090,7 @@ window.removeMemberConfirm=function(id){
   var m=S.members[id];if(!m)return;
   showModal('<div class="sh"></div><div class="sheet-title">'+t('removeMember')+'</div>'+
     '<div style="font-size:14px;color:var(--t2);margin-bottom:16px">'+escHtml(m.name)+' · '+t('removeMemberConfirm')+'</div>'+
-    '<button class="btn btn-d btn-full" onclick="doRemoveMember(\''+id+\')" style="margin-bottom:7px">'+t('removeMember')+'</button>'+
+    "<button class='btn btn-d btn-full' onclick='doRemoveMember(\"" + id.replace(/"/g, '\\"') + "\")' style='margin-bottom:7px'>" + t('removeMember') + "</button>"
     '<button class="btn btn-g btn-full" onclick="closeModal()">'+t('cancel')+'</button>');
 };
 window.doRemoveMember=async function(id){
