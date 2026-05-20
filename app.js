@@ -2086,12 +2086,19 @@ window.submitAddMember=async function(){
     '</div>'+
     '<button class="btn btn-p btn-full" onclick="navigator.clipboard&&navigator.clipboard.writeText(\''+claimCode+'\').then(function(){toast(t(\'codeCopied\'));})">'+ic('copy',14)+' '+t('copy')+'</button>');
 };
-window.removeMemberConfirm=function(id){
-  var m=S.members[id];if(!m)return;
-  showModal('<div class="sh"></div><div class="sheet-title">'+t('removeMember')+'</div>'+
-    '<div style="font-size:14px;color:var(--t2);margin-bottom:16px">'+escHtml(m.name)+' · '+t('removeMemberConfirm')+'</div>'+
-    "<button class='btn btn-d btn-full' onclick='doRemoveMember(\"" + id.replace(/"/g, '\\"') + "\")' style='margin-bottom:7px'>" + t('removeMember') + "</button>"
-    '<button class="btn btn-g btn-full" onclick="closeModal()">'+t('cancel')+'</button>');
+window.removeMemberConfirm = function(id) {
+  var m = S.members[id];
+  if (!m) return;
+  
+  // 转义 id 中的单引号，防止破坏 onclick 字符串
+  var safeId = id.replace(/'/g, "\\'");
+  
+  showModal(
+    '<div class="sh"></div><div class="sheet-title">' + t('removeMember') + '</div>' +
+    '<div style="font-size:14px;color:var(--t2);margin-bottom:16px">' + escHtml(m.name) + ' · ' + t('removeMemberConfirm') + '</div>' +
+    '<button class="btn btn-d btn-full" onclick="doRemoveMember(\'' + safeId + '\')" style="margin-bottom:7px">' + t('removeMember') + '</button>' +
+    '<button class="btn btn-g btn-full" onclick="closeModal()">' + t('cancel') + '</button>'
+  );
 };
 window.doRemoveMember=async function(id){
   var m=S.members[id];if(!m)return;
