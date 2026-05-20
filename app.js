@@ -846,7 +846,7 @@ function renderExpStats(){
     budgetHtml='<div class="budget-row">'+
       '<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:13px;color:var(--t2)">'+t('budget')+'</span><span style="font-size:13px;font-weight:700;color:var(--t1)">'+bc.s+Math.round(stats.grandTotal)+' / '+bc.s+budget.total+'</span></div>'+
       '<div class="budget-prog"><div class="budget-fill" style="width:'+pct+'%;background:'+fillColor+'"></div></div>'+
-      (msg?'<div class="budget-praise" style="background:'+(over?'rgba(var(--red-rgb),.08)':'rgba(var(--green-rgb),.08)');border:0.5px solid '+(over?'rgba(var(--red-rgb),.2)':'rgba(var(--green-rgb),.2)')+'">'+escHtml(msg)+'</div>':'')+
+    (msg ? '<div class="budget-praise" style="background:' + (over ? 'rgba(var(--red-rgb),.08)' : 'rgba(var(--green-rgb),.08)') + ';border:0.5px solid ' + (over ? 'rgba(var(--red-rgb),.2)' : 'rgba(var(--green-rgb),.2)') + '">' + escHtml(msg) + '</div>' : '')
     '</div>';
   }
   var dailyBudgetHtml='';
