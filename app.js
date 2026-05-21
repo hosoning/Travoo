@@ -2355,15 +2355,72 @@ async function init(){
   if(S.baseCurrency){var fxTs=S.fxDate?new Date(S.fxDate).getTime():0;if(Date.now()-fxTs>4*3600*1000)fetchRates().then(function(){if(S.tab==='home')renderHome();});}
   if('Notification' in window&&localStorage.getItem('notifsEnabled')!=='false'){if(Notification.permission==='default')Notification.requestPermission();}
 
-// 修复 PWA 模式顶部遮挡（强制覆盖内联样式）
+
+// 修复 PWA 模式全部布局问题（强制覆盖内联样式）
 if (window.matchMedia('(display-mode: standalone)').matches) {
   var style = document.createElement('style');
   style.textContent = `
+    /* 1. 修复顶部导航栏和登录页 */
     .nav { padding-top: calc(env(safe-area-inset-top,44px) + 28px) !important; }
     .ob { padding-top: calc(env(safe-area-inset-top,44px) + 70px) !important; }
+    
+    /* 2. 修复底部 Tab Bar 间距 */
+    .tabs { padding-bottom: calc(env(safe-area-inset-bottom,34px) + 6px) !important; }
+    
+    /* 3. 修复所有全屏弹窗：确保滚动区域不被顶部栏遮挡 */
+    .wx-full,
+    .gallery-ov {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      overflow: hidden !important;
+      background: var(--bg) !important;
+      z-index: 600 !important;
+    }
+    
+    /* 天气全屏弹窗 - 滚动区域向下偏移 */
+    .wx-full > div:last-child {
+      position: absolute !important;
+      top: calc(env(safe-area-inset-top,44px) + 52px) !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
+    
+    /* 天气全屏顶部导航栏增加安全区 */
+    .wx-full > div:first-child {
+      padding-top: calc(env(safe-area-inset-top,44px) + 8px) !important;
+      background: var(--glass-bg) !important;
+      backdrop-filter: blur(16px) !important;
+    }
+    
+    /* 清单全屏弹窗 */
+    .wx-full[onclick*="showListsFull"] > div:last-child,
+    .wx-full#lists-full-ov > div:last-child {
+      top: calc(env(safe-area-inset-top,44px) + 54px) !important;
+    }
+    
+    /* 相册全屏弹窗 */
+    .gallery-ov > div:last-child {
+      top: calc(env(safe-area-inset-top,44px) + 52px) !important;
+      bottom: 0 !important;
+      overflow-y: auto !important;
+    }
+    
+    /* 隐藏滚动条（美观） */
+    .wx-full::-webkit-scrollbar,
+    .gallery-ov::-webkit-scrollbar {
+      display: none;
+    }
   `;
   document.head.appendChild(style);
 }
+
+
 
 }
 
