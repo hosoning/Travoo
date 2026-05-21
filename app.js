@@ -2356,120 +2356,80 @@ async function init(){
   if('Notification' in window&&localStorage.getItem('notifsEnabled')!=='false'){if(Notification.permission==='default')Notification.requestPermission();}
 
 
-// 修复 PWA 模式全部布局问题（强制覆盖内联样式）
+// 修复 PWA 模式布局 + 聊天输入栏 + 减少底部遮挡
 if (window.matchMedia('(display-mode: standalone)').matches) {
   var style = document.createElement('style');
   style.textContent = `
-    /* 1. 顶部导航栏：增加高度 + 安全区 */
+    /* 基础安全区 - 减少顶部额外高度，靠滚动动态增加 */
     .nav {
-      padding-top: calc(env(safe-area-inset-top,44px) + 28px) !important;
-      padding-left: max(env(safe-area-inset-left,0px) + 16px, 16px) !important;
-      padding-right: max(env(safe-area-inset-right,0px) + 16px, 16px) !important;
-      min-height: calc(env(safe-area-inset-top,44px) + 70px) !important;
-      background: var(--glass-bg) !important;
-      backdrop-filter: blur(20px) !important;
-      z-index: 100 !important;
-    }
-    /* 导航栏下方的“隐形延长块” —— 用伪元素增加向下延伸 */
-    .nav::after {
-      content: '' !important;
-      position: absolute !important;
-      left: 0 !important;
-      right: 0 !important;
-      bottom: -12px !important;
-      height: 12px !important;
-      background: inherit !important;
-      backdrop-filter: inherit !important;
-      pointer-events: none !important;
-      z-index: -1 !important;
-    }
-    /* 2. 登录页顶部安全区 */
-    .ob {
-      padding-top: calc(env(safe-area-inset-top,44px) + 80px) !important;
-      padding-left: max(env(safe-area-inset-left,0px) + 30px, 30px) !important;
-      padding-right: max(env(safe-area-inset-right,0px) + 30px, 30px) !important;
-    }
-    /* 3. 底部 Tab Bar 安全区 */
-    .tabs {
-      padding-bottom: calc(env(safe-area-inset-bottom,34px) + 12px) !important;
-      padding-left: max(env(safe-area-inset-left,0px) + 4px, 4px) !important;
-      padding-right: max(env(safe-area-inset-right,0px) + 4px, 4px) !important;
-    }
-    /* 4. 所有可滚动区域：避免内容被顶部导航栏遮挡 */
-    .scroller,
-    .itin-scroll .itin-page,
-    .chat-body {
-      scroll-padding-top: calc(env(safe-area-inset-top,44px) + 70px) !important;
-    }
-    /* 设置页面底部退出按钮可见（增加底部内边距） */
-    .scroller {
-      padding-bottom: calc(var(--tabh) + 90px) !important;
-    }
-    /* 5. 聊天输入栏 —— 强力修复 */
-    .chat-bar {
-      padding-bottom: calc(env(safe-area-inset-bottom,34px) + 24px) !important;
-      background: var(--glass-bg) !important;
-      border-top: 0.5px solid var(--glass-border) !important;
-    }
-    /* 聊天输入框高度自适应，避免被键盘顶起时异常 */
-    .chat-inp-el {
-      min-height: 44px !important;
-      max-height: 110px !important;
-    }
-    /* 6. 所有全屏弹窗（天气 / 清单 / 相册）滚动区域避开顶部导航栏 */
-    .wx-full,
-    .gallery-ov {
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
-      bottom: 0 !important;
-      overflow: hidden !important;
-      background: var(--bg) !important;
-      z-index: 600 !important;
-    }
-    .wx-full > div:last-child,
-    .gallery-ov > div:last-child {
-      position: absolute !important;
-      top: calc(env(safe-area-inset-top,44px) + 60px) !important;
-      left: 0 !important;
-      right: 0 !important;
-      bottom: 0 !important;
-      overflow-y: auto !important;
-      -webkit-overflow-scrolling: touch !important;
-      padding-bottom: calc(env(safe-area-inset-bottom,34px) + 20px) !important;
-    }
-    /* 天气 / 清单全屏顶部栏增加安全区 */
-    .wx-full > div:first-child,
-    .gallery-ov > div:first-child {
       padding-top: calc(env(safe-area-inset-top,44px) + 12px) !important;
       padding-left: max(env(safe-area-inset-left,0px) + 16px, 16px) !important;
       padding-right: max(env(safe-area-inset-right,0px) + 16px, 16px) !important;
+      transition: all 0.22s cubic-bezier(0.2, 0.9, 0.4, 1.1) !important;
       background: var(--glass-bg) !important;
-      backdrop-filter: blur(16px) !important;
-      min-height: calc(env(safe-area-inset-top,44px) + 48px) !important;
+      backdrop-filter: blur(20px) !important;
     }
-    /* 清单全屏单独适配 */
-    .wx-full#lists-full-ov > div:last-child {
-      top: calc(env(safe-area-inset-top,44px) + 62px) !important;
+    /* 滚动后压缩模式 */
+    .nav.compact {
+      padding-top: calc(env(safe-area-inset-top,44px) + 6px) !important;
+      padding-bottom: 6px !important;
     }
-    /* 隐藏滚动条（美观） */
-    .wx-full::-webkit-scrollbar,
-    .gallery-ov::-webkit-scrollbar {
-      display: none;
+    .nav.compact .nav-large {
+      font-size: 17px !important;
+      text-align: center !important;
+      margin: 0 auto !important;
+      transform: none !important;
+      position: static !important;
     }
-    /* 7. 弹窗主体增加左右安全区 */
+    .nav.compact .nav-title {
+      font-size: 17px !important;
+      opacity: 1 !important;
+    }
+    /* 登录页保留足够内边距 */
+    .ob {
+      padding-top: calc(env(safe-area-inset-top,44px) + 60px) !important;
+      padding-left: max(env(safe-area-inset-left,0px) + 30px, 30px) !important;
+      padding-right: max(env(safe-area-inset-right,0px) + 30px, 30px) !important;
+    }
+    /* 底部 Tab Bar 只留必要安全区 */
+    .tabs {
+      padding-bottom: calc(env(safe-area-inset-bottom,34px) + 4px) !important;
+    }
+    /* 聊天输入栏 —— 关键修复 */
+    .chat-bar {
+      padding-bottom: calc(env(safe-area-inset-bottom,34px) + 16px) !important;
+      background: var(--glass-bg) !important;
+      border-top: 0.5px solid var(--glass-border) !important;
+    }
+    /* 聊天区域滚动时不要被输入栏遮住 */
+    .chat-body {
+      padding-bottom: 12px !important;
+    }
+    /* 设置页面底部退出按钮完全可见 */
+    .scroller {
+      padding-bottom: calc(var(--tabh) + 40px) !important;
+    }
+    /* 全屏弹窗滚动区域避开顶部 */
+    .wx-full > div:last-child,
+    .gallery-ov > div:last-child {
+      top: calc(env(safe-area-inset-top,44px) + 56px) !important;
+      padding-bottom: calc(env(safe-area-inset-bottom,34px) + 20px) !important;
+    }
+    .wx-full > div:first-child,
+    .gallery-ov > div:first-child {
+      padding-top: calc(env(safe-area-inset-top,44px) + 8px) !important;
+    }
+    /* 弹窗左右安全区 */
     .sheet {
       padding-left: max(env(safe-area-inset-left,0px) + 18px, 18px) !important;
       padding-right: max(env(safe-area-inset-right,0px) + 18px, 18px) !important;
     }
-    /* 8. 通用按钮/内容区域边缘安全 */
+    /* 通用内容区域边缘保护 */
     .btn-full, .inp, .list, .set-group {
       margin-left: max(env(safe-area-inset-left,0px) + 16px, 16px) !important;
       margin-right: max(env(safe-area-inset-right,0px) + 16px, 16px) !important;
-      width: calc(100% - 2 * max(env(safe-area-inset-left,0px) + 16px, 16px)) !important;
+      width: calc(100% - 32px - 2 * max(env(safe-area-inset-left,0px), 0px)) !important;
     }
-    /* 修正上面规则可能导致 list 内部错位，针对 .list 内部的 .lr 恢复 */
     .list .lr {
       margin-left: 0 !important;
       margin-right: 0 !important;
@@ -2477,9 +2437,39 @@ if (window.matchMedia('(display-mode: standalone)').matches) {
     }
   `;
   document.head.appendChild(style);
+
 }
-
-
+// 滚动时动态压缩导航栏 (类似 iOS Settings)
+  function observeNavScroll() {
+    var views = document.querySelectorAll('.view');
+    views.forEach(function(view) {
+      var scrollEl = view.querySelector('.scroller, .chat-body, .itin-scroll');
+      var nav = view.querySelector('.nav');
+      if (!scrollEl || !nav) return;
+      function onScroll() {
+        var scrollTop = scrollEl.scrollTop;
+        if (scrollTop > 28) {
+          nav.classList.add('compact');
+        } else {
+          nav.classList.remove('compact');
+        }
+      }
+      scrollEl.addEventListener('scroll', onScroll, { passive: true });
+      onScroll(); // 初始检查
+    });
+  }
+  // 监听视图切换时重新绑定
+  var origSwitchTab = window.switchTab;
+  window.switchTab = function(name, dir) {
+    origSwitchTab(name, dir);
+    setTimeout(observeNavScroll, 80);
+  };
+  observeNavScroll();
+  
+  
+  
+  
+  
 
 }
 
