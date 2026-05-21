@@ -2354,6 +2354,17 @@ async function init(){
   requestGeoPermission();
   if(S.baseCurrency){var fxTs=S.fxDate?new Date(S.fxDate).getTime():0;if(Date.now()-fxTs>4*3600*1000)fetchRates().then(function(){if(S.tab==='home')renderHome();});}
   if('Notification' in window&&localStorage.getItem('notifsEnabled')!=='false'){if(Notification.permission==='default')Notification.requestPermission();}
+
+// 修复 PWA 模式顶部遮挡（强制覆盖内联样式）
+if (window.matchMedia('(display-mode: standalone)').matches) {
+  var style = document.createElement('style');
+  style.textContent = `
+    .nav { padding-top: calc(env(safe-area-inset-top,44px) + 28px) !important; }
+    .ob { padding-top: calc(env(safe-area-inset-top,44px) + 70px) !important; }
+  `;
+  document.head.appendChild(style);
+}
+
 }
 
 // T key additions
