@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════
-// Travoo v10 — app.js
+// Travoo v11 20260521-1707 — app.js
 // ═══════════════════════════════════════════════════════
 import { initializeApp }   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import {
@@ -173,11 +173,11 @@ function getClothRecs(tMax,tMin,precip,wind){
 
 // ── I18N ──────────────────────────────────────────────
 const T={
-'zh-CN':{brand:'Travoo',sub:'和朋友一起记录每趟旅行',join:'加入行程',create:'创建新行程',or:'或',yourName:'你的名字',namePh:'名字',codePh:'6位行程码',myTrips:'我的行程',newTrip:'新建行程',today:'今天',itin:'行程',exp:'花费',ai:'管家',set:'设置',qa:'快捷操作',smRec:'智能提醒',total:'总花费',myPaid:'我付款',cnt:'笔数',detail:'明细',settle:'结算',stats:'统计',code:'行程码',members:'成员',aiCfg:'AI配置',notif:'通知',about:'关于',leave:'退出行程',copy:'复制',share:'分享',lang:'语言',wp:'壁纸',themes:'主题',save:'保存',del:'删除',cancel:'取消',aiPh:'问我任何旅行问题…',aiWelcome:'Travoo 管家',aiWelcomeSub:'餐厅推荐、景点攻略、打车方式\n花费分析，随时为你解答',noExp:'暂无记录',noExpSub:'点击添加花费',paidBy:'付款人',splitWith:'分摊成员',amount:'金额',desc:'描述',cat:'分类',subcat:'细分类',date:'日期',apiEp:'API端点',apiKey:'API Key',model:'模型',saveCfg:'保存配置',noCfg:'请先配置AI',noCfgSub:'在设置中填入API端点和Key',cfgAI:'去配置',msgApp:'消息应用',voiceHint:'按住说话',listening:'聆听中…',editItem:'编辑',addItem:'添加项目',todayTimeline:'今日行程',locationAllow:'允许位置',addExpense:'记录花费',offlineNote:'离线模式',codeShare:'分享此行程码给朋友加入',free:'免费',you:'你',viewFull:'查看完整行程',settled:'已结清',settledSub:'无待结算款项',addMember:'添加成员',logExp:'记账',importXlsx:'导入Excel',pasteImport:'粘贴文字导入',invite:'邀请',nMembers:'名成员',confirmDelItem:'确认删除此项目？',chatSug1:'今天有什么推荐',chatSug2:'附近怎么打车',chatSug3:'景点拍照技巧',chatSug4:'今日花费分析',chatSug5:'提醒我准时出发',pickFromAlbum:'从相册选取',resetDefault:'重置默认',clearChat:'清除对话',version:'版本',connected:'已连接',localMode:'本地模式',confirmLeaveTitle:'退出行程',confirmLeaveMsg:'退出后需重新输入行程码',confirmLeaveBtn:'确认退出',addMemberTitle:'添加成员',addMemberPh:'名字',timeLabel:'时间',actNameLabel:'活动名称',transLabel:'交通方式',spendMinLabel:'预计花费最低',spendMaxLabel:'预计花费最高',noteLabel:'备注/提醒',importantLabel:'重要行程',mustOnTime:'必须准时',addNewDay:'添加新一天',tripInfoTitle:'行程信息',tripNameLabel:'行程名称',dateRangeLabel:'日期范围',importDataLabel:'导入行程',importHint:'支持Excel(.xlsx)或粘贴表格文字',importHint2:'★推荐：Excel全选复制粘贴',pasteImportTitle:'粘贴行程文字',pasteHint:'格式：\n① Excel全选复制粘贴\n② 每行：2000/1/1 08:00 晚餐',wallUpdated:'壁纸已更新',wallReset:'壁纸已重置',imgTooLarge:'图片过大',codeCopied:'行程码已复制',aiConfigSaved:'AI配置已保存',chatCleared:'对话已清除',recognizing:'AI识别中...',recognizeOk:'识别成功，请确认',recognizeFail:'识别失败',logged:'已记录',deleted:'已删除',importOk:'导入成功',importFail:'解析失败',addedDay:'已添加',transferTo:'转给',relatedApps:'相关应用',askAIBtn:'询问管家',notPlanned:'未有行程',countdown:'出发倒计时',tripEnded:'旅程已结束',history:'历史行程',editAvatar:'换头像',editNickname:'改昵称',xhsRefresh:'换一批',editDayTitle:'修改标题',butlerName:'Travoo管家',currency:'货币',baseCurrency:'主货币（结算）',localCurrency:'旅行货币',rate:'汇率',refreshRate:'刷新汇率',rateUnavailable:'汇率未加载',appearance:'外观与显示',deviceId:'设备ID',lists:'清单',shopping:'购物清单',todo:'待办事项',packing:'行李打包',addListItem:'添加项目',listPre:'出发前',listDuring:'旅行中',listPost:'回来后',packingClothes:'衣物',packingDocs:'证件',packingElectronics:'电子',packingToiletries:'洗漱',period:'生理期',periodLastDate:'上次日期',periodCycleLen:'周期天数',periodDuration:'持续天数',periodAdd:'添加记录',periodConflict:'生理期可能与旅行重叠',periodPacking:'生理期提醒：备好卫生用品',customApps:'自定义应用',exportData:'导出数据',importData:'导入数据',importSuccess:'导入成功',markPaid:'标记已付',moveUp:'向前移',moveDown:'向后移',notConfigured:'未配置',noGeo:'请先允许位置权限',localWeather:'当地天气',travelDocs:'机票酒店',addFlight:'添加航班',addHotel:'添加酒店',addTrain:'添加火车',flightNo:'航班号',airline:'航空公司',from:'出发地',to:'目的地',depart:'出发时间',arrive:'到达时间',terminal:'航站楼',seat:'座位',hotelName:'酒店名称',address:'地址',checkIn:'入住日期',checkOut:'退房日期',confirmNo:'预订号',room:'房间号',flight:'航班',hotel:'酒店',train:'火车',ferry:'渡轮',noTravelDocs:'还没有机票/酒店信息',addFirst:'点击+添加',journal:'旅行手账',writeNote:'写点什么…',noJournal:'还没有手账记录',journalPrompt:'记录今天的旅行故事',newEntry:'新建记录',saveEntry:'保存',mood:'心情',moodGreat:'很棒',moodGood:'不错',moodOk:'一般',moodBad:'不好',private:'仅自己可见',shared:'所有人可见',visibility:'可见性',addPhoto:'添加照片',photoBoard:'旅行相册',noPhotos:'还没有照片',catLandscape:'风景',catFood:'美食',catArchitecture:'建筑',catPeople:'人物',catTransport:'交通',catMisc:'其他',setAccount:'账户与成员',setAppearance:'外观',setTravel:'旅行设置',setData:'数据与同步',fromCamera:'拍照',fromAlbum:'相册',splitEqual:'平均分摊',splitCustom:'自定义金额',budget:'预算',setDailyBudget:'设置每日预算',setBudget:'设置总预算',budgetOver:'超支',budgetSave:'节省',perDay:'每天',claimCode:'认领码',claimMemberTitle:'认领成员',claimMemberDesc:'输入认领码成为该成员',canDeleteMember:'可删除（未认领）',geoAllow:'允许位置权限',geoDenied:'位置权限已被拒绝',geoSettings:'请前往系统设置开启',removeMember:'删除成员',removeMemberConfirm:'确认删除此成员？此操作不可撤销',regionDetected:'目的地推荐',
+'zh-CN':{brand:'Travoo',sub:'和朋友一起记录每趟旅行',join:'加入行程',create:'创建新行程',or:'或',yourName:'你的名字',namePh:'名字',codePh:'6位行程码',myTrips:'我的行程',newTrip:'新建行程',today:'今天',itin:'行程',exp:'花费',ai:'管家',set:'设置',qa:'快捷操作',smRec:'智能提醒',total:'总花费',myPaid:'我付款',cnt:'笔数',detail:'明细',settle:'结算',stats:'统计',code:'行程码',members:'成员',aiCfg:'AI配置',notif:'通知',about:'关于',leave:'退出行程',copy:'复制',share:'分享',lang:'语言',wp:'壁纸',themes:'主题',save:'保存',del:'删除',cancel:'取消',aiPh:'问我任何旅行问题…',aiWelcome:'Travoo 管家',aiWelcomeSub:'餐厅推荐、景点攻略、打车方式\n花费分析，随时为你解答',noExp:'暂无记录',noExpSub:'点击添加花费',paidBy:'付款人',splitWith:'分摊成员',amount:'金额',desc:'描述',cat:'分类',subcat:'细分类',date:'日期',apiEp:'API端点',apiKey:'API Key',model:'模型',saveCfg:'保存配置',noCfg:'请先配置AI',noCfgSub:'在设置中填入API端点和Key',cfgAI:'去配置',msgApp:'消息应用',voiceHint:'按住说话',listening:'聆听中…',editItem:'编辑',addItem:'添加项目',todayTimeline:'今日行程',locationAllow:'允许位置',addExpense:'记录花费',offlineNote:'离线模式',codeShare:'分享此行程码给朋友加入',free:'免费',you:'你',viewFull:'查看完整行程',settled:'已结清',settledSub:'无待结算款项',addMember:'添加成员',logExp:'记账',importXlsx:'导入Excel',pasteImport:'粘贴文字导入',invite:'邀请',nMembers:'名成员',confirmDelItem:'确认删除此项目？',chatSug1:'今天有什么推荐',chatSug2:'附近怎么打车',chatSug3:'景点拍照技巧',chatSug4:'今日花费分析',chatSug5:'提醒我准时出发',pickFromAlbum:'从相册选取',resetDefault:'重置默认',clearChat:'清除对话',version:'版本',connected:'已连接',localMode:'本地模式',confirmLeaveTitle:'退出行程',confirmLeaveMsg:'退出后需重新输入行程码',confirmLeaveBtn:'确认退出',addMemberTitle:'添加成员',addMemberPh:'名字',timeLabel:'时间',actNameLabel:'活动名称',transLabel:'交通方式',spendMinLabel:'预计花费最低',spendMaxLabel:'预计花费最高',noteLabel:'备注/提醒',importantLabel:'重要行程',mustOnTime:'必须准时',addNewDay:'添加新一天',tripInfoTitle:'行程信息',tripNameLabel:'行程名称',dateRangeLabel:'日期范围',importDataLabel:'导入行程',importHint:'支持Excel(.xlsx)或粘贴表格文字',importHint2:'★推荐：Excel全选复制粘贴',pasteImportTitle:'粘贴行程文字',pasteHint:'格式：\n① Excel全选复制粘贴\n② 每行：2000/1/1 08:00 晚餐',wallUpdated:'壁纸已更新',wallReset:'壁纸已重置',imgTooLarge:'图片过大',codeCopied:'行程码已复制',aiConfigSaved:'AI配置已保存',chatCleared:'对话已清除',recognizing:'AI识别中...',recognizeOk:'识别成功，请确认',recognizeFail:'识别失败',logged:'已记录',deleted:'已删除',importOk:'导入成功',importFail:'解析失败',addedDay:'已添加',transferTo:'转给',relatedApps:'相关应用',askAIBtn:'询问管家',notPlanned:'未有行程',countdown:'出发倒计时',tripEnded:'旅程已结束',history:'历史行程',editAvatar:'换头像',editNickname:'改昵称',xhsRefresh:'换一批',editDayTitle:'修改标题',butlerName:'Travoo管家',currency:'货币',baseCurrency:'主货币（结算）',localCurrency:'旅行货币',rate:'汇率',refreshRate:'刷新汇率',rateUnavailable:'汇率未加载',appearance:'外观与显示',deviceId:'设备ID',lists:'清单',shopping:'购物清单',todo:'待办事项',packing:'行李打包',addListItem:'添加项目',listPre:'出发前',listDuring:'旅行中',listPost:'回来后',packingClothes:'衣物',packingDocs:'证件',packingElectronics:'电子',packingToiletries:'洗漱',period:'生理期',periodLastDate:'上次日期',periodCycleLen:'周期天数',periodDuration:'持续天数',periodAdd:'添加记录',periodConflict:'生理期可能与旅行重叠',periodPacking:'生理期提醒：备好卫生用品',customApps:'自定义应用',exportData:'导出数据',importData:'导入数据',importSuccess:'导入成功',markPaid:'标记已付',moveUp:'向前移',moveDown:'向后移',notConfigured:'未配置',noGeo:'请先允许位置权限',localWeather:'当地天气',travelDocs:'机票酒店',addFlight:'添加航班',addHotel:'添加酒店',addTrain:'添加火车',flightNo:'航班号',airline:'航空公司',from:'出发地',to:'目的地',depart:'出发时间',arrive:'到达时间',terminal:'航站楼',seat:'座位',hotelName:'酒店名称',address:'地址',checkIn:'入住日期',checkOut:'退房日期',confirmNo:'预订号',room:'房间号',flight:'航班',hotel:'酒店',train:'火车',ferry:'渡轮',noTravelDocs:'还没有机票/酒店信息',addFirst:'点击+添加',journal:'旅行手账',writeNote:'写点什么…',noJournal:'还没有手账记录',journalPrompt:'记录今天的旅行故事',newEntry:'新建记录',saveEntry:'保存',mood:'心情',moodGreat:'很棒',moodGood:'不错',moodOk:'一般',moodBad:'不好',private:'仅自己可见',shared:'所有人可见',visibility:'可见性',addPhoto:'添加照片',photoBoard:'旅行相册',noPhotos:'还没有照片',catLandscape:'风景',catFood:'美食',catArchitecture:'建筑',catPeople:'人物',catTransport:'交通',catMisc:'其他',setAccount:'账户与成员',setAppearance:'外观',setTravel:'旅行设置',setData:'数据与同步',fromCamera:'拍照',fromAlbum:'相册',splitEqual:'平均分摊',splitCustom:'自定义金额',budget:'预算',setDailyBudget:'设置每日预算',setBudget:'设置总预算',budgetOver:'超支',budgetSave:'节省',perDay:'每天',claimCode:'认领码',claimMemberTitle:'认领成员',claimMemberDesc:'输入认领码成为该成员',canDeleteMember:'可删除（未认领）',geoAllow:'允许位置权限',geoDenied:'位置权限已被拒绝',geoSettings:'请前往系统设置开启',removeMember:'删除成员',removeMemberConfirm:'确认删除此成员？此操作不可撤销',regionDetected:'目的地推荐',docType:'类型',expCurrency:'消费货币',addPhotoBoard:'添加到相册',photoCat:'分类',sendPhoto:'发送图片',
 },
-'zh-TW':{brand:'Travoo',sub:'和朋友一起記錄每趟旅行',join:'加入行程',create:'建立新行程',or:'或',yourName:'你的名字',namePh:'名字',codePh:'6位行程碼',myTrips:'我的行程',newTrip:'新建行程',today:'今天',itin:'行程',exp:'花費',ai:'管家',set:'設定',qa:'快捷操作',smRec:'智慧提醒',total:'總花費',myPaid:'我付款',cnt:'筆數',detail:'明細',settle:'結算',stats:'統計',code:'行程碼',members:'成員',aiCfg:'AI設定',notif:'通知',about:'關於',leave:'退出行程',copy:'複製',share:'分享',lang:'語言',wp:'桌布',themes:'主題',save:'儲存',del:'刪除',cancel:'取消',aiPh:'問我任何旅遊問題…',aiWelcome:'Travoo管家',aiWelcomeSub:'餐廳推薦、景點攻略、叫車方式\n花費分析，隨時為你解答',noExp:'暫無記錄',noExpSub:'點擊添加花費',paidBy:'付款人',splitWith:'分攤成員',amount:'金額',desc:'描述',cat:'分類',subcat:'細分類',date:'日期',apiEp:'API端點',apiKey:'API Key',model:'模型',saveCfg:'儲存設定',noCfg:'請先設定AI',noCfgSub:'在設定中填入API端點和Key',cfgAI:'去設定',msgApp:'訊息應用',voiceHint:'按住說話',listening:'聆聽中…',editItem:'編輯',addItem:'新增項目',todayTimeline:'今日行程',locationAllow:'允許位置',addExpense:'記錄花費',offlineNote:'離線模式',codeShare:'分享此行程碼給朋友加入',free:'免費',you:'你',viewFull:'查看完整行程',settled:'已結清',settledSub:'無待結算款項',addMember:'添加成員',logExp:'記帳',importXlsx:'匯入Excel',pasteImport:'貼上文字匯入',invite:'邀請',nMembers:'名成員',confirmDelItem:'確認刪除此項目？',chatSug1:'今天有什麼推薦',chatSug2:'附近怎麼叫車',chatSug3:'景點拍照技巧',chatSug4:'今日花費分析',chatSug5:'提醒我準時出發',pickFromAlbum:'從相冊選取',resetDefault:'重置預設',clearChat:'清除對話',version:'版本',connected:'已連接',localMode:'本地模式',confirmLeaveTitle:'退出行程',confirmLeaveMsg:'退出後需重新輸入行程碼',confirmLeaveBtn:'確認退出',addMemberTitle:'添加成員',addMemberPh:'名字',timeLabel:'時間',actNameLabel:'活動名稱',transLabel:'交通方式',spendMinLabel:'預計花費最低',spendMaxLabel:'預計花費最高',noteLabel:'備注/提醒',importantLabel:'重要行程',mustOnTime:'必須準時',addNewDay:'添加新一天',tripInfoTitle:'行程資訊',tripNameLabel:'行程名稱',dateRangeLabel:'日期範圍',importDataLabel:'匯入行程',importHint:'支援Excel(.xlsx)或貼上表格文字',importHint2:'★推薦：Excel全選複製貼上',pasteImportTitle:'貼上行程文字',pasteHint:'格式：\n① Excel全選複製貼上\n② 每行：2000/1/1 08:00 晚餐',wallUpdated:'桌布已更新',wallReset:'已重置桌布',imgTooLarge:'圖片過大',codeCopied:'行程碼已複製',aiConfigSaved:'AI設定已儲存',chatCleared:'對話已清除',recognizing:'AI識別中...',recognizeOk:'識別成功，請確認',recognizeFail:'識別失敗',logged:'已記錄',deleted:'已刪除',importOk:'匯入成功',importFail:'解析失敗',addedDay:'已添加',transferTo:'轉給',relatedApps:'相關應用',askAIBtn:'詢問管家',notPlanned:'未有行程',countdown:'出發倒數',tripEnded:'旅程已結束',history:'歷史行程',editAvatar:'換頭像',editNickname:'改暱稱',xhsRefresh:'換一批',editDayTitle:'修改標題',butlerName:'Travoo管家',currency:'貨幣',baseCurrency:'主貨幣（結算）',localCurrency:'旅行貨幣',rate:'匯率',refreshRate:'重新整理匯率',rateUnavailable:'匯率未載入',appearance:'外觀與顯示',deviceId:'設備ID',lists:'清單',shopping:'購物清單',todo:'待辦事項',packing:'行李打包',addListItem:'添加項目',listPre:'出發前',listDuring:'旅行中',listPost:'回來後',packingClothes:'衣物',packingDocs:'證件',packingElectronics:'電子',packingToiletries:'盥洗',period:'生理期',periodLastDate:'上次日期',periodCycleLen:'週期天數',periodDuration:'持續天數',periodAdd:'添加記錄',periodConflict:'生理期可能與旅行重疊',periodPacking:'生理期提醒：備好衛生用品',customApps:'自訂應用',exportData:'匯出資料',importData:'匯入資料',importSuccess:'匯入成功',markPaid:'標記已付',moveUp:'向前移',moveDown:'向後移',notConfigured:'未配置',noGeo:'請先允許位置權限',localWeather:'當地天氣',travelDocs:'機票酒店',addFlight:'添加航班',addHotel:'添加酒店',addTrain:'添加火車',flightNo:'航班號',airline:'航空公司',from:'出發地',to:'目的地',depart:'出發時間',arrive:'到達時間',terminal:'航站樓',seat:'座位',hotelName:'酒店名稱',address:'地址',checkIn:'入住日期',checkOut:'退房日期',confirmNo:'預訂號',room:'房間號',flight:'航班',hotel:'酒店',train:'火車',ferry:'渡輪',noTravelDocs:'還沒有機票/酒店資訊',addFirst:'點擊+添加',journal:'旅行手帳',writeNote:'寫點什麼…',noJournal:'還沒有手帳記錄',journalPrompt:'記錄今天的旅行故事',newEntry:'新建記錄',saveEntry:'儲存',mood:'心情',moodGreat:'很棒',moodGood:'不錯',moodOk:'一般',moodBad:'不好',private:'僅自己可見',shared:'所有人可見',visibility:'可見性',addPhoto:'添加照片',photoBoard:'旅行相册',noPhotos:'還沒有照片',catLandscape:'風景',catFood:'美食',catArchitecture:'建築',catPeople:'人物',catTransport:'交通',catMisc:'其他',setAccount:'帳號與成員',setAppearance:'外觀',setTravel:'旅行設定',setData:'資料與同步',fromCamera:'拍照',fromAlbum:'相冊',splitEqual:'平均分攤',splitCustom:'自定義金額',budget:'預算',setDailyBudget:'設置每日預算',setBudget:'設置總預算',budgetOver:'超支',budgetSave:'節省',perDay:'每天',claimCode:'認領碼',claimMemberTitle:'認領成員',claimMemberDesc:'輸入認領碼成為該成員',canDeleteMember:'可刪除（未認領）',geoAllow:'允許位置權限',geoDenied:'位置權限已被拒絕',geoSettings:'請前往系統設定開啟',removeMember:'刪除成員',removeMemberConfirm:'確認刪除此成員？',regionDetected:'目的地推薦',
+'zh-TW':{brand:'Travoo',sub:'和朋友一起記錄每趟旅行',join:'加入行程',create:'建立新行程',or:'或',yourName:'你的名字',namePh:'名字',codePh:'6位行程碼',myTrips:'我的行程',newTrip:'新建行程',today:'今天',itin:'行程',exp:'花費',ai:'管家',set:'設定',qa:'快捷操作',smRec:'智慧提醒',total:'總花費',myPaid:'我付款',cnt:'筆數',detail:'明細',settle:'結算',stats:'統計',code:'行程碼',members:'成員',aiCfg:'AI設定',notif:'通知',about:'關於',leave:'退出行程',copy:'複製',share:'分享',lang:'語言',wp:'桌布',themes:'主題',save:'儲存',del:'刪除',cancel:'取消',aiPh:'問我任何旅遊問題…',aiWelcome:'Travoo管家',aiWelcomeSub:'餐廳推薦、景點攻略、叫車方式\n花費分析，隨時為你解答',noExp:'暫無記錄',noExpSub:'點擊添加花費',paidBy:'付款人',splitWith:'分攤成員',amount:'金額',desc:'描述',cat:'分類',subcat:'細分類',date:'日期',apiEp:'API端點',apiKey:'API Key',model:'模型',saveCfg:'儲存設定',noCfg:'請先設定AI',noCfgSub:'在設定中填入API端點和Key',cfgAI:'去設定',msgApp:'訊息應用',voiceHint:'按住說話',listening:'聆聽中…',editItem:'編輯',addItem:'新增項目',todayTimeline:'今日行程',locationAllow:'允許位置',addExpense:'記錄花費',offlineNote:'離線模式',codeShare:'分享此行程碼給朋友加入',free:'免費',you:'你',viewFull:'查看完整行程',settled:'已結清',settledSub:'無待結算款項',addMember:'添加成員',logExp:'記帳',importXlsx:'匯入Excel',pasteImport:'貼上文字匯入',invite:'邀請',nMembers:'名成員',confirmDelItem:'確認刪除此項目？',chatSug1:'今天有什麼推薦',chatSug2:'附近怎麼叫車',chatSug3:'景點拍照技巧',chatSug4:'今日花費分析',chatSug5:'提醒我準時出發',pickFromAlbum:'從相冊選取',resetDefault:'重置預設',clearChat:'清除對話',version:'版本',connected:'已連接',localMode:'本地模式',confirmLeaveTitle:'退出行程',confirmLeaveMsg:'退出後需重新輸入行程碼',confirmLeaveBtn:'確認退出',addMemberTitle:'添加成員',addMemberPh:'名字',timeLabel:'時間',actNameLabel:'活動名稱',transLabel:'交通方式',spendMinLabel:'預計花費最低',spendMaxLabel:'預計花費最高',noteLabel:'備注/提醒',importantLabel:'重要行程',mustOnTime:'必須準時',addNewDay:'添加新一天',tripInfoTitle:'行程資訊',tripNameLabel:'行程名稱',dateRangeLabel:'日期範圍',importDataLabel:'匯入行程',importHint:'支援Excel(.xlsx)或貼上表格文字',importHint2:'★推薦：Excel全選複製貼上',pasteImportTitle:'貼上行程文字',pasteHint:'格式：\n① Excel全選複製貼上\n② 每行：2000/1/1 08:00 晚餐',wallUpdated:'桌布已更新',wallReset:'已重置桌布',imgTooLarge:'圖片過大',codeCopied:'行程碼已複製',aiConfigSaved:'AI設定已儲存',chatCleared:'對話已清除',recognizing:'AI識別中...',recognizeOk:'識別成功，請確認',recognizeFail:'識別失敗',logged:'已記錄',deleted:'已刪除',importOk:'匯入成功',importFail:'解析失敗',addedDay:'已添加',transferTo:'轉給',relatedApps:'相關應用',askAIBtn:'詢問管家',notPlanned:'未有行程',countdown:'出發倒數',tripEnded:'旅程已結束',history:'歷史行程',editAvatar:'換頭像',editNickname:'改暱稱',xhsRefresh:'換一批',editDayTitle:'修改標題',butlerName:'Travoo管家',currency:'貨幣',baseCurrency:'主貨幣（結算）',localCurrency:'旅行貨幣',rate:'匯率',refreshRate:'重新整理匯率',rateUnavailable:'匯率未載入',appearance:'外觀與顯示',deviceId:'設備ID',lists:'清單',shopping:'購物清單',todo:'待辦事項',packing:'行李打包',addListItem:'添加項目',listPre:'出發前',listDuring:'旅行中',listPost:'回來後',packingClothes:'衣物',packingDocs:'證件',packingElectronics:'電子',packingToiletries:'盥洗',period:'生理期',periodLastDate:'上次日期',periodCycleLen:'週期天數',periodDuration:'持續天數',periodAdd:'添加記錄',periodConflict:'生理期可能與旅行重疊',periodPacking:'生理期提醒：備好衛生用品',customApps:'自訂應用',exportData:'匯出資料',importData:'匯入資料',importSuccess:'匯入成功',markPaid:'標記已付',moveUp:'向前移',moveDown:'向後移',notConfigured:'未配置',noGeo:'請先允許位置權限',localWeather:'當地天氣',travelDocs:'機票酒店',addFlight:'添加航班',addHotel:'添加酒店',addTrain:'添加火車',flightNo:'航班號',airline:'航空公司',from:'出發地',to:'目的地',depart:'出發時間',arrive:'到達時間',terminal:'航站樓',seat:'座位',hotelName:'酒店名稱',address:'地址',checkIn:'入住日期',checkOut:'退房日期',confirmNo:'預訂號',room:'房間號',flight:'航班',hotel:'酒店',train:'火車',ferry:'渡輪',noTravelDocs:'還沒有機票/酒店資訊',addFirst:'點擊+添加',journal:'旅行手帳',writeNote:'寫點什麼…',noJournal:'還沒有手帳記錄',journalPrompt:'記錄今天的旅行故事',newEntry:'新建記錄',saveEntry:'儲存',mood:'心情',moodGreat:'很棒',moodGood:'不錯',moodOk:'一般',moodBad:'不好',private:'僅自己可見',shared:'所有人可見',visibility:'可見性',addPhoto:'添加照片',photoBoard:'旅行相册',noPhotos:'還沒有照片',catLandscape:'風景',catFood:'美食',catArchitecture:'建築',catPeople:'人物',catTransport:'交通',catMisc:'其他',setAccount:'帳號與成員',setAppearance:'外觀',setTravel:'旅行設定',setData:'資料與同步',fromCamera:'拍照',fromAlbum:'相冊',splitEqual:'平均分攤',splitCustom:'自定義金額',budget:'預算',setDailyBudget:'設置每日預算',setBudget:'設置總預算',budgetOver:'超支',budgetSave:'節省',perDay:'每天',claimCode:'認領碼',claimMemberTitle:'認領成員',claimMemberDesc:'輸入認領碼成為該成員',canDeleteMember:'可刪除（未認領）',geoAllow:'允許位置權限',geoDenied:'位置權限已被拒絕',geoSettings:'請前往系統設定開啟',removeMember:'刪除成員',removeMemberConfirm:'確認刪除此成員？',regionDetected:'目的地推薦',docType:'類型',expCurrency:'消費貨幣',addPhotoBoard:'添加到相冊',photoCat:'分類',sendPhoto:'發送圖片',
 },
-'en':{brand:'Travoo',sub:'Plan, track & share every journey',join:'Join Trip',create:'Create New Trip',or:'or',yourName:'Your name',namePh:'Name',codePh:'6-char code',myTrips:'My Trips',newTrip:'New Trip',today:'Today',itin:'Itinerary',exp:'Expenses',ai:'Butler',set:'Settings',qa:'Quick Actions',smRec:'Smart Tips',total:'Total',myPaid:'I Paid',cnt:'Items',detail:'Details',settle:'Settle Up',stats:'Stats',code:'Trip Code',members:'Members',aiCfg:'AI Config',notif:'Notifications',about:'About',leave:'Leave Trip',copy:'Copy',share:'Share',lang:'Language',wp:'Wallpaper',themes:'Theme',save:'Save',del:'Delete',cancel:'Cancel',aiPh:'Ask me anything…',aiWelcome:'Travoo Butler',aiWelcomeSub:'Ask about restaurants, attractions,\ntransport, expenses and more',noExp:'No expenses yet',noExpSub:'Tap to add',paidBy:'Paid by',splitWith:'Split with',amount:'Amount',desc:'Description',cat:'Category',subcat:'Subcategory',date:'Date',apiEp:'API Endpoint',apiKey:'API Key',model:'Model',saveCfg:'Save',noCfg:'AI Not Configured',noCfgSub:'Add API endpoint and key in Settings',cfgAI:'Configure',msgApp:'Messaging',voiceHint:'Hold to speak',listening:'Listening…',editItem:'Edit',addItem:'Add Item',todayTimeline:"Today's Plan",locationAllow:'Allow Location',addExpense:'Log Expense',offlineNote:'Offline mode',codeShare:'Share this code with friends',free:'Free',you:'You',viewFull:'Full Itinerary',settled:'All Settled',settledSub:'No pending payments',addMember:'Add Member',logExp:'Log',importXlsx:'Import Excel',pasteImport:'Paste Text',invite:'Invite',nMembers:'members',confirmDelItem:'Delete this item?',chatSug1:"What's on today",chatSug2:'How to get a taxi',chatSug3:'Photo tips',chatSug4:'Expense summary',chatSug5:'Remind me to leave',pickFromAlbum:'Pick from Album',resetDefault:'Reset',clearChat:'Clear Chat',version:'Version',connected:'Connected',localMode:'Local Mode',confirmLeaveTitle:'Leave Trip',confirmLeaveMsg:"You'll need the code to rejoin",confirmLeaveBtn:'Leave',addMemberTitle:'Add Member',addMemberPh:'Name',timeLabel:'Time',actNameLabel:'Activity',transLabel:'Transport (opt.)',spendMinLabel:'Min Spend',spendMaxLabel:'Max Spend',noteLabel:'Notes',importantLabel:'Highlight',mustOnTime:'Must be on time',addNewDay:'Add Day',tripInfoTitle:'Trip Info',tripNameLabel:'Trip Name',dateRangeLabel:'Dates',importDataLabel:'Import',importHint:'Import Excel or paste text',importHint2:'★ Tip: Copy all from Excel and paste',pasteImportTitle:'Paste Itinerary',pasteHint:'Supported:\n① Copy all from Excel\n② Per line: 2000/1/1 08:00 Dinner',wallUpdated:'Wallpaper updated',wallReset:'Wallpaper reset',imgTooLarge:'Image too large',codeCopied:'Code copied',aiConfigSaved:'AI config saved',chatCleared:'Chat cleared',recognizing:'Recognizing...',recognizeOk:'Recognized',recognizeFail:'Failed',logged:'Logged',deleted:'Deleted',importOk:'Imported',importFail:'Parse failed',addedDay:'Added',transferTo:'pays',relatedApps:'Apps',askAIBtn:'Ask Butler',notPlanned:'Not Planned',countdown:'Countdown',tripEnded:'Trip Ended',history:'History',editAvatar:'Change Photo',editNickname:'Edit Name',xhsRefresh:'Refresh',editDayTitle:'Edit Title',butlerName:'Travoo Butler',currency:'Currency',baseCurrency:'Home Currency',localCurrency:'Trip Currency',rate:'Rate',refreshRate:'Refresh',rateUnavailable:'Rate unavailable',appearance:'Appearance',deviceId:'Device ID',lists:'Lists',shopping:'Shopping',todo:'To-Do',packing:'Packing',addListItem:'Add item',listPre:'Before trip',listDuring:'During',listPost:'After trip',packingClothes:'Clothing',packingDocs:'Documents',packingElectronics:'Electronics',packingToiletries:'Toiletries',period:'Period',periodLastDate:'Last period',periodCycleLen:'Cycle (days)',periodDuration:'Duration (days)',periodAdd:'Add',periodConflict:'Period may overlap with trip',periodPacking:'Pack period supplies',customApps:'Quick Apps',exportData:'Export',importData:'Import',importSuccess:'Imported',markPaid:'Mark Paid',moveUp:'Move Up',moveDown:'Move Down',notConfigured:'Not set',noGeo:'Allow location first',localWeather:'Local Weather',travelDocs:'Flights & Hotels',addFlight:'Add Flight',addHotel:'Add Hotel',addTrain:'Add Train',flightNo:'Flight No.',airline:'Airline',from:'From',to:'To',depart:'Depart',arrive:'Arrive',terminal:'Terminal',seat:'Seat',hotelName:'Hotel Name',address:'Address',checkIn:'Check-in',checkOut:'Check-out',confirmNo:'Booking Ref',room:'Room',flight:'Flight',hotel:'Hotel',train:'Train',ferry:'Ferry',noTravelDocs:'No flight/hotel info yet',addFirst:'Tap + to add',journal:'Journal',writeNote:'Write something…',noJournal:'No journal entries yet',journalPrompt:"Record today's story",newEntry:'New Entry',saveEntry:'Save',mood:'Mood',moodGreat:'Great',moodGood:'Good',moodOk:'OK',moodBad:'Bad',private:'Only me',shared:'Everyone',visibility:'Visibility',addPhoto:'Add Photo',photoBoard:'Photo Board',noPhotos:'No photos yet',catLandscape:'Landscape',catFood:'Food',catArchitecture:'Architecture',catPeople:'People',catTransport:'Transport',catMisc:'Misc',setAccount:'Account & Members',setAppearance:'Appearance',setTravel:'Travel Settings',setData:'Data & Sync',fromCamera:'Camera',fromAlbum:'Album',splitEqual:'Equal split',splitCustom:'Custom amounts',budget:'Budget',setDailyBudget:'Daily budget',setBudget:'Total budget',budgetOver:'Over budget',budgetSave:'Saved',perDay:'per day',claimCode:'Claim Code',claimMemberTitle:'Claim Member Slot',claimMemberDesc:'Enter code to take over this member',canDeleteMember:'Deletable (unclaimed)',geoAllow:'Allow Location',geoDenied:'Location Denied',geoSettings:'Go to System Settings to enable',removeMember:'Remove Member',removeMemberConfirm:'Remove this member? Cannot be undone.',regionDetected:'Recommended for destination',
+'en':{brand:'Travoo',sub:'Plan, track & share every journey',join:'Join Trip',create:'Create New Trip',or:'or',yourName:'Your name',namePh:'Name',codePh:'6-char code',myTrips:'My Trips',newTrip:'New Trip',today:'Today',itin:'Itinerary',exp:'Expenses',ai:'Butler',set:'Settings',qa:'Quick Actions',smRec:'Smart Tips',total:'Total',myPaid:'I Paid',cnt:'Items',detail:'Details',settle:'Settle Up',stats:'Stats',code:'Trip Code',members:'Members',aiCfg:'AI Config',notif:'Notifications',about:'About',leave:'Leave Trip',copy:'Copy',share:'Share',lang:'Language',wp:'Wallpaper',themes:'Theme',save:'Save',del:'Delete',cancel:'Cancel',aiPh:'Ask me anything…',aiWelcome:'Travoo Butler',aiWelcomeSub:'Ask about restaurants, attractions,\ntransport, expenses and more',noExp:'No expenses yet',noExpSub:'Tap to add',paidBy:'Paid by',splitWith:'Split with',amount:'Amount',desc:'Description',cat:'Category',subcat:'Subcategory',date:'Date',apiEp:'API Endpoint',apiKey:'API Key',model:'Model',saveCfg:'Save',noCfg:'AI Not Configured',noCfgSub:'Add API endpoint and key in Settings',cfgAI:'Configure',msgApp:'Messaging',voiceHint:'Hold to speak',listening:'Listening…',editItem:'Edit',addItem:'Add Item',todayTimeline:"Today's Plan",locationAllow:'Allow Location',addExpense:'Log Expense',offlineNote:'Offline mode',codeShare:'Share this code with friends',free:'Free',you:'You',viewFull:'Full Itinerary',settled:'All Settled',settledSub:'No pending payments',addMember:'Add Member',logExp:'Log',importXlsx:'Import Excel',pasteImport:'Paste Text',invite:'Invite',nMembers:'members',confirmDelItem:'Delete this item?',chatSug1:"What's on today",chatSug2:'How to get a taxi',chatSug3:'Photo tips',chatSug4:'Expense summary',chatSug5:'Remind me to leave',pickFromAlbum:'Pick from Album',resetDefault:'Reset',clearChat:'Clear Chat',version:'Version',connected:'Connected',localMode:'Local Mode',confirmLeaveTitle:'Leave Trip',confirmLeaveMsg:"You'll need the code to rejoin",confirmLeaveBtn:'Leave',addMemberTitle:'Add Member',addMemberPh:'Name',timeLabel:'Time',actNameLabel:'Activity',transLabel:'Transport (opt.)',spendMinLabel:'Min Spend',spendMaxLabel:'Max Spend',noteLabel:'Notes',importantLabel:'Highlight',mustOnTime:'Must be on time',addNewDay:'Add Day',tripInfoTitle:'Trip Info',tripNameLabel:'Trip Name',dateRangeLabel:'Dates',importDataLabel:'Import',importHint:'Import Excel or paste text',importHint2:'★ Tip: Copy all from Excel and paste',pasteImportTitle:'Paste Itinerary',pasteHint:'Supported:\n① Copy all from Excel\n② Per line: 2000/1/1 08:00 Dinner',wallUpdated:'Wallpaper updated',wallReset:'Wallpaper reset',imgTooLarge:'Image too large',codeCopied:'Code copied',aiConfigSaved:'AI config saved',chatCleared:'Chat cleared',recognizing:'Recognizing...',recognizeOk:'Recognized',recognizeFail:'Failed',logged:'Logged',deleted:'Deleted',importOk:'Imported',importFail:'Parse failed',addedDay:'Added',transferTo:'pays',relatedApps:'Apps',askAIBtn:'Ask Butler',notPlanned:'Not Planned',countdown:'Countdown',tripEnded:'Trip Ended',history:'History',editAvatar:'Change Photo',editNickname:'Edit Name',xhsRefresh:'Refresh',editDayTitle:'Edit Title',butlerName:'Travoo Butler',currency:'Currency',baseCurrency:'Home Currency',localCurrency:'Trip Currency',rate:'Rate',refreshRate:'Refresh',rateUnavailable:'Rate unavailable',appearance:'Appearance',deviceId:'Device ID',lists:'Lists',shopping:'Shopping',todo:'To-Do',packing:'Packing',addListItem:'Add item',listPre:'Before trip',listDuring:'During',listPost:'After trip',packingClothes:'Clothing',packingDocs:'Documents',packingElectronics:'Electronics',packingToiletries:'Toiletries',period:'Period',periodLastDate:'Last period',periodCycleLen:'Cycle (days)',periodDuration:'Duration (days)',periodAdd:'Add',periodConflict:'Period may overlap with trip',periodPacking:'Pack period supplies',customApps:'Quick Apps',exportData:'Export',importData:'Import',importSuccess:'Imported',markPaid:'Mark Paid',moveUp:'Move Up',moveDown:'Move Down',notConfigured:'Not set',noGeo:'Allow location first',localWeather:'Local Weather',travelDocs:'Flights & Hotels',addFlight:'Add Flight',addHotel:'Add Hotel',addTrain:'Add Train',flightNo:'Flight No.',airline:'Airline',from:'From',to:'To',depart:'Depart',arrive:'Arrive',terminal:'Terminal',seat:'Seat',hotelName:'Hotel Name',address:'Address',checkIn:'Check-in',checkOut:'Check-out',confirmNo:'Booking Ref',room:'Room',flight:'Flight',hotel:'Hotel',train:'Train',ferry:'Ferry',noTravelDocs:'No flight/hotel info yet',addFirst:'Tap + to add',journal:'Journal',writeNote:'Write something…',noJournal:'No journal entries yet',journalPrompt:"Record today's story",newEntry:'New Entry',saveEntry:'Save',mood:'Mood',moodGreat:'Great',moodGood:'Good',moodOk:'OK',moodBad:'Bad',private:'Only me',shared:'Everyone',visibility:'Visibility',addPhoto:'Add Photo',photoBoard:'Photo Board',noPhotos:'No photos yet',catLandscape:'Landscape',catFood:'Food',catArchitecture:'Architecture',catPeople:'People',catTransport:'Transport',catMisc:'Misc',setAccount:'Account & Members',setAppearance:'Appearance',setTravel:'Travel Settings',setData:'Data & Sync',fromCamera:'Camera',fromAlbum:'Album',splitEqual:'Equal split',splitCustom:'Custom amounts',budget:'Budget',setDailyBudget:'Daily budget',setBudget:'Total budget',budgetOver:'Over budget',budgetSave:'Saved',perDay:'per day',claimCode:'Claim Code',claimMemberTitle:'Claim Member Slot',claimMemberDesc:'Enter code to take over this member',canDeleteMember:'Deletable (unclaimed)',geoAllow:'Allow Location',geoDenied:'Location Denied',geoSettings:'Go to System Settings to enable',removeMember:'Remove Member',removeMemberConfirm:'Remove this member? Cannot be undone.',regionDetected:'Recommended for destination',docType:'Type',expCurrency:'Currency',addPhotoBoard:'Add to Board',photoCat:'Category',sendPhoto:'Send Photo',
 },
 };
 function t(k){return (T[S.lang]||T['zh-CN'])[k]||k;}
@@ -266,6 +266,8 @@ const IC={
   hotel2:'<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
   piechart:'<path d="M21.21 15.89A10 10 0 118 2.83"/><path d="M22 12A10 10 0 0012 2v10z"/>',
   barChart:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
+  list:'<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>',
+  phone:'<path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-4.99-4.99 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>',
 };
 function ic(n,sz){var p=IC[n]||IC.plus;sz=sz||22;return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';}
 
@@ -362,7 +364,6 @@ async function fbDelExpense(id){
   if(db&&S.tripCode){await deleteDoc(doc(db,'trips',S.tripCode,'expenses',id));}
   else{S.expenses=S.expenses.filter(function(e){return e.id!==id;});refreshExpList();}
 }
-// Travel docs
 async function fbSaveTravelDoc(d){
   if(db&&S.tripCode){var ref=await addDoc(collection(db,'trips',S.tripCode,'travelDocs'),Object.assign({memberId:S.memberId,createdAt:serverTimestamp()},d));return ref.id;}
   else{var id='td_'+Date.now();S.travelDocs.push(Object.assign({id:id,memberId:S.memberId},d));return id;}
@@ -371,7 +372,6 @@ async function fbDelTravelDoc(id){
   if(db&&S.tripCode){await deleteDoc(doc(db,'trips',S.tripCode,'travelDocs',id));}
   else{S.travelDocs=S.travelDocs.filter(function(d){return d.id!==id;});}
 }
-// Journal
 async function fbSaveJournal(entry){
   var local=JSON.parse(localStorage.getItem('journal_'+(S.tripCode||'x'))||'[]');
   var idx=local.findIndex(function(e){return e.id===entry.id;});
@@ -382,7 +382,6 @@ async function fbSaveJournal(entry){
     else{var ref=await addDoc(collection(db,'trips',S.tripCode,'journal'),Object.assign({},entry,{createdAt:serverTimestamp()}));entry.id=ref.id;}
   }
 }
-// Photo board
 async function fbAddPhoto(pd){
   if(db&&S.tripCode){var ref=await addDoc(collection(db,'trips',S.tripCode,'photoBoard'),Object.assign({addedBy:S.memberId,createdAt:serverTimestamp()},pd));S.photoBoard.unshift(Object.assign({id:ref.id},pd));}
   else{var id='ph_'+Date.now();S.photoBoard.unshift(Object.assign({id:id,addedBy:S.memberId},pd));}
@@ -493,12 +492,12 @@ function _updateTripDates(days){
 // ── GEO + WEATHER ──────────────────────────────────────
 async function requestGeoPermission(){
   if(!navigator.geolocation){toast(t('noGeo'));return;}
-  // Check permission state first
   if(navigator.permissions){
     try{
       var perm=await navigator.permissions.query({name:'geolocation'});
       if(perm.state==='denied'){
-        showModal('<div class="sh"></div>'+
+        showModal(
+          '<div class="sh"></div>'+
           '<div class="sheet-title">'+t('geoAllow')+'</div>'+
           '<div style="font-size:14px;color:var(--t2);line-height:1.7;margin-bottom:18px">'+t('geoDenied')+'<br>'+t('geoSettings')+'</div>'+
           '<button class="btn btn-g btn-full" onclick="closeModal()">'+t('cancel')+'</button>');
@@ -516,7 +515,8 @@ async function requestGeoPermission(){
     },
     function(err){
       if(err.code===err.PERMISSION_DENIED){
-        showModal('<div class="sh"></div>'+
+        showModal(
+          '<div class="sh"></div>'+
           '<div class="sheet-title">'+t('geoAllow')+'</div>'+
           '<div style="font-size:14px;color:var(--t2);line-height:1.7;margin-bottom:18px">'+t('geoDenied')+'<br>'+t('geoSettings')+'</div>'+
           '<button class="btn btn-g btn-full" onclick="closeModal()">'+t('cancel')+'</button>');
@@ -542,17 +542,13 @@ async function fetchWeather(){
     var url='https://api.open-meteo.com/v1/forecast?latitude='+S.geo.lat+'&longitude='+S.geo.lon+
       '&current=temperature_2m,weathercode,windspeed_10m,relative_humidity_2m'+
       '&hourly=temperature_2m,weathercode,precipitation_probability'+
-      '&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_mean,weathercode'+
+      '&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_mean,weathercode,sunrise,sunset'+
       '&timezone=auto&forecast_days=9&wind_speed_unit=kmh';
     var r=await fetch(url);
     if(!r.ok)throw new Error('HTTP '+r.status);
     var data=await r.json();
     S.weather=data;
-    // Extract hourly (next 24h)
     if(data.hourly){
-      var now=new Date();
-      var nowH2=now.getHours();
-      var todayStr=today();
       S.weatherHourly={times:data.hourly.time,temps:data.hourly.temperature_2m,codes:data.hourly.weathercode,precs:data.hourly.precipitation_probability};
     }
     localStorage.setItem('wxCache',JSON.stringify({data:data,hourly:S.weatherHourly,ts:Date.now()}));
@@ -564,41 +560,42 @@ async function fetchWeather(){
 function renderWeatherMini(){
   var en=S.lang==='en';
   if(!S.geo){
-    return '<div class="wx-mini" onclick="reqGeoWeather()" style="padding:11px 13px;display:flex;align-items:center;gap:11px">'+
-      '<div>'+wxSvg(2,28)+'</div>'+
-      '<div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--t1)">'+(S.locationName||t('localWeather'))+'</div>'+
-        '<div style="font-size:11px;color:var(--t3)">'+(en?'Tap to enable':'点击开启天气')+'</div></div>'+
-      '<div style="font-size:12px;color:var(--blue);font-weight:600">'+(en?'Allow':'允许')+'</div>'+
+    return '<div class="wx-mini" onclick="reqGeoWeather()" style="padding:13px 15px;display:flex;align-items:center;gap:12px;margin:0 16px 12px;cursor:pointer">'+
+      '<div>'+wxSvg(2,30)+'</div>'+
+      '<div style="flex:1"><div style="font-size:14px;font-weight:600;color:var(--t1)">'+(S.locationName||t('localWeather'))+'</div>'+
+        '<div style="font-size:12px;color:var(--t3)">'+(en?'Tap to enable':'点击开启天气')+'</div></div>'+
+      '<div style="font-size:13px;color:var(--blue);font-weight:600">'+(en?'Allow':'允许')+'</div>'+
     '</div>';
   }
-  if(!S.weather){return '<div class="wx-mini shimmer" style="height:58px;border-radius:var(--r2);margin:0 16px 12px"></div>';}
+  if(!S.weather){return '<div class="wx-mini shimmer" style="height:70px;border-radius:var(--r2);margin:0 16px 12px"></div>';}
   var cur=S.weather.current,daily=S.weather.daily;
   var temp=Math.round(cur.temperature_2m);
   var tMax=daily.temperature_2m_max[0],tMin=daily.temperature_2m_min[0],prec0=daily.precipitation_probability_mean[0]||0;
-  var wdsEN=['Sun','Mon','Tue','Wed','Thu'],wdsZH=['日','一','二','三','四','五','六'];
+  var wdsEN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var wdsZH=['日','一','二','三','四','五','六'];
   var fHtml='';
   for(var i=0;i<Math.min(5,daily.time.length);i++){
     var d=new Date(daily.time[i]+'T12:00:00');
     var dl=i===0?(en?'Today':'今天'):(en?wdsEN[d.getDay()]:'周'+wdsZH[d.getDay()]);
     fHtml+='<div class="wx-mini-day">'+
-      '<div class="wx-mini-day-lbl">'+dl+'</div>'+
-      '<div style="display:flex;justify-content:center;margin:2px 0">'+wxSvg(daily.weathercode[i],14)+'</div>'+
-      '<div class="wx-mini-day-temp">'+Math.round(daily.temperature_2m_max[i])+'°</div>'+
+      '<div class="wx-mini-day-lbl" style="font-size:11px">'+dl+'</div>'+
+      '<div style="display:flex;justify-content:center;margin:3px 0">'+wxSvg(daily.weathercode[i],16)+'</div>'+
+      '<div class="wx-mini-day-temp" style="font-size:13px;font-weight:700">'+Math.round(daily.temperature_2m_max[i])+'°</div>'+
     '</div>';
   }
   var clothes=getClothRecs(tMax,tMin,prec0,Math.round(cur.windspeed_10m));
-  var cHtml=clothes.map(function(c){return '<div class="wx-pill">'+clothSvg(c[0],10)+' '+escHtml(c[1])+'</div>';}).join('');
-  return '<div class="wx-mini" onclick="showWeatherFull()">'+
-    '<div class="wx-mini-row">'+
-      '<div>'+wxSvg(cur.weathercode,32)+'</div>'+
-      '<div style="flex:1">'+
-        (S.locationName?'<div class="wx-mini-loc">'+escHtml(S.locationName)+'</div>':'')+
-        '<div class="wx-mini-temp">'+temp+'°C</div>'+
-        '<div class="wx-mini-desc">'+wxDesc(cur.weathercode)+' · '+cur.relative_humidity_2m+'% · '+Math.round(cur.windspeed_10m)+'km/h</div>'+
+  var cHtml=clothes.map(function(c){return '<div class="wx-pill">'+clothSvg(c[0],11)+' '+escHtml(c[1])+'</div>';}).join('');
+  return '<div class="wx-mini" onclick="showWeatherFull()" style="margin:0 16px 12px;cursor:pointer">'+
+    '<div class="wx-mini-row" style="padding:13px 15px">'+
+      '<div>'+wxSvg(cur.weathercode,36)+'</div>'+
+      '<div style="flex:1;padding-left:2px">'+
+        (S.locationName?'<div class="wx-mini-loc" style="font-size:12px;color:var(--t3);margin-bottom:1px">'+escHtml(S.locationName)+'</div>':'')+
+        '<div class="wx-mini-temp" style="font-size:30px;font-weight:200;color:var(--t1);line-height:1">'+temp+'°C</div>'+
+        '<div class="wx-mini-desc" style="font-size:12px;color:var(--t2);margin-top:2px">'+wxDesc(cur.weathercode)+' · '+cur.relative_humidity_2m+'% · '+Math.round(cur.windspeed_10m)+'km/h</div>'+
       '</div>'+
-      '<div style="display:flex;gap:8px;padding-left:4px">'+fHtml+'</div>'+
+      '<div style="display:flex;gap:6px;padding-left:4px">'+fHtml+'</div>'+
     '</div>'+
-    (cHtml?'<div class="wx-clothes">'+cHtml+'</div>':'')+
+    (cHtml?'<div class="wx-clothes" style="padding:0 13px 11px;display:flex;flex-wrap:wrap;gap:6px">'+cHtml+'</div>':'')+
   '</div>';
 }
 
@@ -610,28 +607,28 @@ window.showWeatherFull=function(){
   var tMax=daily.temperature_2m_max[0],tMin=daily.temperature_2m_min[0],prec0=daily.precipitation_probability_mean[0]||0;
   var clothes=getClothRecs(tMax,tMin,prec0,Math.round(cur.windspeed_10m));
 
-  // 24h hourly
+  // 24h hourly — time only, format【01】【13】
   var hourlyHtml='';
   if(S.weatherHourly){
-    var nowTs=new Date();var nowHour=nowTs.getHours();var todayStr=today();
     var shown=0;
     for(var i=0;i<S.weatherHourly.times.length&&shown<24;i++){
       var ts=S.weatherHourly.times[i];if(!ts)continue;
-      var tDate=ts.split('T')[0],tH=parseInt(ts.split('T')[1]);
-      var tsMs=new Date(ts).getTime();if(tsMs<Date.now()-3600000)continue;
-      var lbl=tDate===todayStr?(tH+':00'):(tDate.substring(5)+' '+tH+':00');
-      if(shown===0)lbl=en?'Now':'现在';
-      hourlyHtml+='<div class="wx-hour">'+
-        '<div class="wx-hour-time">'+lbl+'</div>'+
-        wxSvg(S.weatherHourly.codes[i]||0,18)+
-        '<div class="wx-hour-temp">'+Math.round(S.weatherHourly.temps[i]||0)+'°</div>'+
-        (S.weatherHourly.precs[i]>10?'<div class="wx-hour-prec">'+S.weatherHourly.precs[i]+'%</div>':'')+
+      var tH=parseInt(ts.split('T')[1]);
+      var tsMs=new Date(ts).getTime();
+      if(tsMs<Date.now()-3600000)continue;
+      // Format: two-digit hour only, e.g. 01 / 13
+      var lbl=shown===0?(en?'Now':'现在'):String(tH).padStart(2,'0');
+      hourlyHtml+='<div class="wx-hour" style="min-width:58px;text-align:center;padding:0 5px;flex-shrink:0">'+
+        '<div style="font-size:12px;color:var(--t2);margin-bottom:5px;font-weight:500">'+lbl+'</div>'+
+        wxSvg(S.weatherHourly.codes[i]||0,24)+
+        '<div style="font-size:15px;font-weight:600;color:var(--t1);margin-top:5px">'+Math.round(S.weatherHourly.temps[i]||0)+'°</div>'+
+        (S.weatherHourly.precs[i]>10?'<div style="font-size:10px;color:#60A0FF;margin-top:2px">'+S.weatherHourly.precs[i]+'%</div>':'')+
       '</div>';
       shown++;
     }
   }
 
-  // 9-day daily
+  // 9-day daily — show weekday + date
   var wdsEN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   var wdsZH=['日','一','二','三','四','五','六'];
   var allMax=daily.temperature_2m_max;
@@ -642,41 +639,92 @@ window.showWeatherFull=function(){
   for(var i=0;i<Math.min(9,daily.time.length);i++){
     var d2=new Date(daily.time[i]+'T12:00:00');
     var wd=en?wdsEN[d2.getDay()]:'周'+wdsZH[d2.getDay()];
-    var dl=i===0?(en?'Today':'今天'):wd;
+    var d2M=parseInt(daily.time[i].split('-')[1]);
+    var d2D=parseInt(daily.time[i].split('-')[2]);
     var pr=daily.precipitation_probability_mean[i]||0;
     var barW=Math.max(8,((daily.temperature_2m_max[i]-daily.temperature_2m_min[i])/range)*100);
     var barL=Math.max(0,((daily.temperature_2m_min[i]-globalMin)/range)*100);
-    dailyHtml+='<div class="wx-day-row">'+
-      '<div class="wx-day-name">'+dl+'</div>'+
-      wxSvg(daily.weathercode[i],18)+
-      '<div class="wx-day-prec">'+(pr>10?pr+'%':'')+'</div>'+
-      '<div class="wx-day-range"><div class="wx-day-fill" style="left:'+barL+'%;width:'+barW+'%"></div></div>'+
-      '<div class="wx-day-temps"><span class="wx-day-min">'+Math.round(daily.temperature_2m_min[i])+'°</span><span class="wx-day-max">'+Math.round(daily.temperature_2m_max[i])+'°</span></div>'+
+    var nameHtml=i===0?
+      '<div style="font-weight:700;font-size:14px;color:var(--t1)">'+(en?'Today':'今天')+'</div>':
+      '<div style="font-weight:600;font-size:14px;color:var(--t1)">'+wd+'</div><div style="font-size:11px;color:var(--t3);margin-top:1px">'+d2M+'/'+d2D+'</div>';
+    dailyHtml+='<div class="wx-day-row" style="padding:10px 13px;display:flex;align-items:center;gap:10px;border-bottom:0.5px solid var(--glass-border)">'+
+      '<div style="width:80px;flex-shrink:0">'+nameHtml+'</div>'+
+      wxSvg(daily.weathercode[i],22)+
+      '<div style="width:38px;font-size:12px;color:#60A0FF;text-align:center">'+(pr>10?pr+'%':'')+'</div>'+
+      '<div class="wx-day-range" style="flex:1;height:6px;background:var(--glass-bg3);border-radius:3px;position:relative;overflow:visible">'+
+        '<div class="wx-day-fill" style="position:absolute;top:0;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--blue),var(--orange));left:'+barL+'%;width:'+barW+'%"></div>'+
+      '</div>'+
+      '<div style="width:80px;display:flex;justify-content:space-between;padding-left:8px">'+
+        '<span style="font-size:14px;color:var(--t2)">'+Math.round(daily.temperature_2m_min[i])+'°</span>'+
+        '<span style="font-size:14px;font-weight:700;color:var(--t1)">'+Math.round(daily.temperature_2m_max[i])+'°</span>'+
+      '</div>'+
     '</div>';
   }
 
-  var clothHtml=clothes.map(function(c){return '<div style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;background:var(--glass-bg);border:0.5px solid var(--glass-border);border-radius:9px;font-size:12px;color:var(--t1)">'+clothSvg(c[0],13)+' '+escHtml(c[1])+'</div>';}).join('');
+  var clothHtml=clothes.map(function(c){return '<div style="display:inline-flex;align-items:center;gap:6px;padding:8px 13px;background:var(--glass-bg);border:0.5px solid var(--glass-border);border-radius:10px;font-size:13px;color:var(--t1)">'+clothSvg(c[0],14)+' '+escHtml(c[1])+'</div>';}).join('');
 
   var ov=document.createElement('div');ov.className='wx-full';
   ov.innerHTML=
-    '<div style="position:absolute;top:0;left:0;right:0;z-index:10;padding:calc(var(--sai)+6px) 16px 8px;display:flex;align-items:center">'+
+    '<div style="position:absolute;top:0;left:0;right:0;z-index:10;padding:calc(var(--sai,0px)+8px) 16px 10px;display:flex;align-items:center;background:var(--glass-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:0.5px solid var(--glass-border)">'+
       '<div class="nbtn" onclick="this.closest(\'.wx-full\').remove()">'+ic('arrowup',15)+'</div>'+
-      '<div style="flex:1;text-align:center;font-size:14px;font-weight:600;color:var(--t1)">'+(en?'Weather':'天气')+'</div>'+
+      '<div style="flex:1;text-align:center;font-size:15px;font-weight:700;color:var(--t1)">'+(en?'Weather':'天气')+(S.locationName?' · '+escHtml(S.locationName):'')+'</div>'+
       '<div style="width:34px"></div>'+
     '</div>'+
-    '<div class="wx-full-hero">'+
-      (S.locationName?'<div class="wx-full-loc">'+escHtml(S.locationName)+'</div>':'')+''+
-      '<div class="wx-full-temp">'+temp+'°</div>'+
-      '<div class="wx-full-desc">'+wxDesc(cur.weathercode)+'</div>'+
-      '<div class="wx-full-hilo">H:'+Math.round(tMax)+'° L:'+Math.round(tMin)+'°  |  '+cur.relative_humidity_2m+'%  '+Math.round(cur.windspeed_10m)+'km/h</div>'+
-    '</div>'+
-    '<div class="wx-full-scroll">'+
-      (hourlyHtml?'<div class="wx-section"><div class="wx-section-title">'+(en?'Hourly (24h)':'未来24小时')+'</div><div class="wx-hourly-row">'+hourlyHtml+'</div></div>':'')+
-      '<div class="wx-section"><div class="wx-section-title">'+(en?'9-Day Forecast':'9日预报')+'</div><div class="wx-daily-row">'+dailyHtml+'</div></div>'+
-      (clothHtml?'<div class="wx-section" style="padding:12px 13px"><div class="wx-section-title" style="padding:0 0 7px">'+(en?'What to wear':'穿搭建议')+'</div><div style="display:flex;flex-wrap:wrap;gap:7px">'+clothHtml+'</div></div>':'')+
+    '<div style="overflow-y:auto;-webkit-overflow-scrolling:touch;position:absolute;top:calc(var(--sai,0px)+52px);bottom:0;left:0;right:0">'+
+      '<div style="text-align:center;padding:28px 16px 20px">'+
+        '<div style="font-size:80px;font-weight:200;color:var(--t1);line-height:1">'+temp+'°</div>'+
+        '<div style="font-size:20px;font-weight:500;color:var(--t2);margin:6px 0">'+wxDesc(cur.weathercode)+'</div>'+
+        '<div style="font-size:14px;color:var(--t3)">H:'+Math.round(tMax)+'° L:'+Math.round(tMin)+'°  ·  '+cur.relative_humidity_2m+'%  ·  '+Math.round(cur.windspeed_10m)+'km/h</div>'+
+      '</div>'+
+      (hourlyHtml?
+        '<div style="background:var(--glass-bg);border:0.5px solid var(--glass-border);border-radius:var(--r2);margin:0 16px 14px;overflow:hidden">'+
+          '<div style="padding:12px 13px 8px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--t3)">'+(en?'Hourly — next 24h':'未来24小时')+'</div>'+
+          '<div style="display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:4px 8px 14px;gap:0;scrollbar-width:none">'+hourlyHtml+'</div>'+
+        '</div>':'')+
+      '<div style="background:var(--glass-bg);border:0.5px solid var(--glass-border);border-radius:var(--r2);margin:0 16px 14px;overflow:hidden">'+
+        '<div style="padding:12px 13px 4px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--t3)">'+(en?'9-Day Forecast':'9日预报')+'</div>'+
+        dailyHtml+
+      '</div>'+
+      (clothHtml?
+        '<div style="background:var(--glass-bg);border:0.5px solid var(--glass-border);border-radius:var(--r2);margin:0 16px 14px;padding:12px 13px">'+
+          '<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--t3);margin-bottom:9px">'+(en?'What to wear':'穿搭建议')+'</div>'+
+          '<div style="display:flex;flex-wrap:wrap;gap:8px">'+clothHtml+'</div>'+
+        '</div>':'')+'<div style="height:30px"></div>'+
     '</div>';
   document.body.appendChild(ov);
+  // Animate in
+  ov.style.cssText+='transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1)';
+  requestAnimationFrame(function(){requestAnimationFrame(function(){ov.style.transform='translateY(0)';});});
 };
+
+// ── LISTS FULL SCREEN ─────────────────────────────────
+window.showListsFull=function(initPane){
+  var pane=initPane||S._listsPane||'shopping';
+  S._listsPane=pane;
+  var existing=document.getElementById('lists-full-ov');
+  if(existing)existing.remove();
+  var ov=document.createElement('div');
+  ov.className='wx-full';ov.id='lists-full-ov';
+  var tabs=['shopping','todo','packing'].map(function(k){
+    return '<div class="ptab '+(pane===k?'on':'')+'" onclick="showListsFull(\''+k+'\')" style="transition:all .2s var(--sp,ease)">'+t(k)+'</div>';
+  }).join('');
+  var content=pane==='shopping'?renderShoppingPane():pane==='todo'?renderTodoPane():renderPackingPane();
+  ov.innerHTML=
+    '<div style="position:absolute;top:0;left:0;right:0;z-index:10;padding:calc(var(--sai,0px)+8px) 16px 10px;display:flex;align-items:center;background:var(--glass-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:0.5px solid var(--glass-border)">'+
+      '<div class="nbtn" onclick="document.getElementById(\'lists-full-ov\').remove()">'+ic('arrowup',15)+'</div>'+
+      '<div style="flex:1;text-align:center;font-size:15px;font-weight:700;color:var(--t1)">'+t('lists')+'</div>'+
+      '<div style="width:34px"></div>'+
+    '</div>'+
+    '<div style="position:absolute;top:calc(var(--sai,0px)+54px);bottom:0;left:0;right:0;overflow-y:auto;-webkit-overflow-scrolling:touch">'+
+      '<div class="ptabs" style="margin:12px 16px">'+tabs+'</div>'+
+      '<div id="lists-content" style="padding:0 16px 30px">'+content+'</div>'+
+    '</div>';
+  document.body.appendChild(ov);
+  // Animate in
+  ov.style.cssText+='transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1)';
+  requestAnimationFrame(function(){requestAnimationFrame(function(){ov.style.transform='translateY(0)';});});
+};
+window.showListsModal=function(){showListsFull();};
 
 // ── NOTIFICATIONS + VOICE + APP LAUNCHER ──────────────
 function checkNotifs(){
@@ -690,7 +738,7 @@ function checkNotifs(){
     var n30='n30_'+item.id;
     if(diff>=28&&diff<=32&&shown.indexOf(n30)<0){shown.push(n30);localStorage.setItem('shownNotifs',JSON.stringify(shown));showNotifBanner('Travoo','30min: '+item.title,'');}
     var nN='nnow_'+item.id;
-    if(diff>=-2&&diff<=3&&shown.indexOf(nN)<0){shown.push(nN);localStorage.setItem('shownNotifs',JSON.stringify(shown));showNotifBanner('Travoo',item.title,item.urgent?'⚠️ 必须准时':'祝旅途愉快');}
+    if(diff>=-2&&diff<=3&&shown.indexOf(nN)<0){shown.push(nN);localStorage.setItem('shownNotifs',JSON.stringify(shown));showNotifBanner('Travoo',item.title,item.urgent?'必须准时':'祝旅途愉快');}
   });
 }
 function showNotifBanner(app,title,body){
@@ -743,7 +791,8 @@ var _ov=null;
 function showModal(html){
   closeModal();
   var d=document.createElement('div');d.className='ov';
-  d.innerHTML='<div class="sheet">'+html+'</div>';
+  // FIX #2: add horizontal padding to sheet so content isn't edge-to-edge
+  d.innerHTML='<div class="sheet" style="padding-left:18px;padding-right:18px">'+html+'</div>';
   d.addEventListener('click',function(e){if(e.target===d)closeModal();});
   document.body.appendChild(d);_ov=d;
 }
@@ -820,7 +869,6 @@ function renderExpStats(){
     return '<div class="stat-legend-item"><div class="stat-legend-dot" style="background:'+s.color+'"></div><span class="stat-legend-lbl">'+catL(s.key)+'</span><span class="stat-legend-pct">'+pct+'%  '+bc.s+Math.round(s.value)+'</span></div>';
   }).join('');
 
-  // Daily bars
   var days=getDays();
   var dateLabels=days.length>0?days.map(function(d){return d.date;}):Object.keys(stats.dailyTotals).sort().slice(-7);
   var maxD=Math.max.apply(null,dateLabels.map(function(d){return stats.dailyTotals[d]||0;}).concat([1]));
@@ -835,18 +883,17 @@ function renderExpStats(){
     '</div>';
   }).join('');
 
-  // Budget
   var budget=S.budget,budgetHtml='';
   if(budget.total){
     var pct=Math.min(100,Math.round((stats.grandTotal/budget.total)*100));
     var over=stats.grandTotal>budget.total;
     var fillColor=over?'var(--red)':(pct>80?'var(--orange)':'var(--green)');
-    var msg=over?'⚠️ '+t('budgetOver')+' '+bc.s+Math.round(stats.grandTotal-budget.total):
-      (pct<70?'🎉 '+t('budgetSave')+' '+bc.s+Math.round(budget.total-stats.grandTotal):'');
+    var msg=over?t('budgetOver')+' '+bc.s+Math.round(stats.grandTotal-budget.total):
+      (pct<70?t('budgetSave')+' '+bc.s+Math.round(budget.total-stats.grandTotal):'');
     budgetHtml='<div class="budget-row">'+
       '<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:13px;color:var(--t2)">'+t('budget')+'</span><span style="font-size:13px;font-weight:700;color:var(--t1)">'+bc.s+Math.round(stats.grandTotal)+' / '+bc.s+budget.total+'</span></div>'+
       '<div class="budget-prog"><div class="budget-fill" style="width:'+pct+'%;background:'+fillColor+'"></div></div>'+
-    (msg ? '<div class="budget-praise" style="background:' + (over ? 'rgba(var(--red-rgb),.08)' : 'rgba(var(--green-rgb),.08)') + ';border:0.5px solid ' + (over ? 'rgba(var(--red-rgb),.2)' : 'rgba(var(--green-rgb),.2)') + '">' + escHtml(msg) + '</div>' : '')
+    (msg?'<div class="budget-praise" style="background:'+(over?'rgba(var(--red-rgb),.08)':'rgba(var(--green-rgb),.08)')+';border:0.5px solid '+(over?'rgba(var(--red-rgb),.2)':'rgba(var(--green-rgb),.2)')+'">'+escHtml(msg)+'</div>':'')+
     '</div>';
   }
   var dailyBudgetHtml='';
@@ -854,8 +901,8 @@ function renderExpStats(){
     var todaySpend=stats.dailyTotals[today()]||0;
     var dpct=Math.min(100,Math.round((todaySpend/budget.daily)*100));
     var dOver=todaySpend>budget.daily;
-    var dMsg=dOver?'⚠️ '+t('budgetOver')+' '+bc.s+Math.round(todaySpend-budget.daily):
-      (dpct<70?'🎉 '+t('budgetSave')+' '+bc.s+Math.round(budget.daily-todaySpend):'');
+    var dMsg=dOver?t('budgetOver')+' '+bc.s+Math.round(todaySpend-budget.daily):
+      (dpct<70?t('budgetSave')+' '+bc.s+Math.round(budget.daily-todaySpend):'');
     dailyBudgetHtml='<div class="budget-row">'+
       '<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:13px;color:var(--t2)">'+t('perDay')+'</span><span style="font-size:13px;font-weight:700;color:var(--t1)">'+bc.s+Math.round(todaySpend)+' / '+bc.s+budget.daily+'</span></div>'+
       '<div class="budget-prog"><div class="budget-fill" style="width:'+dpct+'%;background:'+(dOver?'var(--red)':dpct>80?'var(--orange)':'var(--green)')+'"></div></div>'+
@@ -897,7 +944,6 @@ function calcSettle(){
     var split=e.splitAmong||ids;
     var splitType=e.splitType||'equal';
     if(splitType==='custom'&&e.customSplits){
-      // Custom splits: each person has specified amount
       if(bal[e.paidBy]!==undefined)bal[e.paidBy]+=amt;
       Object.entries(e.customSplits).forEach(function(entry){
         var mid=entry[0],mAmt=entry[1];
@@ -957,11 +1003,14 @@ function renderApp(){
   setInterval(checkNotifs,60000);setTimeout(checkNotifs,2000);
   requestGeoPermission();
 
-  // Mic FAB (home only)
+  // FIX #7: Mic FAB — home tab only, positioned bottom-right above nav
   var mf=document.createElement('button');mf.id='gfab-mic';mf.className='gfab';mf.setAttribute('hidden','');
   mf.innerHTML=ic('mic',21);
+  mf.style.cssText='position:fixed;bottom:calc(58px + env(safe-area-inset-bottom,0px) + 16px);right:20px;z-index:90;width:52px;height:52px;border-radius:50%;background:rgba(var(--accent-rgb),.15);border:0.5px solid rgba(var(--accent-rgb),.3);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--accent);transition:transform .15s ease,opacity .15s ease;-webkit-tap-highlight-color:transparent;';
   mf.addEventListener('mousedown',function(){startVoice(handleVoiceIntent);});
   mf.addEventListener('touchstart',function(e){e.preventDefault();startVoice(handleVoiceIntent);},{passive:false});
+  mf.addEventListener('touchstart',function(){mf.style.transform='scale(.92)';},{passive:true});
+  mf.addEventListener('touchend',function(){mf.style.transform='scale(1)';},{passive:true});
   app.appendChild(mf);
 }
 
@@ -979,10 +1028,8 @@ window.switchTab=function(name,dir){
     });
   }
   S.tab=name;
-  // Remove expense FAB when not on expense tab
   var af=document.getElementById('gfab-add');
   if(af&&name!=='exp')af.remove();
-  // Voice FAB only on home
   var mf=document.getElementById('gfab-mic');
   if(mf){if(name==='home')mf.removeAttribute('hidden');else mf.setAttribute('hidden','');}
   var fn={home:renderHome,itin:renderItin,exp:renderExp,chat:renderChat,set:renderSet};
@@ -1014,7 +1061,8 @@ function renderOnboarding(){
     '<div id="v-ob" class="view active anim-in"><div class="ob">'+
       '<div class="ob-logo">'+ic('plane',50)+'</div>'+
       '<div class="ob-brand">'+t('brand')+'</div><div class="ob-sub">'+t('sub')+'</div>'+
-      '<div class="ob-form">'+
+      // FIX #2: added padding to ob-form
+      '<div class="ob-form" style="padding:0 8px">'+
         '<div class="inp-lbl" style="text-align:left">'+t('yourName')+'</div>'+
         '<input class="inp" id="ob-name" placeholder="'+t('namePh')+'" autocomplete="off">'+
         '<input class="code-inp" id="ob-code" maxlength="6" placeholder="'+t('codePh')+'" autocomplete="off" autocapitalize="characters">'+
@@ -1045,10 +1093,11 @@ window.handleCreate=async function(){
 function _saveSession(code,mid,name){S.tripCode=code;S.memberId=mid;S.memberName=name;localStorage.setItem('tripCode',code);localStorage.setItem('memberId',mid);localStorage.setItem('memberName',name);}
 function _addLocalTrip(code,name,dates){var trips=JSON.parse(localStorage.getItem('localTrips')||'[]');if(!trips.find(function(tt){return tt.code===code;}))trips.push({code:code,name:name,dates:dates});localStorage.setItem('localTrips',JSON.stringify(trips));S.localTrips=trips;}
 function renderTripList(){
-  var cards=S.localTrips.map(function(tr){return '<div class="list" style="margin-bottom:10px;cursor:pointer" onclick="enterTrip(\''+tr.code+'\')"><div class="lr"><div style="flex:1"><div style="font-size:16px;font-weight:600;color:var(--t1)">'+escHtml(tr.name||'我的旅行')+'</div><div style="font-size:12px;color:var(--t2)">'+escHtml(tr.dates||'—')+'</div></div><div class="lr-chev">'+ic('chev',14)+'</div></div></div>';}).join('');
+  var cards=S.localTrips.map(function(tr){return '<div class="list" style="margin-bottom:10px;cursor:pointer;transition:opacity .15s" onclick="enterTrip(\''+tr.code+'\')" ontouchstart="this.style.opacity=.7" ontouchend="this.style.opacity=1"><div class="lr"><div style="flex:1"><div style="font-size:16px;font-weight:600;color:var(--t1)">'+escHtml(tr.name||'我的旅行')+'</div><div style="font-size:12px;color:var(--t2)">'+escHtml(tr.dates||'—')+'</div></div><div class="lr-chev">'+ic('chev',14)+'</div></div></div>';}).join('');
   document.getElementById('app').innerHTML=
+    // FIX #1: nav padding-top with SAI
     '<div id="v-tl" class="view active anim-in">'+
-    '<div class="nav"><div class="nav-large">'+t('myTrips')+'</div><div class="nbtn" onclick="renderOnboarding()">'+ic('plus',15)+'</div></div>'+
+    '<div class="nav" style="padding-top:calc(var(--sai,0px)+4px)"><div class="nav-large">'+t('myTrips')+'</div><div class="nbtn" onclick="renderOnboarding()">'+ic('plus',15)+'</div></div>'+
     '<div class="scroller"><div style="height:14px"></div><div class="sec li-anim">'+cards+
     '<div style="text-align:center;padding:16px;cursor:pointer;color:var(--t3);font-size:14px" onclick="renderOnboarding()">+ '+t('newTrip')+'</div></div></div></div>';
 }
@@ -1084,11 +1133,16 @@ function renderHome(){
       memRow+'</div></div>';
 
   var wxHtml=renderWeatherMini();
-
-  // Travel docs widget
   var tdHtml=renderTravelDocsWidget();
 
-  // Rate bar
+  // FIX #3: Lists widget on home page
+  var listsHtml='<div onclick="showListsFull()" style="margin:0 16px 12px;padding:13px 14px;background:var(--glass-bg);border:0.5px solid var(--glass-border);border-radius:var(--r2);display:flex;align-items:center;gap:11px;cursor:pointer;transition:opacity .15s;-webkit-tap-highlight-color:transparent" ontouchstart="this.style.opacity=.7" ontouchend="this.style.opacity=1">'+
+    '<div style="width:30px;height:30px;background:rgba(var(--accent-rgb),.12);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--accent)">'+ic('list',15)+'</div>'+
+    '<div style="flex:1"><div style="font-size:14px;font-weight:600;color:var(--t1)">'+t('lists')+'</div>'+
+      '<div style="font-size:11px;color:var(--t3);margin-top:1px">'+t('shopping')+' · '+t('todo')+' · '+t('packing')+'</div></div>'+
+    '<div style="color:var(--t3)">'+ic('chev',14)+'</div>'+
+  '</div>';
+
   var lc=CUR[S.localCurrency]||{f:'',s:S.localCurrency},bc=CUR[S.baseCurrency]||{f:'',s:S.baseCurrency};
   var rateVal=getRate(S.localCurrency,S.baseCurrency);
   var rateStr=Object.keys(S.rates).length>0?('1 '+S.localCurrency+' = '+fmtCur(rateVal,S.baseCurrency)):t('rateUnavailable');
@@ -1097,37 +1151,32 @@ function renderHome(){
     '<div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--t1)">'+escHtml(rateStr)+'</div>'+
       (S.fxDate?'<div style="font-size:10px;color:var(--t3)">'+S.fxDate.substring(0,16)+'</div>':'')+
     '</div>'+
-    '<div onclick="event.stopPropagation();doFetchRates()" style="padding:5px 11px;background:var(--glass-bg2);border:0.5px solid var(--glass-border);border-radius:9px;font-size:12px;color:var(--t2);display:flex;align-items:center;gap:3px;cursor:pointer">'+ic('refresh',11)+'</div>'+
+    '<div onclick="event.stopPropagation();doFetchRates()" style="padding:5px 11px;background:var(--glass-bg2);border:0.5px solid var(--glass-border);border-radius:9px;font-size:12px;color:var(--t2);display:flex;align-items:center;gap:3px;cursor:pointer;transition:opacity .15s;-webkit-tap-highlight-color:transparent">'+ic('refresh',11)+'</div>'+
   '</div>';
 
-  // Quick actions (no XHS, no butler/expense)
   var qaApps=getQuickApps();
   var qaHtml='';
   qaApps.forEach(function(key){
     var app=APPS[key];if(!app)return;
     var customIcon=S.customAppIcons&&S.customAppIcons[key];
     var iconHtml=customIcon?'<img src="'+customIcon+'" alt="">':('<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+IC[app.i||'globe']+'</svg>');
-    qaHtml+='<div class="qa" onclick="openApp(\''+key+'\')"><div class="qa-icon">'+iconHtml+'</div><div class="qa-lbl">'+escHtml(appL(key))+'</div></div>';
+    qaHtml+='<div class="qa" onclick="openApp(\''+key+'\')" style="transition:transform .15s ease,opacity .15s ease;-webkit-tap-highlight-color:transparent" ontouchstart="this.style.transform=\'scale(.93)\'" ontouchend="this.style.transform=\'scale(1)\'"><div class="qa-icon">'+iconHtml+'</div><div class="qa-lbl">'+escHtml(appL(key))+'</div></div>';
   });
 
-  // Photo board
   var pbHtml=renderPhotoBoardWidget();
-  // Journal
   var jHtml=renderJournalWidget();
-  // Smart recs
   var recs=buildSmartRecs(todayDay,h),recsHtml='';
   if(recs.length){
     recsHtml='<div style="margin-bottom:16px"><div class="sec-ttl" style="padding:0 16px;margin-bottom:7px">'+t('smRec')+'</div><div class="smart-strip">';
     recs.forEach(function(r){recsHtml+='<div class="smart-pill" onclick="'+(r.action||'')+'"><div class="smart-tag">'+escHtml(r.type)+'</div><div class="smart-ttl">'+escHtml(r.title)+'</div><div class="smart-desc">'+escHtml(r.desc)+'</div></div>';});
     recsHtml+='</div></div>';
   }
-  // Today timeline
   var bottomHtml='';
   if(todayDay&&todayDay.items.length){
     bottomHtml='<div class="sec"><div class="sec-ttl">'+t('todayTimeline')+'</div><div class="list li-anim">';
     todayDay.items.forEach(function(item){
       var sp=spendStr(item);
-      bottomHtml+='<div class="lr" onclick="showActDetail(\''+item.id+'\')">'+
+      bottomHtml+='<div class="lr" onclick="showActDetail(\''+item.id+'\')" style="transition:opacity .15s;-webkit-tap-highlight-color:transparent" ontouchstart="this.style.opacity=.7" ontouchend="this.style.opacity=1">'+
         '<div style="width:42px;flex-shrink:0;font-size:11px;font-weight:700;color:var(--t2)">'+escHtml(item.time)+'</div>'+
         '<div style="flex:1"><div style="font-size:14px;font-weight:600;color:var(--t1)">'+renderMentions(item.title)+'</div>'+
           (sp?'<div style="font-size:11px;color:var(--orange)">'+escHtml(sp)+'</div>':'')+
@@ -1135,16 +1184,17 @@ function renderHome(){
         (item.urgent?'<div style="width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0"></div>':'')+
       '</div>';
     });
-    bottomHtml+='</div><button class="btn btn-g btn-full" style="margin-top:9px" onclick="switchTab(\'itin\')">'+t('viewFull')+'</button></div>';
+    bottomHtml+='</div><button class="btn btn-g btn-full" style="margin-top:9px;transition:transform .15s ease" ontouchstart="this.style.transform=\'scale(.97)\'" ontouchend="this.style.transform=\'scale(1)\'" onclick="switchTab(\'itin\')">'+t('viewFull')+'</button></div>';
   }
 
+  // FIX #1: nav has padding-top with SAI
   v.innerHTML=
-    '<div class="nav" style="padding-top:calc(var(--sai)+4px)">'+
+    '<div class="nav" style="padding-top:calc(var(--sai,0px)+4px)">'+
       '<div style="font-size:12px;font-weight:500;color:var(--t2);flex:1">'+escHtml(trip.name||'')+'</div>'+
       '<div class="nbtn" onclick="showTripCodeModal()">'+ic('share',14)+'</div>'+
     '</div>'+
     '<div class="scroller" style="padding-top:6px">'+
-      heroHtml+wxHtml+tdHtml+rateHtml+
+      heroHtml+wxHtml+tdHtml+listsHtml+rateHtml+
       '<div class="sec">'+
         '<div style="display:flex;align-items:center;margin-bottom:7px">'+
           '<div class="sec-ttl" style="margin-bottom:0;flex:1">'+t('qa')+'</div>'+
@@ -1153,6 +1203,7 @@ function renderHome(){
         '<div class="qa-grid">'+qaHtml+'</div>'+
       '</div>'+
       pbHtml+jHtml+recsHtml+bottomHtml+
+      '<div style="height:90px"></div>'+
     '</div>';
 }
 window.doFetchRates=async function(){toast('获取汇率中…',0);var ok=await fetchRates();toast(ok?'汇率已更新':'获取失败');if(S.tab==='home')renderHome();else if(S.tab==='set')renderSet();};
@@ -1272,7 +1323,7 @@ function renderPhotoBoardWidget(){
 }
 window.addPhotoToBoard=function(){
   var cats=[t('catLandscape'),t('catFood'),t('catArchitecture'),t('catPeople'),t('catTransport'),t('catMisc')];
-  var catChips=cats.map(function(c,i){return '<div class="chip '+(i===0?'on':'')+'" data-c="'+c+'" onclick="$$(\'.pb-cat\').forEach(function(cc){cc.classList.remove(\'on\')});this.classList.add(\'on\')" class="chip pb-cat">'+c+'</div>';}).join('');
+  var catChips=cats.map(function(c,i){return '<div class="chip '+(i===0?'on':'')+' pb-cat" data-c="'+c+'" onclick="$$(\'.pb-cat\').forEach(function(cc){cc.classList.remove(\'on\')});this.classList.add(\'on\')">'+c+'</div>';}).join('');
   showModal('<div class="sh"></div><div class="sheet-title">'+t('addPhotoBoard')+'</div>'+
     '<div id="pb-preview" style="margin-bottom:9px"></div>'+
     '<div style="display:flex;gap:7px;margin-bottom:11px"><button class="btn btn-g" style="flex:1;padding:10px" onclick="pickPhotoBoard(\'camera\')">'+ic('camera',14)+' '+t('fromCamera')+'</button><button class="btn btn-g" style="flex:1;padding:10px" onclick="pickPhotoBoard(\'album\')">'+ic('img',14)+' '+t('fromAlbum')+'</button></div>'+
@@ -1287,7 +1338,7 @@ window.pickPhotoBoard=function(src){
 };
 window.submitPhotoBoard=async function(){
   if(!window._pbImage){toast('请先选择图片');return;}
-  var cat=$('.pb-cat.chip.on')&&$('.pb-cat.chip.on').dataset.c||t('catMisc');
+  var cat=$('.pb-cat.on')&&$('.pb-cat.on').dataset&&$('.pb-cat.on').dataset.c||t('catMisc');
   var cap=$('#pb-cap')&&$('#pb-cap').value.trim()||'';
   showLoad();await fbAddPhoto({url:window._pbImage,category:cat,caption:cap});
   window._pbImage=null;hideLoad();closeModal();toast(t('save'));
@@ -1303,7 +1354,7 @@ window.showPhotoGallery=function(startIdx){
       (ph.url?'<img src="'+ph.url+'" alt="">':'<div style="width:100%;height:100%;background:var(--glass-bg2)"></div>')+
     '</div>';}).join('');
     ov.innerHTML=
-      '<div style="position:absolute;top:0;left:0;right:0;z-index:10;padding:calc(var(--sai)+6px) 14px 10px;display:flex;align-items:center;background:linear-gradient(rgba(0,0,0,.6),transparent)">'+
+      '<div style="position:absolute;top:0;left:0;right:0;z-index:10;padding:calc(var(--sai,0px)+6px) 14px 10px;display:flex;align-items:center;background:linear-gradient(rgba(0,0,0,.6),transparent)">'+
         '<div class="nbtn" onclick="this.closest(\'.gallery-ov\').remove()">'+ic('arrowup',15)+'</div>'+
         '<div style="flex:1;text-align:center;font-size:13px;color:rgba(255,255,255,.7)">'+(curr+1)+'/'+photos.length+(p.caption?' · '+escHtml(p.caption):'')+'</div>'+
         '<div class="nbtn" onclick="if(confirm(\'Delete?\'))window._galleryDel()">'+ic('trash',13)+'</div>'+
@@ -1322,7 +1373,7 @@ window.showPhotoGallery=function(startIdx){
 // ── JOURNAL WIDGET ────────────────────────────────────
 function renderJournalWidget(){
   var todayEntry=S.journal.find(function(e){return e.date===today()&&(e.ownerId===S.memberId||e.visibility==='shared');});
-  return '<div class="journal-widget" onclick="showJournalModal()">'+
+  return '<div class="journal-widget" onclick="showJournalModal()" style="transition:opacity .15s;-webkit-tap-highlight-color:transparent" ontouchstart="this.style.opacity=.8" ontouchend="this.style.opacity=1">'+
     '<div class="journal-header">'+
       '<div style="width:26px;height:26px;background:rgba(var(--purple-rgb),.14);border-radius:8px;display:flex;align-items:center;justify-content:center">'+
         '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+IC.journal+'</svg></div>'+
@@ -1411,7 +1462,7 @@ window.showCustomAppsModal=function(){
       '<div style="width:30px;height:30px;border-radius:8px;background:var(--glass-bg2);display:flex;align-items:center;justify-content:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--t2)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+IC[app.i||'globe']+'</svg></div>';
     html+='<div class="lr">'+iconHtml+'<span class="lr-lbl">'+escHtml(appL(key))+'</span>'+
       '<div class="nbtn" style="width:24px;height:24px;opacity:.45;margin-right:5px" onclick="uploadAppIcon(\''+key+'\')">'+ic('camera',10)+'</div>'+
-      '<div style="width:28px;height:28px;border-radius:50%;border:1.5px solid '+(on?'var(--green)':'var(--glass-border2)')+';background:'+(on?'rgba(var(--green-rgb),.14)':'var(--glass-bg)')+';display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .16s var(--sp)" id="qac-'+key+'" onclick="toggleQAApp(\''+key+'\')">'+
+      '<div style="width:28px;height:28px;border-radius:50%;border:1.5px solid '+(on?'var(--green)':'var(--glass-border2)')+';background:'+(on?'rgba(var(--green-rgb),.14)':'var(--glass-bg)')+';display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .18s var(--sp,ease)" id="qac-'+key+'" onclick="toggleQAApp(\''+key+'\')">'+
         (on?ic('check',12):'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>')+
       '</div></div>';
   });
@@ -1458,15 +1509,16 @@ function renderItin(){
         '</div>'+
       '</div>'+
       '<div class="li-anim">'+itemsHtml+'</div>'+
-      '<div style="margin:3px 16px 9px"><button class="btn btn-g btn-full" style="padding:9px;font-size:13px" onclick="showAddItemModal('+di+')">'+ic('plus',13)+' '+t('addItem')+'</button></div>'+
+      '<div style="margin:3px 16px 9px"><button class="btn btn-g btn-full" style="padding:9px;font-size:13px;transition:transform .15s ease" ontouchstart="this.style.transform=\'scale(.97)\'" ontouchend="this.style.transform=\'scale(1)\'" onclick="showAddItemModal('+di+')">'+ic('plus',13)+' '+t('addItem')+'</button></div>'+
     '</div>';
   }).join('');
   var emptyHtml=days.length===0?
     '<div class="empty" style="min-height:60dvh;cursor:pointer" onclick="showTripEditModal()">'+
       ic('cal',50)+'<div class="empty-ttl">'+t('notPlanned')+'</div><div class="empty-sub">'+t('importDataLabel')+'</div>'+
       '<button class="btn btn-g" style="margin-top:14px;padding:11px 22px" onclick="event.stopPropagation();showTripEditModal()">'+ic('upload',14)+' '+t('importDataLabel')+'</button></div>':'';
+  // FIX #1: nav padding-top with SAI
   v.innerHTML=
-    '<div class="nav"><div class="nbtn" onclick="showTripEditModal()">'+ic('edit',14)+'</div><div class="nav-title">'+escHtml((S.trip&&S.trip.name)||t('itin'))+'</div><div class="nbtn" onclick="showAddDayModal()">'+ic('plus',14)+'</div></div>'+
+    '<div class="nav" style="padding-top:calc(var(--sai,0px)+4px)"><div class="nbtn" onclick="showTripEditModal()">'+ic('edit',14)+'</div><div class="nav-title">'+escHtml((S.trip&&S.trip.name)||t('itin'))+'</div><div class="nbtn" onclick="showAddDayModal()">'+ic('plus',14)+'</div></div>'+
     (days.length>0?
       '<div class="day-tabs" id="dtabs">'+tabsHtml+'</div>'+
       '<div class="itin-scroll" id="itin-sl">'+pagesHtml+'</div>':
@@ -1482,7 +1534,7 @@ function renderActCard(item){
   var spend=spendStr(item),isHi=item.hi&&item.transport;
   var chips='';if(item.transport&&!isHi)chips+='<span class="act-chip">'+ic('car',9)+' '+escHtml(item.transport)+'</span>';if(item.lodge)chips+='<span class="act-chip">'+ic('map',9)+' '+escHtml(item.lodge)+'</span>';
   var apps='';if(item.apps&&item.apps.length)item.apps.forEach(function(a){if(!APPS[a])return;apps+='<div class="act-app" onclick="event.stopPropagation();openApp(\''+a+'\')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+IC[APPS[a].i||'globe']+'</svg> '+escHtml(appL(a))+'</div>';});
-  return '<div class="act'+(item.urgent?' urgent':'')+'" onclick="showActDetail(\''+item.id+'\')">'+
+  return '<div class="act'+(item.urgent?' urgent':'')+'" onclick="showActDetail(\''+item.id+'\')" style="transition:opacity .15s;-webkit-tap-highlight-color:transparent">'+
     '<div class="act-row"><div class="act-tc"><div class="act-time">'+escHtml(item.time)+'</div></div>'+
     '<div class="act-body"><div class="act-title">'+renderMentions(item.title)+'</div>'+
       (chips?'<div class="act-meta">'+chips+'</div>':'')+
@@ -1603,36 +1655,68 @@ window.importFromImage=function(){
 // ── EXPENSES ──────────────────────────────────────────
 function renderExp(){
   var v=$('#v-exp');if(!v)return;
-  v.innerHTML='<div class="nav"><div class="nav-title">'+t('exp')+'</div><div class="nbtn" onclick="showBudgetModal()">'+ic('sliders',14)+'</div></div>'+
+  // FIX #1: nav padding-top with SAI
+  v.innerHTML='<div class="nav" style="padding-top:calc(var(--sai,0px)+4px)"><div class="nav-title">'+t('exp')+'</div><div class="nbtn" onclick="showBudgetModal()">'+ic('sliders',14)+'</div></div>'+
     '<div class="scroller"><div style="height:12px"></div><div class="sec">'+
       '<div id="exp-summary"></div>'+
+      // FIX #5: ptab wrapper with animation-ready classes
       '<div class="ptabs" style="margin-bottom:12px" id="exp-ptabs">'+
-        '<div class="ptab '+(S._expTab==='list'?'on':'')+'" onclick="switchExpTab(\'list\',this)">'+t('detail')+'</div>'+
-        '<div class="ptab '+(S._expTab==='stats'?'on':'')+'" onclick="switchExpTab(\'stats\',this)">'+t('stats')+'</div>'+
-        '<div class="ptab '+(S._expTab==='settle'?'on':'')+'" onclick="switchExpTab(\'settle\',this)">'+t('settle')+'</div>'+
+        '<div class="ptab '+(S._expTab==='list'?'on':'')+'" onclick="switchExpTab(\'list\',this)" style="transition:all .2s var(--sp,ease)">'+t('detail')+'</div>'+
+        '<div class="ptab '+(S._expTab==='stats'?'on':'')+'" onclick="switchExpTab(\'stats\',this)" style="transition:all .2s var(--sp,ease)">'+t('stats')+'</div>'+
+        '<div class="ptab '+(S._expTab==='settle'?'on':'')+'" onclick="switchExpTab(\'settle\',this)" style="transition:all .2s var(--sp,ease)">'+t('settle')+'</div>'+
       '</div>'+
       '<div id="exp-list-pane" style="'+(S._expTab==='list'?'':'display:none')+'"><div id="exp-list" class="list"></div></div>'+
       '<div id="exp-stats-pane" style="'+(S._expTab==='stats'?'':'display:none')+'"><div id="exp-stats" class="list"></div></div>'+
       '<div id="exp-settle-pane" style="'+(S._expTab==='settle'?'':'display:none')+'"><div id="exp-settle" class="list"></div></div>'+
-    '</div></div>';
-  // Add FAB
+    '</div><div style="height:90px"></div></div>';
+  // FIX #7: expense add FAB — positioned bottom-right above nav
   var addFab=document.createElement('button');addFab.id='gfab-add';addFab.className='gfab';
   addFab.innerHTML=ic('plus',21);
+  addFab.style.cssText='position:fixed;bottom:calc(58px + env(safe-area-inset-bottom,0px) + 16px);right:20px;z-index:90;width:52px;height:52px;border-radius:50%;background:rgba(var(--accent-rgb),.18);border:0.5px solid rgba(var(--accent-rgb),.35);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--accent);transition:transform .15s ease,opacity .15s ease;-webkit-tap-highlight-color:transparent;';
   addFab.addEventListener('click',function(){showAddExpenseModal();});
+  addFab.addEventListener('touchstart',function(){addFab.style.transform='scale(.92)';},{passive:true});
+  addFab.addEventListener('touchend',function(){addFab.style.transform='scale(1)';},{passive:true});
   document.getElementById('app').appendChild(addFab);
   refreshExpList();
 }
+
+// FIX #5: Tab switching with slide animation
 window.switchExpTab=function(tab,el){
   $$('#exp-ptabs .ptab').forEach(function(tb){tb.classList.remove('on');});
   if(el)el.classList.add('on');
-  S._expTab=tab;
   var lp=$('#exp-list-pane'),sp=$('#exp-stats-pane'),pp=$('#exp-settle-pane');
-  if(lp)lp.style.display=tab==='list'?'block':'none';
-  if(sp)sp.style.display=tab==='stats'?'block':'none';
-  if(pp)pp.style.display=tab==='settle'?'block':'none';
-  if(tab==='stats')renderExpStats();
-  if(tab==='settle')renderSettle();
+  var panes={list:lp,stats:sp,settle:pp};
+  var incoming=panes[tab];
+  // Fade out all visible panes
+  [lp,sp,pp].forEach(function(pane){
+    if(pane&&pane.style.display!=='none'){
+      pane.style.transition='opacity .13s ease,transform .13s ease';
+      pane.style.opacity='0';
+      pane.style.transform='translateX(6px)';
+    }
+  });
+  setTimeout(function(){
+    if(lp)lp.style.display=tab==='list'?'block':'none';
+    if(sp)sp.style.display=tab==='stats'?'block':'none';
+    if(pp)pp.style.display=tab==='settle'?'block':'none';
+    if(incoming){
+      incoming.style.opacity='0';
+      incoming.style.transform='translateX(-6px)';
+      incoming.style.transition='none';
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){
+          incoming.style.transition='opacity .22s ease,transform .22s ease';
+          incoming.style.opacity='1';
+          incoming.style.transform='translateX(0)';
+        });
+      });
+    }
+    if(tab==='stats')renderExpStats();
+    if(tab==='settle')renderSettle();
+    S._expTab=tab;
+  },130);
 };
+
 function refreshExpList(){
   var sum=$('#exp-summary'),list=$('#exp-list');if(!sum||!list)return;
   var bc=CUR[S.baseCurrency]||{s:'¥'};
@@ -1646,7 +1730,7 @@ function refreshExpList(){
     var dispAmt=fmtCur(Number(e.amount)||0,expCur);
     var convHtml=expCur!==S.baseCurrency&&e.baseAmount?'<div style="font-size:10px;color:var(--t3)">≈ '+fmtCur(e.baseAmount,S.baseCurrency)+'</div>':'';
     var subLabel=e.subcategory?catL(e.category)+' · '+subL(e.category,e.subcategory):catL(e.category);
-    return '<div class="ei" onclick="showExpDetail(\''+e.id+'\')">'+
+    return '<div class="ei" onclick="showExpDetail(\''+e.id+'\')" style="transition:opacity .15s;-webkit-tap-highlight-color:transparent" ontouchstart="this.style.opacity=.7" ontouchend="this.style.opacity=1">'+
       '<div class="ei-ic" style="background:'+cc+'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+IC[catIcon(e.category)]+'</svg></div>'+
       '<div class="ei-d"><div class="ei-name">'+escHtml(e.description||catL(e.category))+'</div><div class="ei-sub">'+escHtml(memName(e.paidBy))+' · '+escHtml(subLabel)+' · '+escHtml(e.date||'')+'</div></div>'+
       '<div style="text-align:right"><div class="ei-amt" style="color:'+cc+'">'+dispAmt+'</div>'+convHtml+'</div></div>';
@@ -1659,12 +1743,12 @@ function renderSettle(){
   if(!txns.length){el.innerHTML='<div class="empty">'+ic('check',48)+'<div class="empty-ttl">'+t('settled')+'</div><div class="empty-sub">'+t('settledSub')+'</div></div>';return;}
   el.innerHTML=txns.map(function(tx){
     var key=tx.from+'_'+tx.to,isPaid=!!S.settledRows[key];
-    var payBtns=MSG_APPS.slice(0,4).map(function(k){var a=APPS[k];if(!a)return '';return '<div class="pay-btn" onclick="payVia(\''+k+'\',\''+tx.from+'\',\''+tx.to+'\','+tx.amount+')">'+ic('phone',10)+' '+escHtml(appL(k))+'</div>';}).join('');
+    var payBtns=MSG_APPS.slice(0,4).map(function(k){var a=APPS[k];if(!a)return '';return '<div class="pay-btn" onclick="payVia(\''+k+'\',\''+tx.from+'\',\''+tx.to+'\','+tx.amount+')">'+ic('msg',10)+' '+escHtml(appL(k))+'</div>';}).join('');
     return '<div class="srow">'+
       '<div class="srow-main">'+
         '<div style="flex:1"><div class="srow-name" style="'+(isPaid?'text-decoration:line-through;opacity:.5':'')+'">'+escHtml(memName(tx.from))+'</div><div class="srow-to">'+t('transferTo')+' '+escHtml(memName(tx.to))+'</div></div>'+
         '<div class="srow-amt" style="'+(isPaid?'text-decoration:line-through;opacity:.5':'')+'">'+fmtCur(tx.amount,S.baseCurrency)+'</div>'+
-        '<div class="srow-done'+(isPaid?' paid':'')+'" onclick="markSettled(\''+key+'\')">'+ic('check',10)+' '+(isPaid?'已付':t('markPaid'))+'</div>'+
+        '<div class="srow-done'+(isPaid?' paid':'')+'" onclick="markSettled(\''+key+'\')" style="transition:all .2s ease">'+ic('check',10)+' '+(isPaid?'已付':t('markPaid'))+'</div>'+
       '</div>'+
       (isPaid?'':'<div class="pay-btns">'+payBtns+'</div>')+
     '</div>';
@@ -1673,13 +1757,12 @@ function renderSettle(){
 window.payVia=function(appKey,fromId,toId,amount){var msg='[Travoo] '+memName(fromId)+' → '+memName(toId)+': '+fmtCur(amount,S.baseCurrency);openApp(appKey,encodeURIComponent(msg));};
 window.markSettled=function(key){S.settledRows[key]=!S.settledRows[key];localStorage.setItem('settledRows',JSON.stringify(S.settledRows));renderSettle();};
 
-// ── ADD EXPENSE MODAL (with hierarchical cats, custom split, text extract) ──
-// Category selector render
+// ── ADD EXPENSE MODAL ─────────────────────────────────
 function renderCatSelector(){
   var html='<div class="cat-main-grid" id="cat-main-grid">';
   Object.keys(ECAT).forEach(function(k){
     var c=ECAT[k];
-    html+='<div class="cat-main-item" data-cat="'+k+'" onclick="selectMainCat(\''+k+'\')">'+
+    html+='<div class="cat-main-item" data-cat="'+k+'" onclick="selectMainCat(\''+k+'\')" style="transition:all .15s var(--sp,ease)">'+
       '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="'+c.color+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+IC[c.icon]+'</svg>'+
       '<div class="cat-main-lbl">'+catL(k)+'</div></div>';
   });
@@ -1694,7 +1777,7 @@ window.selectMainCat=function(k){
   var subRow=$('#cat-sub-row');
   if(subRow){
     subRow.innerHTML=Object.keys(sub).map(function(sk){
-      return '<div class="cat-sub-chip" data-sk="'+sk+'" onclick="selectSubCat(\''+sk+'\')">'+subL(k,sk)+'</div>';
+      return '<div class="cat-sub-chip" data-sk="'+sk+'" onclick="selectSubCat(\''+sk+'\')" style="transition:all .15s var(--sp,ease)">'+subL(k,sk)+'</div>';
     }).join('');
   }
 };
@@ -1703,14 +1786,13 @@ window.selectSubCat=function(sk){
   $$('.cat-sub-chip').forEach(function(el){el.classList.toggle('on',el.dataset.sk===sk);});
 };
 
-// Custom split render
 function renderSplitSelector(prefill){
   var ids=Object.keys(S.members);
   var splitType=prefill&&prefill.splitType||'equal';
   var customSplits=prefill&&prefill.customSplits||{};
   var html='<div style="display:flex;gap:7px;margin-bottom:9px">'+
-    '<div class="chip '+(splitType==='equal'?'on':'')+' split-type-btn" data-st="equal" onclick="switchSplitType(\'equal\')">'+t('splitEqual')+'</div>'+
-    '<div class="chip '+(splitType==='custom'?'on':'')+' split-type-btn" data-st="custom" onclick="switchSplitType(\'custom\')">'+t('splitCustom')+'</div>'+
+    '<div class="chip '+(splitType==='equal'?'on':'')+' split-type-btn" data-st="equal" onclick="switchSplitType(\'equal\')" style="transition:all .18s ease">'+t('splitEqual')+'</div>'+
+    '<div class="chip '+(splitType==='custom'?'on':'')+' split-type-btn" data-st="custom" onclick="switchSplitType(\'custom\')" style="transition:all .18s ease">'+t('splitCustom')+'</div>'+
   '</div>'+
   '<div class="split-grid" id="split-grid">';
   ids.forEach(function(id){
@@ -1718,7 +1800,7 @@ function renderSplitSelector(prefill){
     var checked=!prefill||(prefill.splitAmong||ids).indexOf(id)>=0;
     var customAmt=customSplits[id]||'';
     html+='<div class="split-row" id="sr-'+id+'">'+
-      '<div class="split-check '+(checked?'on':'')+'" id="sc-'+id+'" onclick="toggleSplitMem(\''+id+'\')">'+
+      '<div class="split-check '+(checked?'on':'')+'" id="sc-'+id+'" onclick="toggleSplitMem(\''+id+'\')" style="transition:all .15s ease">'+
         '<svg width="11" height="11" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
       '</div>'+
       renderAv(id,24)+
@@ -1737,7 +1819,6 @@ window.switchSplitType=function(st){
 window.toggleSplitMem=function(id){
   var btn=$('#sc-'+id);if(!btn)return;
   btn.classList.toggle('on');
-  // If custom split and all unchecked -> don't allow
 };
 
 window.showExpDetail=function(id){
@@ -1755,12 +1836,10 @@ window.showExpDetail=function(id){
     '<button class="btn btn-g btn-full" onclick="closeModal();editExpense(\''+id+'\')" style="margin-bottom:7px">'+ic('edit',14)+' '+t('editItem')+'</button>'+
     '<button class="btn btn-d btn-full" onclick="fbDelExpense(\''+id+'\');closeModal();toast(t(\'deleted\'))">'+ic('trash',14)+' '+t('del')+'</button>');
 };
-
 window.editExpense=function(id){
   var e=S.expenses.find(function(x){return x.id===id;});if(!e)return;
   showAddExpenseModal({id:id,amount:e.amount,currency:e.currency||S.localCurrency,description:e.description,category:e.category,subcategory:e.subcategory,paidBy:e.paidBy,splitAmong:e.splitAmong,splitType:e.splitType,customSplits:e.customSplits,date:e.date,_editing:true});
 };
-
 window.showAddExpenseModal=function(prefill){
   prefill=prefill||{};
   window._selCat=prefill.category||'food';
@@ -1774,34 +1853,27 @@ window.showAddExpenseModal=function(prefill){
 
   showModal('<div class="sh"></div><div class="sheet-title">'+(window._expEditing?t('editItem'):t('addExpense'))+'</div>'+
     '<div id="receipt-prev"></div>'+
-    // Receipt capture (camera + album)
     '<div style="display:flex;gap:7px;margin-bottom:11px">'+
       '<button class="btn btn-g" style="flex:1;padding:9px;font-size:12px" onclick="captureReceipt(\'camera\')">'+ic('camera',13)+' '+t('fromCamera')+'</button>'+
       '<button class="btn btn-g" style="flex:1;padding:9px;font-size:12px" onclick="captureReceipt(\'album\')">'+ic('img',13)+' '+t('fromAlbum')+'</button>'+
     '</div>'+
-    // Amount + currency
     '<div style="display:flex;gap:7px;margin-bottom:4px">'+
       '<div style="flex:1"><div class="inp-lbl">'+t('amount')+'</div><input class="inp" id="ex-amt" type="number" placeholder="0" value="'+(prefill.amount!=null?prefill.amount:'')+'" style="font-size:21px;font-weight:700" oninput="updateExpConv()"></div>'+
       '<div style="width:130px"><div class="inp-lbl">'+t('expCurrency')+'</div><select class="inp" id="ex-cur" onchange="updateExpConv()">'+curOpts+'</select></div>'+
     '</div>'+
     '<div id="exp-conv-hint" style="font-size:11px;color:var(--t3);margin-bottom:10px;min-height:15px">'+escHtml(rateHint)+'</div>'+
-    // Description + date
     '<div style="display:flex;gap:7px;margin-bottom:10px">'+
       '<div style="flex:1"><div class="inp-lbl">'+t('desc')+'</div><input class="inp" id="ex-desc" placeholder="" value="'+(prefill.description?escHtml(prefill.description):'')+'"></div>'+
       '<div style="width:130px"><div class="inp-lbl">'+t('date')+'</div><input class="inp" id="ex-date" type="date" value="'+(prefill.date||today())+'"></div>'+
     '</div>'+
-    // Category (hierarchical)
     '<div class="inp-lbl">'+t('cat')+'</div>'+
     renderCatSelector()+
-    // Paid by
     '<div class="inp-lbl" style="margin-top:11px">'+t('paidBy')+'</div>'+
     '<select class="inp" id="ex-payer" style="margin-bottom:10px">'+memOpts+'</select>'+
-    // Split
     '<div class="inp-lbl">'+t('splitWith')+'</div>'+
     renderSplitSelector(prefill)+
-    '<button class="btn btn-p btn-full" onclick="submitExpense()" style="margin-top:13px">'+t('save')+'</button>');
+    '<button class="btn btn-p btn-full" onclick="submitExpense()" style="margin-top:13px;transition:transform .15s ease" ontouchstart="this.style.transform=\'scale(.97)\'" ontouchend="this.style.transform=\'scale(1)\'">'+t('save')+'</button>');
 
-  // Set initial cat
   setTimeout(function(){selectMainCat(window._selCat);if(window._selSubcat)selectSubCat(window._selSubcat);},100);
   if(prefill.amount)updateExpConv();
 };
@@ -1811,8 +1883,6 @@ window.updateExpConv=function(){
   if(cur!==S.baseCurrency&&amt>0&&Object.keys(S.rates).length>0){hint.textContent='≈ '+fmtCur(toBase(amt,cur),S.baseCurrency);}
   else hint.textContent=Object.keys(S.rates).length>0?'1 '+S.localCurrency+' = '+fmtCur(getRate(S.localCurrency,S.baseCurrency),S.baseCurrency):'';
 };
-
-// Receipt capture with text extraction fallback
 window.captureReceipt=function(src){
   var inp=document.createElement('input');inp.type='file';inp.accept='image/*';
   if(src==='camera')inp.capture='environment';
@@ -1837,14 +1907,12 @@ window.captureReceipt=function(src){
         if(result.category){selectMainCat(result.category);if(result.subcategory)setTimeout(function(){selectSubCat(result.subcategory);},100);}
         toast(t('recognizeOk'));updateExpConv();
       } else {
-        // text-based keyword extraction from filename/context
         toast(S.lang==='en'?'Photo added, please fill amount':'图片已添加，请填写金额');
       }
     };rd.readAsDataURL(f);
   };
   inp.click();
 };
-
 window.submitExpense=function(){
   var amtEl=$('#ex-amt'),dscEl=$('#ex-desc'),payEl=$('#ex-payer'),curEl=$('#ex-cur'),dateEl=$('#ex-date');
   var amt=amtEl?parseFloat(amtEl.value):0,desc=dscEl?dscEl.value.trim():'';
@@ -1860,12 +1928,8 @@ window.submitExpense=function(){
     var customSplits={};split.forEach(function(id){var inp=$('#si-'+id);if(inp&&inp.value)customSplits[id]=parseFloat(inp.value)||0;});
     data.customSplits=customSplits;
   }
-  if(window._expEditing){
-    fbUpdateExpense(window._expEditing,data);
-    closeModal();toast(t('save'));
-  } else {
-    fbAddExpense(data);closeModal();toast(t('logged'));
-  }
+  if(window._expEditing){fbUpdateExpense(window._expEditing,data);closeModal();toast(t('save'));}
+  else{fbAddExpense(data);closeModal();toast(t('logged'));}
 };
 
 // ── CHAT ──────────────────────────────────────────────
@@ -1873,7 +1937,7 @@ function renderChat(){
   var v=$('#v-chat');if(!v)return;
   var hasCfg=!!(S.aiConfig.apiKey&&S.aiConfig.endpoint);
   var sugs=[t('chatSug1'),t('chatSug2'),t('chatSug3'),t('chatSug4'),t('chatSug5')];
-  var noBanner='';if(!hasCfg){noBanner='<div style="margin:0 14px 10px;padding:13px;background:rgba(var(--orange-rgb),.07);border:0.5px solid rgba(var(--orange-rgb),.22);border-radius:var(--r2)"><div style="font-size:13px;font-weight:700;color:var(--orange);margin-bottom:4px">'+t('noCfg')+'</div><div style="font-size:12px;color:var(--t2);margin-bottom:9px">'+t('noCfgSub')+'</div><button class="btn btn-g" style="padding:7px 14px;font-size:12px" onclick="showAIConfig()">'+t('cfgAI')+'</button></div>';}
+  var noBanner='';if(!hasCfg){noBanner='<div style="margin:0 14px 10px;padding:13px;background:rgba(var(--orange-rgb),.07);border:0.5px solid rgba(var(--orange-rgb),.22);border-radius:var(--r2);flex-shrink:0"><div style="font-size:13px;font-weight:700;color:var(--orange);margin-bottom:4px">'+t('noCfg')+'</div><div style="font-size:12px;color:var(--t2);margin-bottom:9px">'+t('noCfgSub')+'</div><button class="btn btn-g" style="padding:7px 14px;font-size:12px" onclick="showAIConfig()">'+t('cfgAI')+'</button></div>';}
   var welcome=S.chatHistory.length===0?
     '<div style="text-align:center;padding:28px 18px">'+
       '<div style="width:60px;height:60px;background:var(--glass-bg2);border:0.5px solid var(--glass-border);border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 13px">'+ic('chat',26)+'</div>'+
@@ -1883,25 +1947,63 @@ function renderChat(){
     S.chatHistory.map(renderMsg).join('');
   var sugHtml=sugs.map(function(s){return '<div class="csug" onclick="sendSug(\''+s.replace(/'/g,"\\'")+'\')">'+escHtml(s)+'</div>';}).join('');
 
+  // FIX #1 + #8: proper flex layout so input bar never disappears in Safari PWA
   v.innerHTML=
-    '<div class="nav">'+
+    '<div class="nav" style="padding-top:calc(var(--sai,0px)+4px);flex-shrink:0">'+
       '<div style="width:34px;flex-shrink:0"></div>'+
       '<div class="nav-title" style="position:static;transform:none;flex:1;text-align:center">'+t('butlerName')+'</div>'+
       '<div class="nbtn" onclick="showAIConfig()">'+ic('cog',14)+'</div>'+
     '</div>'+
     noBanner+
-    // FIX #1: chat-outer fills remaining space, bar always at bottom
-    '<div class="chat-outer">'+
-      '<div class="chat-body" id="chat-body">'+welcome+'</div>'+
-      '<div class="csug-wrap" id="csug-wrap">'+sugHtml+'</div>'+
-      '<div class="chat-bar">'+
-        '<button class="cvbtn" onmousedown="startVoice(handleVoiceIntent)" ontouchstart="event.preventDefault();startVoice(handleVoiceIntent)" style="-webkit-user-select:none">'+ic('mic',17)+'</button>'+
+    // chat-outer: flex column, fills remaining height, input bar sticks to bottom
+    '<div style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden">'+
+      '<div class="chat-body" id="chat-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 14px 12px">'+welcome+'</div>'+
+      '<div class="csug-wrap" id="csug-wrap" style="flex-shrink:0;overflow-x:auto;-webkit-overflow-scrolling:touch">'+sugHtml+'</div>'+
+      // FIX #8: chat bar always visible, proper safe area bottom
+      '<div class="chat-bar" style="flex-shrink:0;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 6px)">'+
+        '<button class="cvbtn" onmousedown="startVoice(handleVoiceIntent)" ontouchstart="event.preventDefault();startVoice(handleVoiceIntent)" style="-webkit-user-select:none;transition:opacity .15s">'+ic('mic',17)+'</button>'+
+        // FIX #8: photo button in chat
+        '<button class="cvbtn" onclick="sendChatPhoto()" style="transition:opacity .15s" title="'+t('sendPhoto')+'">'+ic('camera',17)+'</button>'+
         '<textarea class="chat-inp-el" id="chat-inp" rows="1" placeholder="'+t('aiPh')+'" onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();sendChatMsg()}" oninput="this.style.height=\'auto\';this.style.height=Math.min(this.scrollHeight,110)+\'px\'"></textarea>'+
-        '<button class="csend" id="csend" onclick="sendChatMsg()"><svg width="17" height="17" viewBox="0 0 24 24" fill="none">'+IC.send+'</svg></button>'+
+        '<button class="csend" id="csend" onclick="sendChatMsg()" style="transition:transform .15s ease;-webkit-tap-highlight-color:transparent"><svg width="17" height="17" viewBox="0 0 24 24" fill="none">'+IC.send+'</svg></button>'+
       '</div>'+
     '</div>';
   scrollChat();
 }
+
+// FIX #8: Send photo to AI in chat
+window.sendChatPhoto=function(){
+  if(!(S.aiConfig.apiKey&&S.aiConfig.endpoint)){toast(t('noCfg'));return;}
+  var inp=document.createElement('input');inp.type='file';inp.accept='image/*';
+  inp.onchange=async function(){
+    var f=inp.files[0];if(!f)return;
+    toast(t('recognizing'),0);
+    var rd=new FileReader();
+    rd.onload=async function(e){
+      var b64=e.target.result;
+      var body=$('#chat-body');
+      // Show image bubble in chat
+      if(body){
+        var imgEl=document.createElement('div');imgEl.className='msg msg-u';
+        imgEl.innerHTML='<div class="mbubble" style="padding:4px;background:transparent"><img src="'+b64+'" style="max-width:200px;max-height:200px;border-radius:10px;display:block"></div>';
+        body.appendChild(imgEl);scrollChat();
+      }
+      try{
+        var res=await fetch(S.aiConfig.endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.aiConfig.apiKey},body:JSON.stringify({model:S.aiConfig.model||'gpt-4o',max_tokens:800,messages:[{role:'user',content:[{type:'text',text:'You are a travel assistant. Describe what you see in this image and provide any travel-related insights, tips or recommendations. Reply in the same language as the app ('+(S.lang==='en'?'English':'Chinese')+').'},{type:'image_url',image_url:{url:b64,detail:'high'}}]}]})});
+        if(!res.ok)throw new Error('API '+res.status);
+        var d=await res.json();
+        var reply=(d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content)||'';
+        toast('');
+        var aEl=document.createElement('div');aEl.className='msg msg-a';
+        aEl.innerHTML='<div class="mbubble">'+reply.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>')+'</div>';
+        if(body)body.appendChild(aEl);
+        await fbSaveMsg('assistant',reply);scrollChat();
+      }catch(err){toast('');toast(err.message);}
+    };rd.readAsDataURL(f);
+  };
+  inp.click();
+};
+
 function renderMsg(m){var isU=m.role==='user';var time='';if(m.ts&&m.ts.toDate)time=m.ts.toDate().toLocaleTimeString('zh',{hour:'2-digit',minute:'2-digit'});return '<div class="msg '+(isU?'msg-u':'msg-a')+'"><div class="mbubble">'+(m.content||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>'+(time?'<div class="mmeta">'+time+'</div>':'')+'</div>';}
 function refreshChatMsgs(){var body=$('#chat-body');if(!body)return;if(S.chatHistory.length)body.innerHTML=S.chatHistory.map(renderMsg).join('');scrollChat();}
 function scrollChat(){var b=$('#chat-body');if(b)setTimeout(function(){b.scrollTop=b.scrollHeight;},60);}
@@ -1938,27 +2040,20 @@ window.showAIConfig=function(){
 window.presetAI=function(p,el){$$('.sheet .chip').forEach(function(c){c.classList.remove('on');});el.classList.add('on');var ep=$('#cfg-ep'),md=$('#cfg-model');if(p==='openai'&&ep&&md){ep.value='https://api.openai.com/v1/chat/completions';md.value='gpt-4o-mini';}};
 window.saveAICfg=function(){var ep=($('#cfg-ep')&&$('#cfg-ep').value.trim())||'',key=($('#cfg-key')&&$('#cfg-key').value.trim())||'',model=($('#cfg-model')&&$('#cfg-model').value.trim())||'gpt-4o-mini';if(!ep||!key){toast('请填写端点和Key');return;}S.aiConfig={endpoint:ep,apiKey:key,model:model};localStorage.setItem('aiConfig',JSON.stringify(S.aiConfig));closeModal();toast(t('aiConfigSaved'));renderChat();};
 window.confirmClearChat=function(){showModal('<div class="sh"></div><div style="text-align:center;padding:9px 0"><div style="font-size:17px;font-weight:700;color:var(--t1);margin-bottom:7px">'+t('confirmClearChat')+'</div><div style="font-size:13px;color:var(--t2);margin-bottom:20px">'+t('confirmClearChatSub')+'</div><button class="btn btn-d btn-full" onclick="S.chatHistory=[];toast(t(\'chatCleared\'));closeModal()" style="margin-bottom:9px">'+t('clearChatConfirmBtn')+'</button><button class="btn btn-g btn-full" onclick="closeModal()">'+t('cancel')+'</button></div>');};
-var CONFIRM_CLEAR_CHAT='confirmClearChat';
 T['zh-CN'].confirmClearChat='确认清除所有对话？';T['zh-CN'].confirmClearChatSub='此操作不可撤销';T['zh-CN'].clearChatConfirmBtn='确认清除';
 T['zh-TW'].confirmClearChat='確認清除所有對話？';T['zh-TW'].confirmClearChatSub='此操作不可撤銷';T['zh-TW'].clearChatConfirmBtn='確認清除';
 T['en'].confirmClearChat='Clear all messages?';T['en'].confirmClearChatSub='Cannot be undone';T['en'].clearChatConfirmBtn='Clear';
-T['zh-CN'].confirmClearChat='确认清除所有对话？';
 
 // ── LISTS ─────────────────────────────────────────────
-window.showListsModal=function(){ S._listsPane='shopping'; renderListsView(); };
-function renderListsView(){
-  var pane=S._listsPane||'shopping';
-  var tabs=['shopping','todo','packing'].map(function(k){return '<div class="ptab '+(pane===k?'on':'')+'" onclick="switchListPane(\''+k+'\')">'+t(k)+'</div>';}).join('');
-  var content=pane==='shopping'?renderShoppingPane():pane==='todo'?renderTodoPane():renderPackingPane();
-  showModal('<div class="sh"></div><div class="ptabs" style="margin-bottom:13px">'+tabs+'</div><div id="lists-content">'+content+'</div>');
-}
-window.switchListPane=function(p){S._listsPane=p;var lc=$('#lists-content');if(lc){lc.innerHTML=p==='shopping'?renderShoppingPane():p==='todo'?renderTodoPane():renderPackingPane();}else renderListsView();};
 function renderShoppingPane(){
   var items=S.shoppingList,en=S.lang==='en';
   var html='<div style="display:flex;gap:7px;margin-bottom:11px"><input class="inp" id="shop-inp" placeholder="'+(en?'Item…':'物品…')+'" style="flex:1"><button class="btn btn-p" style="padding:9px 13px" onclick="addShoppingItem()">'+ic('plus',14)+'</button></div>';
   var visible=items.filter(function(i){return i.ownerId===S.memberId||(i.sharedWith&&i.sharedWith.indexOf(S.memberId)>=0);});
   if(!visible.length)html+='<div style="text-align:center;padding:22px;color:var(--t3)">'+(en?'No items':'暂无物品')+'</div>';
-  else html+='<div class="list">'+visible.map(function(item){return '<div class="list-item'+(item.done?' done':'')+'"><div class="list-check'+(item.done?' checked':'')+'" onclick="toggleShoppingItem(\''+item.id+'\')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="list-item-text">'+renderMentions(item.text)+'</span><div class="list-item-del" onclick="removeShoppingItem(\''+item.id+'\')">'+ic('trash',12)+'</div></div>';}).join('')+'</div>';
+  else html+='<div class="list">'+visible.map(function(item){return '<div class="list-item'+(item.done?' done':'')+'" style="transition:opacity .15s">'+
+    '<div class="list-check'+(item.done?' checked':'')+'" onclick="toggleShoppingItem(\''+item.id+'\')" style="transition:all .18s ease"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>'+
+    '<span class="list-item-text">'+renderMentions(item.text)+'</span>'+
+    '<div class="list-item-del" onclick="removeShoppingItem(\''+item.id+'\')">'+ic('trash',12)+'</div></div>';}).join('')+'</div>';
   return html;
 }
 window.addShoppingItem=function(){var inp=$('#shop-inp');if(!inp)return;var text=inp.value.trim();if(!text)return;var sw=[];Object.entries(S.members).forEach(function(e){var id=e[0],m=e[1];if(text.indexOf('@'+m.name)>=0&&id!==S.memberId)sw.push(id);});S.shoppingList.push({id:'s_'+Date.now(),text:text,done:false,ownerId:S.memberId,sharedWith:sw});localStorage.setItem('shoppingList',JSON.stringify(S.shoppingList));inp.value='';var lc=$('#lists-content');if(lc)lc.innerHTML=renderShoppingPane();};
@@ -1967,7 +2062,7 @@ window.removeShoppingItem=function(id){S.shoppingList=S.shoppingList.filter(func
 function renderTodoPane(){
   var phases=['pre','during','post'],pLbl={'pre':t('listPre'),'during':t('listDuring'),'post':t('listPost')};
   var html='<div style="display:flex;gap:7px;margin-bottom:11px"><input class="inp" id="todo-inp" placeholder="'+(S.lang==='en'?'Task…':'任务…')+'" style="flex:1"><select class="inp" id="todo-ph" style="width:90px">'+phases.map(function(p){return '<option value="'+p+'">'+pLbl[p]+'</option>';}).join('')+'</select><button class="btn btn-p" style="padding:9px 12px" onclick="addTodoItem()">'+ic('plus',12)+'</button></div>';
-  phases.forEach(function(ph){var items=(S.todoList[ph]||[]).filter(function(i){return i.ownerId===S.memberId||(i.sharedWith&&i.sharedWith.indexOf(S.memberId)>=0);});if(!items.length)return;html+='<div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin:7px 0 4px">'+pLbl[ph]+'</div><div class="list" style="margin-bottom:9px">'+items.map(function(i){return '<div class="list-item'+(i.done?' done':'')+'"><div class="list-check'+(i.done?' checked':'')+'" onclick="toggleTodoItem(\''+ph+'\',\''+i.id+'\')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="list-item-text">'+renderMentions(i.text)+'</span><div class="list-item-del" onclick="removeTodoItem(\''+ph+'\',\''+i.id+'\')">'+ic('trash',12)+'</div></div>';}).join('')+'</div>';});
+  phases.forEach(function(ph){var items=(S.todoList[ph]||[]).filter(function(i){return i.ownerId===S.memberId||(i.sharedWith&&i.sharedWith.indexOf(S.memberId)>=0);});if(!items.length)return;html+='<div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin:7px 0 4px">'+pLbl[ph]+'</div><div class="list" style="margin-bottom:9px">'+items.map(function(i){return '<div class="list-item'+(i.done?' done':'')+'"><div class="list-check'+(i.done?' checked':'')+'" onclick="toggleTodoItem(\''+ph+'\',\''+i.id+'\')" style="transition:all .18s ease"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="list-item-text">'+renderMentions(i.text)+'</span><div class="list-item-del" onclick="removeTodoItem(\''+ph+'\',\''+i.id+'\')">'+ic('trash',12)+'</div></div>';}).join('')+'</div>';});
   if(phases.every(function(ph){return !(S.todoList[ph]||[]).length;}))html+='<div style="text-align:center;padding:22px;color:var(--t3)">'+(S.lang==='en'?'No tasks':'暂无待办')+'</div>';
   return html;
 }
@@ -1978,11 +2073,20 @@ function renderPackingPane(){
   var sugg=getPackSugg(),cats=['clothes','docs','electronics','toiletries'];
   var catLbls={clothes:t('packingClothes'),docs:t('packingDocs'),electronics:t('packingElectronics'),toiletries:t('packingToiletries')};
   var html='<div style="font-size:12px;color:var(--t3);margin-bottom:9px;line-height:1.55">'+(S.lang==='en'?'Suggested based on weather & itinerary':'根据天气和行程智能推荐')+'</div>';
-  cats.forEach(function(cat){var items=sugg[cat]||[];if(!items.length)return;html+='<div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;padding:7px 0 3px">'+catLbls[cat]+'</div><div class="list" style="margin-bottom:9px">'+items.map(function(item){var done=S.packingList[item.id]||false;return '<div class="list-item'+(done?' done':'')+'"><div class="list-check'+(done?' checked':'')+'" onclick="togglePacking(\''+item.id+'\')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="list-item-text">'+escHtml(item.text)+'</span></div>';}).join('')+'</div>';});
+  cats.forEach(function(cat){var items=sugg[cat]||[];if(!items.length)return;html+='<div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;padding:7px 0 3px">'+catLbls[cat]+'</div><div class="list" style="margin-bottom:9px">'+items.map(function(item){var done=S.packingList[item.id]||false;return '<div class="list-item'+(done?' done':'')+'"><div class="list-check'+(done?' checked':'')+'" onclick="togglePacking(\''+item.id+'\')" style="transition:all .18s ease"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="list-item-text">'+escHtml(item.text)+'</span></div>';}).join('')+'</div>';});
   if(periodConflict())html+='<div class="period-warning" style="margin-top:7px">'+ic('bell',13)+' '+t('periodPacking')+'</div>';
   return html;
 }
 window.togglePacking=function(id){S.packingList[id]=!S.packingList[id];localStorage.setItem('packingList',JSON.stringify(S.packingList));var lc=$('#lists-content');if(lc)lc.innerHTML=renderPackingPane();};
+
+// switchListPane (for legacy modal compatibility)
+window.switchListPane=function(p){
+  S._listsPane=p;
+  var lc=$('#lists-content');
+  if(lc){lc.innerHTML=p==='shopping'?renderShoppingPane():p==='todo'?renderTodoPane():renderPackingPane();}
+  else showListsFull(p);
+};
+function renderListsView(){showListsFull();}
 
 // ── SETTINGS ──────────────────────────────────────────
 function renderSet(){
@@ -1994,7 +2098,6 @@ function renderSet(){
   var rateStr=Object.keys(S.rates).length>0?'1 '+S.localCurrency+' = '+fmtCur(rateVal,S.baseCurrency):t('rateUnavailable');
   var histSection='';if(S.localTrips.length>0){histSection='<div class="set-ttl">'+t('history')+'</div><div class="set-group">'+S.localTrips.map(function(tr){return '<div class="set-row" onclick="enterTrip(\''+tr.code+'\')"><div style="flex:1"><div style="font-size:15px;color:var(--t1)">'+escHtml(tr.name||'—')+'</div><div style="font-size:11px;color:var(--t3)">'+escHtml(tr.dates||'—')+'</div></div><span class="set-chev">'+ic('chev',14)+'</span></div>';}).join('')+'</div>';}
 
-  // Members
   var memHtml=Object.entries(S.members).map(function(entry){
     var id=entry[0],m=entry[1],img=memAvatar(id),isYou=id===S.memberId;
     var canDelete=(m.joinedVia==='manual'&&!m.claimed&&m.addedBy===S.memberId)||(!isYou&&(S.trip&&S.trip.creatorId===S.memberId)&&m.joinedVia==='manual'&&!m.claimed);
@@ -2007,8 +2110,9 @@ function renderSet(){
     '</div>';
   }).join('');
 
+  // FIX #1: nav padding-top with SAI
   v.innerHTML=
-    '<div class="nav"><div class="nav-large">'+t('set')+'</div></div>'+
+    '<div class="nav" style="padding-top:calc(var(--sai,0px)+4px)"><div class="nav-large">'+t('set')+'</div></div>'+
     '<div class="scroller"><div style="height:10px"></div>'+
 
     '<div class="set-ttl">'+t('code')+'</div>'+
@@ -2030,7 +2134,8 @@ function renderSet(){
       '<div class="set-row" onclick="showCurrencyModal()"><div class="set-icon">'+ic('wallet',14)+'</div><div class="set-lbl">'+t('currency')+'</div><span class="set-val">'+lc.f+' → '+bc.f+'</span><span class="set-chev">'+ic('chev',14)+'</span></div>'+
       '<div class="set-row" onclick="showMsgAppModal()"><div class="set-icon">'+ic('msg',14)+'</div><div class="set-lbl">'+t('msgApp')+'</div><span class="set-val">'+escHtml(appL(S.msgApp))+'</span><span class="set-chev">'+ic('chev',14)+'</span></div>'+
       '<div class="set-row" onclick="showPeriodModal()"><div class="set-icon">'+ic('heart',14)+'</div><div class="set-lbl">'+t('period')+'</div><span class="set-val" style="'+(periodConflict()?'color:var(--red)':'')+'">'+(periodConflict()?(S.lang==='en'?'Conflict!':'注意重叠'):(S.lang==='en'?'OK':'无'))+'</span><span class="set-chev">'+ic('chev',14)+'</span></div>'+
-      '<div class="set-row" onclick="showListsModal()"><div class="set-icon">'+ic('list',14)+'</div><div class="set-lbl">'+t('lists')+'</div><span class="set-chev">'+ic('chev',14)+'</span></div>'+
+      // FIX #3: lists entry in settings now opens full screen
+      '<div class="set-row" onclick="showListsFull()"><div class="set-icon">'+ic('list',14)+'</div><div class="set-lbl">'+t('lists')+'</div><span class="set-chev">'+ic('chev',14)+'</span></div>'+
     '</div>'+
 
     '<div class="set-ttl">'+t('notif')+'</div>'+
@@ -2056,13 +2161,14 @@ function renderSet(){
 
     '<div class="set-ttl">'+t('about')+'</div>'+
     '<div class="set-group">'+
-      '<div class="set-row" style="cursor:default"><div class="set-icon">'+ic('globe',14)+'</div><span class="set-lbl">'+t('version')+'</span><span class="set-val">5.2.0</span></div>'+
+      '<div class="set-row" style="cursor:default"><div class="set-icon">'+ic('globe',14)+'</div><span class="set-lbl">'+t('version')+'</span><span class="set-val">5.2.1</span></div>'+
       '<div class="set-row" style="cursor:default"><div class="set-icon">'+ic('check',14)+'</div><span class="set-lbl">Firebase</span><span class="set-val">'+(fbApp?t('connected'):t('localMode'))+'</span></div>'+
     '</div>'+
 
-    '<div style="padding:0 16px 18px"><button class="btn btn-d btn-full" onclick="confirmLeave()" style="margin-top:7px">'+t('leave')+'</button></div>'+
+    '<div style="padding:0 16px 18px"><button class="btn btn-d btn-full" onclick="confirmLeave()" style="margin-top:7px;transition:transform .15s ease" ontouchstart="this.style.transform=\'scale(.97)\'" ontouchend="this.style.transform=\'scale(1)\'">'+t('leave')+'</button></div>'+
     '</div>';
 }
+
 // Member management
 window.showAddMember=function(){
   showModal('<div class="sh"></div><div class="sheet-title">'+t('addMember')+'</div>'+
@@ -2086,18 +2192,14 @@ window.submitAddMember=async function(){
     '</div>'+
     '<button class="btn btn-p btn-full" onclick="navigator.clipboard&&navigator.clipboard.writeText(\''+claimCode+'\').then(function(){toast(t(\'codeCopied\'));})">'+ic('copy',14)+' '+t('copy')+'</button>');
 };
-window.removeMemberConfirm = function(id) {
-  var m = S.members[id];
-  if (!m) return;
-  
-  // 转义 id 中的单引号，防止破坏 onclick 字符串
-  var safeId = id.replace(/'/g, "\\'");
-  
+window.removeMemberConfirm=function(id){
+  var m=S.members[id];if(!m)return;
+  var safeId=id.replace(/'/g,"\\'");
   showModal(
-    '<div class="sh"></div><div class="sheet-title">' + t('removeMember') + '</div>' +
-    '<div style="font-size:14px;color:var(--t2);margin-bottom:16px">' + escHtml(m.name) + ' · ' + t('removeMemberConfirm') + '</div>' +
-    '<button class="btn btn-d btn-full" onclick="doRemoveMember(\'' + safeId + '\')" style="margin-bottom:7px">' + t('removeMember') + '</button>' +
-    '<button class="btn btn-g btn-full" onclick="closeModal()">' + t('cancel') + '</button>'
+    '<div class="sh"></div><div class="sheet-title">'+t('removeMember')+'</div>'+
+    '<div style="font-size:14px;color:var(--t2);margin-bottom:16px">'+escHtml(m.name)+' · '+t('removeMemberConfirm')+'</div>'+
+    '<button class="btn btn-d btn-full" onclick="doRemoveMember(\''+safeId+'\')" style="margin-bottom:7px">'+t('removeMember')+'</button>'+
+    '<button class="btn btn-g btn-full" onclick="closeModal()">'+t('cancel')+'</button>'
   );
 };
 window.doRemoveMember=async function(id){
@@ -2120,24 +2222,35 @@ window.submitClaimMember=async function(){
   var entry=Object.entries(S.members).find(function(e){return e[1].claimCode===code&&!e[1].claimed&&e[1].joinedVia==='manual';});
   if(!entry){toast('找不到对应成员或已被认领');return;}
   var oldId=entry[0],m=entry[1];
-  // Claim: mark as claimed, link to this device
   m.claimed=true;m.claimedBy=S.memberId;m.claimDeviceId=DEVICE_ID;
   if(db&&S.tripCode){var upd={};upd['members.'+oldId+'.claimed']=true;upd['members.'+oldId+'.claimedBy']=S.memberId;await updateDoc(doc(db,'trips',S.tripCode),upd);}
-  // Switch session to the claimed member
   S.memberId=oldId;S.memberName=m.name;
   localStorage.setItem('memberId',oldId);localStorage.setItem('memberName',m.name);
   closeModal();renderSet();toast('已认领为 '+m.name);
 };
 
+// FIX #9 (Q10): showMemberEdit — show claim code if member is unclaimed
 window.showMemberEdit=function(id){
   var m=S.members[id];if(!m)return;var img=memAvatar(id),isYou=id===S.memberId;
+  // Show claim code section for unclaimed members (every time, not just first time)
+  var claimSection='';
+  if(!m.claimed&&m.claimCode){
+    var safeCode=escHtml(m.claimCode);
+    claimSection='<div style="text-align:center;margin:13px 0;padding:14px;background:var(--glass-bg);border:0.5px solid var(--glass-border);border-radius:var(--r2)">'+
+      '<div style="font-size:11px;color:var(--t3);margin-bottom:8px">'+t('claimCode')+'</div>'+
+      '<div class="code-disp" style="font-size:28px;letter-spacing:6px;margin-bottom:10px">'+safeCode+'</div>'+
+      '<div style="font-size:11px;color:var(--t3);margin-bottom:10px">'+t('canDeleteMember')+'</div>'+
+      '<button class="btn btn-g btn-full" style="padding:8px;font-size:13px" onclick="navigator.clipboard&&navigator.clipboard.writeText(\''+safeCode+'\').then(function(){toast(t(\'codeCopied\'));})">'+ic('copy',13)+' '+t('copy')+'</button>'+
+    '</div>';
+  }
   showModal('<div class="sh"></div><div style="display:flex;flex-direction:column;align-items:center;gap:9px;margin-bottom:18px">'+
-    '<div onclick="changeMemberAvatar(\''+id+'\')" style="cursor:pointer;position:relative">'+
+    '<div onclick="changeMemberAvatar(\''+id+'\')" style="cursor:pointer;position:relative;transition:opacity .15s" ontouchstart="this.style.opacity=.7" ontouchend="this.style.opacity=1">'+
       (img?'<div style="width:68px;height:68px;border-radius:50%;overflow:hidden"><img src="'+img+'" style="width:100%;height:100%;object-fit:cover"></div>':'<div style="width:68px;height:68px;border-radius:50%;background:'+m.color+';display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff">'+((m.name||'?')[0])+'</div>')+
       '<div style="position:absolute;bottom:0;right:0;width:20px;height:20px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg)">'+ic('camera',9)+'</div>'+
     '</div>'+
     '<div style="font-size:15px;font-weight:600;color:var(--t1)">'+escHtml(m.name)+(isYou?' ('+t('you')+')':'')+'</div>'+
   '</div>'+
+  claimSection+
   (isYou?'<div class="inp-lbl">'+t('editNickname')+'</div><input class="inp" id="mem-name" value="'+escHtml(m.name)+'" style="margin-bottom:13px">'+
     '<button class="btn btn-p btn-full" style="margin-bottom:7px" onclick="submitMemberEdit(\''+id+'\')">'+t('save')+'</button>':'')+
   '<button class="btn btn-g btn-full" onclick="changeMemberAvatar(\''+id+'\')">'+ic('camera',13)+' '+t('editAvatar')+'</button>');
@@ -2163,16 +2276,15 @@ window.showMsgAppModal=function(){showModal('<div class="sh"></div><div class="s
 window.setMsgApp=function(a){S.msgApp=a;localStorage.setItem('msgApp',a);closeModal();renderSet();};
 window.showAppearanceModal=function(){
   var LL={'zh-CN':'简','zh-TW':'繁','en':'EN'};
-  var langChips=['zh-CN','zh-TW','en'].map(function(l){return '<div class="chip '+(S.lang===l?'on':'')+'" style="font-weight:700;padding:5px 13px" onclick="setLang(\''+l+'\')">'+LL[l]+'</div>';}).join('');
+  var langChips=['zh-CN','zh-TW','en'].map(function(l){return '<div class="chip '+(S.lang===l?'on':'')+'" style="font-weight:700;padding:5px 13px;transition:all .18s ease" onclick="setLang(\''+l+'\')">'+LL[l]+'</div>';}).join('');
   var swatches='<div class="theme-grid">';
-  Object.entries(THEMES).forEach(function(entry){var k=entry[0],th=entry[1];var sty=typeof th.swatch==='string'&&th.swatch.startsWith('linear')?'background:'+th.swatch:'background:'+th.swatch;swatches+='<div class="theme-swatch'+(S.theme===k?' on':'')+'" style="'+sty+'" title="'+th.n+'" onclick="window.applyTheme(\''+k+'\');$$(\'.theme-swatch\').forEach(function(s){s.classList.remove(\'on\')});this.classList.add(\'on\')"></div>';});
+  Object.entries(THEMES).forEach(function(entry){var k=entry[0],th=entry[1];var sty=typeof th.swatch==='string'&&th.swatch.startsWith('linear')?'background:'+th.swatch:'background:'+th.swatch;swatches+='<div class="theme-swatch'+(S.theme===k?' on':'')+'" style="'+sty+';transition:transform .15s ease,box-shadow .15s ease" title="'+th.n+'" onclick="window.applyTheme(\''+k+'\');$$(\'.theme-swatch\').forEach(function(s){s.classList.remove(\'on\')});this.classList.add(\'on\')"></div>';});
   swatches+='</div>';
   showModal('<div class="sh"></div><div class="sheet-title">'+t('appearance')+'</div>'+
     '<div class="inp-lbl">'+t('lang')+'</div><div class="chips" style="margin-bottom:16px">'+langChips+'</div>'+
     '<div class="inp-lbl">'+t('themes')+'</div><div style="font-size:11px;color:var(--t3);margin-bottom:7px">深色 / 浅色 / 跟随系统</div>'+swatches+
     '<div style="margin-top:16px"><div class="inp-lbl">'+t('wp')+'</div>'+
     '<div style="display:flex;gap:7px;margin-top:5px"><button class="btn btn-g" style="flex:1" onclick="pickWallpaper()">'+ic('img',13)+' '+t('pickFromAlbum')+'</button><button class="btn btn-g" style="flex:1" onclick="clearWallpaper()">'+t('resetDefault')+'</button></div></div>');
-  T['zh-CN'].appearanceDesc='主题 · 语言 · 壁纸';T['zh-TW'].appearanceDesc='主題 · 語言 · 桌布';T['en'].appearanceDesc='Theme · Language · Wallpaper';
 };
 window.showPeriodModal=function(){
   var pd=S.periodData;
@@ -2207,6 +2319,32 @@ async function init(){
   var ci=localStorage.getItem('customAppIcons');if(ci){try{S.customAppIcons=JSON.parse(ci);}catch(e){}}
   window.applyTheme(S.theme);
   applyWallpaper();
+
+  // FIX #1 #6 #8: Inject essential styles for PWA layout correctness
+  (function(){
+    var s=document.getElementById('travoo-extra');
+    if(!s){s=document.createElement('style');s.id='travoo-extra';document.head.appendChild(s);}
+    s.textContent=
+      // Ensure views fill correctly as flex columns
+      '.view.active{display:flex;flex-direction:column;}'+
+      // Chat layout — critical for input bar visibility in Safari PWA
+      '#v-chat.active{display:flex;flex-direction:column;}'+
+      // FAB above nav bar — override any CSS if needed
+      '.gfab{position:fixed !important;bottom:calc(58px + env(safe-area-inset-bottom,0px) + 16px) !important;right:20px !important;z-index:90 !important;}'+
+      // Smooth button feedback
+      '.btn{transition:transform .12s ease,opacity .12s ease;-webkit-tap-highlight-color:transparent;}'+
+      '.btn:active{transform:scale(.97);}'+
+      '.nbtn{transition:opacity .12s ease;-webkit-tap-highlight-color:transparent;}'+
+      '.nbtn:active{opacity:.55;}'+
+      '.tab,.tab-center{transition:opacity .12s ease;-webkit-tap-highlight-color:transparent;}'+
+      '.lr{transition:opacity .12s ease;-webkit-tap-highlight-color:transparent;}'+
+      // Fullscreen overlay slide-in
+      '.wx-full{position:fixed;top:0;left:0;right:0;bottom:0;z-index:200;background:var(--bg);overflow:hidden;}'+
+      // PTabs transition
+      '.ptab{transition:all .2s cubic-bezier(.4,0,.2,1) !important;}'+
+      '';
+  })();
+
   if(S.tripCode&&S.memberId){
     showLoad();await fbLoad(S.tripCode);
     try{S.journal=JSON.parse(localStorage.getItem('journal_'+S.tripCode)||'[]');}catch(e){S.journal=[];}
@@ -2217,7 +2355,8 @@ async function init(){
   if(S.baseCurrency){var fxTs=S.fxDate?new Date(S.fxDate).getTime():0;if(Date.now()-fxTs>4*3600*1000)fetchRates().then(function(){if(S.tab==='home')renderHome();});}
   if('Notification' in window&&localStorage.getItem('notifsEnabled')!=='false'){if(Notification.permission==='default')Notification.requestPermission();}
 }
-// Add missing T keys
+
+// T key additions
 T['zh-CN'].appearanceDesc='主题 · 语言 · 壁纸';
 T['zh-TW'].appearanceDesc='主題 · 語言 · 桌布';
 T['en'].appearanceDesc='Theme · Language · Wallpaper';
