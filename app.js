@@ -2356,115 +2356,92 @@ async function init(){
   if('Notification' in window&&localStorage.getItem('notifsEnabled')!=='false'){if(Notification.permission==='default')Notification.requestPermission();}
 
 
-// 修复 PWA 模式布局 + 聊天输入栏 + 减少底部遮挡
+// 修复 PWA 模式全部布局问题（强制覆盖 + 底部遮挡彻底解决）
 if (window.matchMedia('(display-mode: standalone)').matches) {
   var style = document.createElement('style');
   style.textContent = `
-    /* 基础安全区 - 减少顶部额外高度，靠滚动动态增加 */
+    /* 导航栏压缩效果 */
     .nav {
       padding-top: calc(env(safe-area-inset-top,44px) + 12px) !important;
-      padding-left: max(env(safe-area-inset-left,0px) + 16px, 16px) !important;
-      padding-right: max(env(safe-area-inset-right,0px) + 16px, 16px) !important;
       transition: all 0.22s cubic-bezier(0.2, 0.9, 0.4, 1.1) !important;
-      background: var(--glass-bg) !important;
-      backdrop-filter: blur(20px) !important;
     }
-    /* 滚动后压缩模式 */
     .nav.compact {
       padding-top: calc(env(safe-area-inset-top,44px) + 6px) !important;
-      padding-bottom: 6px !important;
     }
     .nav.compact .nav-large {
       font-size: 17px !important;
       text-align: center !important;
-      margin: 0 auto !important;
-      transform: none !important;
-      position: static !important;
     }
-    .nav.compact .nav-title {
-      font-size: 17px !important;
-      opacity: 1 !important;
-    }
-    /* 登录页保留足够内边距 */
+    /* 登录页 */
     .ob {
       padding-top: calc(env(safe-area-inset-top,44px) + 60px) !important;
-      padding-left: max(env(safe-area-inset-left,0px) + 30px, 30px) !important;
-      padding-right: max(env(safe-area-inset-right,0px) + 30px, 30px) !important;
     }
-    /* 底部 Tab Bar 只留必要安全区 */
-    .tabs {
-      padding-bottom: calc(env(safe-area-inset-bottom,34px) + 4px) !important;
-    }
-    /* 聊天输入栏 —— 关键修复 */
+    /* ========== 底部遮挡关键修复 ========== */
+    /* 聊天输入栏：增加底部内边距 + 背景 */
     .chat-bar {
-      padding-bottom: calc(env(safe-area-inset-bottom,34px) + 16px) !important;
+      padding-bottom: calc(env(safe-area-inset-bottom,34px) + 28px) !important;
       background: var(--glass-bg) !important;
       border-top: 0.5px solid var(--glass-border) !important;
+      margin-bottom: 0 !important;
     }
-    /* 聊天区域滚动时不要被输入栏遮住 */
-    .chat-body {
-      padding-bottom: 12px !important;
-    }
-    /* 设置页面底部退出按钮完全可见 */
+    /* 设置页面滚动区域：底部留出足够空间让退出按钮完全可见 */
     .scroller {
-      padding-bottom: calc(var(--tabh) + 40px) !important;
+      padding-bottom: calc(var(--tabh) + 100px) !important;
     }
-    /* 全屏弹窗滚动区域避开顶部 */
+    /* 聊天内容区域：最后一条消息不会被输入栏遮挡 */
+    .chat-body {
+      padding-bottom: 20px !important;
+    }
+    /* 全屏弹窗滚动区域 */
     .wx-full > div:last-child,
     .gallery-ov > div:last-child {
       top: calc(env(safe-area-inset-top,44px) + 56px) !important;
-      padding-bottom: calc(env(safe-area-inset-bottom,34px) + 20px) !important;
+      padding-bottom: calc(env(safe-area-inset-bottom,34px) + 30px) !important;
     }
-    .wx-full > div:first-child,
-    .gallery-ov > div:first-child {
-      padding-top: calc(env(safe-area-inset-top,44px) + 8px) !important;
-    }
-    /* 弹窗左右安全区 */
+    /* 其他微调 */
     .sheet {
       padding-left: max(env(safe-area-inset-left,0px) + 18px, 18px) !important;
       padding-right: max(env(safe-area-inset-right,0px) + 18px, 18px) !important;
     }
-    /* 通用内容区域边缘保护 */
-    .btn-full, .inp, .list, .set-group {
-      margin-left: max(env(safe-area-inset-left,0px) + 16px, 16px) !important;
-      margin-right: max(env(safe-area-inset-right,0px) + 16px, 16px) !important;
-      width: calc(100% - 32px - 2 * max(env(safe-area-inset-left,0px), 0px)) !important;
-    }
-    .list .lr {
-      margin-left: 0 !important;
-      margin-right: 0 !important;
-      width: auto !important;
-    }
   `;
   document.head.appendChild(style);
 
-}
-// 滚动时动态压缩导航栏 (类似 iOS Settings)
-  function observeNavScroll() {
-    var views = document.querySelectorAll('.view');
-    views.forEach(function(view) {
-      var scrollEl = view.querySelector('.scroller, .chat-body, .itin-scroll');
-      var nav = view.querySelector('.nav');
-      if (!scrollEl || !nav) return;
-      function onScroll() {
-        var scrollTop = scrollEl.scrollTop;
-        if (scrollTop > 28) {
-          nav.classList.add('compact');
-        } else {
-          nav.classList.remove('compact');
-        }
-      }
-      scrollEl.addEventListener('scroll', onScroll, { passive: true });
-      onScroll(); // 初始检查
-    });
+  // 额外强制设置聊天页滚动区域和输入栏可见性（使用JS动态调整）
+  function fixBottomBar() {
+    var chatBar = document.querySelector('.chat-bar');
+    if (chatBar) {
+      var sab = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sab').trim() || '34');
+      chatBar.style.setProperty('padding-bottom', (sab + 28) + 'px', 'important');
+    }
+    var scroller = document.querySelector('.scroller');
+    if (scroller && document.querySelector('#v-set.active')) {
+      var tabh = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--tabh').trim() || '88');
+      scroller.style.setProperty('padding-bottom', (tabh + 100) + 'px', 'important');
+    }
   }
-  // 监听视图切换时重新绑定
-  var origSwitchTab = window.switchTab;
+
+  // 监听视图切换，每次切换后重新调整
+  var origSwitch = window.switchTab;
   window.switchTab = function(name, dir) {
-    origSwitchTab(name, dir);
-    setTimeout(observeNavScroll, 80);
+    origSwitch(name, dir);
+    setTimeout(function() {
+      fixBottomBar();
+      // 滚动压缩导航栏
+      var activeView = document.querySelector('.view.active');
+      var scrollEl = activeView ? (activeView.querySelector('.scroller') || activeView.querySelector('.chat-body')) : null;
+      var nav = activeView ? activeView.querySelector('.nav') : null;
+      if (scrollEl && nav) {
+        var onScroll = function() {
+          if (scrollEl.scrollTop > 28) nav.classList.add('compact');
+          else nav.classList.remove('compact');
+        };
+        scrollEl.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+      }
+    }, 100);
   };
-  observeNavScroll();
+  fixBottomBar();
+}
   
   
   
