@@ -84,7 +84,8 @@ html[data-color-mode="light"] #wp:not(.img){display:none}
   padding-bottom:calc(var(--tabh)+28px);scroll-behavior:smooth}
 .scroller::-webkit-scrollbar{display:none}
 
-.nav{flex-shrink:0;padding:calc(var(--sai)+8px) 16px 8px;
+/* 修复顶部遮挡：增加 padding-top 从 6px 改为 14px */
+.nav{flex-shrink:0;padding:calc(var(--sai)+14px) 16px 8px;
   display:flex;align-items:center;gap:10px;position:relative;z-index:10}
 .nav-title{font-size:17px;font-weight:600;position:absolute;left:50%;transform:translateX(-50%);
   white-space:nowrap;pointer-events:none;color:var(--t1);letter-spacing:-.2px}
@@ -209,8 +210,9 @@ textarea.inp{resize:none;min-height:76px;line-height:1.5}
 input:checked+.tsl{background:var(--accent)}
 input:checked+.tsl::before{transform:translateX(20px);background:var(--bg)}
 
+/* 修复顶部遮挡：增加 .ob 顶部 padding 从 36px 改为 44px */
 .ob{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:calc(var(--sai)+42px) 30px calc(var(--sab)+56px)}
+  padding:calc(var(--sai)+44px) 30px calc(var(--sab)+56px)}
 .ob-logo{width:96px;height:96px;border-radius:26px;
   background:var(--glass-bg2);border:0.5px solid var(--glass-border2);
   backdrop-filter:blur(var(--blur-md));-webkit-backdrop-filter:blur(var(--blur-md));
@@ -676,8 +678,9 @@ input:checked+.tsl::before{transform:translateX(20px);background:var(--bg)}
 .member-can-del{display:inline-flex;align-items:center;gap:3px;font-size:11px;color:var(--red);padding:3px 8px;border-radius:7px;border:0.5px solid rgba(var(--red-rgb),.25);background:rgba(var(--red-rgb),.07);cursor:pointer;transition:all .14s var(--sp)}
 .member-can-del:active{transform:scale(0.9)}
 @media all and (display-mode:standalone){
-  .nav{padding-top:calc(var(--sai)+12px)}
-  .ob{padding-top:calc(var(--sai)+42px);padding-bottom:calc(var(--sab)+36px)}
+  /* 修复 standalone 模式下的顶部遮挡：同步增加 padding-top */
+  .nav{padding-top:calc(var(--sai)+14px)}
+  .ob{padding-top:calc(var(--sai)+44px);padding-bottom:calc(var(--sab)+36px)}
 }
 </style>
 </head>
