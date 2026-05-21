@@ -2360,14 +2360,29 @@ async function init(){
 if (window.matchMedia('(display-mode: standalone)').matches) {
   var style = document.createElement('style');
   style.textContent = `
-    /* 1. 修复顶部导航栏和登录页 */
-    .nav { padding-top: calc(env(safe-area-inset-top,44px) + 28px) !important; }
-    .ob { padding-top: calc(env(safe-area-inset-top,44px) + 70px) !important; }
-    
-    /* 2. 修复底部 Tab Bar 间距 */
-    .tabs { padding-bottom: calc(env(safe-area-inset-bottom,34px) + 6px) !important; }
-    
-    /* 3. 修复所有全屏弹窗：确保滚动区域不被顶部栏遮挡 */
+    /* 1. 顶部导航栏安全区（上 + 左右） */
+    .nav {
+      padding-top: calc(env(safe-area-inset-top,44px) + 28px) !important;
+      padding-left: max(env(safe-area-inset-left,0px) + 16px, 16px) !important;
+      padding-right: max(env(safe-area-inset-right,0px) + 16px, 16px) !important;
+    }
+    /* 2. 登录页面 */
+    .ob {
+      padding-top: calc(env(safe-area-inset-top,44px) + 70px) !important;
+      padding-left: max(env(safe-area-inset-left,0px) + 30px, 30px) !important;
+      padding-right: max(env(safe-area-inset-right,0px) + 30px, 30px) !important;
+    }
+    /* 3. 底部 Tab Bar 安全区 */
+    .tabs {
+      padding-bottom: calc(env(safe-area-inset-bottom,34px) + 6px) !important;
+      padding-left: max(env(safe-area-inset-left,0px) + 4px, 4px) !important;
+      padding-right: max(env(safe-area-inset-right,0px) + 4px, 4px) !important;
+    }
+    /* 4. 聊天输入栏 —— 关键修复 */
+    .chat-bar {
+      padding-bottom: calc(env(safe-area-inset-bottom,34px) + 12px) !important;
+    }
+    /* 5. 所有全屏弹窗（天气 / 清单 / 相册）滚动区域避开顶部导航栏 */
     .wx-full,
     .gallery-ov {
       position: fixed !important;
@@ -2379,9 +2394,8 @@ if (window.matchMedia('(display-mode: standalone)').matches) {
       background: var(--bg) !important;
       z-index: 600 !important;
     }
-    
-    /* 天气全屏弹窗 - 滚动区域向下偏移 */
-    .wx-full > div:last-child {
+    .wx-full > div:last-child,
+    .gallery-ov > div:last-child {
       position: absolute !important;
       top: calc(env(safe-area-inset-top,44px) + 52px) !important;
       left: 0 !important;
@@ -2390,31 +2404,28 @@ if (window.matchMedia('(display-mode: standalone)').matches) {
       overflow-y: auto !important;
       -webkit-overflow-scrolling: touch !important;
     }
-    
-    /* 天气全屏顶部导航栏增加安全区 */
-    .wx-full > div:first-child {
+    /* 天气 / 清单全屏顶部栏增加安全区 */
+    .wx-full > div:first-child,
+    .gallery-ov > div:first-child {
       padding-top: calc(env(safe-area-inset-top,44px) + 8px) !important;
+      padding-left: max(env(safe-area-inset-left,0px) + 16px, 16px) !important;
+      padding-right: max(env(safe-area-inset-right,0px) + 16px, 16px) !important;
       background: var(--glass-bg) !important;
       backdrop-filter: blur(16px) !important;
     }
-    
-    /* 清单全屏弹窗 */
-    .wx-full[onclick*="showListsFull"] > div:last-child,
+    /* 清单全屏单独适配 */
     .wx-full#lists-full-ov > div:last-child {
       top: calc(env(safe-area-inset-top,44px) + 54px) !important;
     }
-    
-    /* 相册全屏弹窗 */
-    .gallery-ov > div:last-child {
-      top: calc(env(safe-area-inset-top,44px) + 52px) !important;
-      bottom: 0 !important;
-      overflow-y: auto !important;
-    }
-    
     /* 隐藏滚动条（美观） */
     .wx-full::-webkit-scrollbar,
     .gallery-ov::-webkit-scrollbar {
       display: none;
+    }
+    /* 6. 通用按钮/内容区域安全区微调（可选） */
+    .sheet {
+      padding-left: max(env(safe-area-inset-left,0px) + 16px, 16px) !important;
+      padding-right: max(env(safe-area-inset-right,0px) + 16px, 16px) !important;
     }
   `;
   document.head.appendChild(style);
