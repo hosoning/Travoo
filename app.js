@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════
-// Travoo v12 20250523 — app.js
+// Travoo v12 20260522 — app.js
 // ═══════════════════════════════════════════════════════
 import { initializeApp }   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import {
@@ -1971,32 +1971,490 @@ function renderChat(){
     S.chatHistory.map(renderMsg).join('');
   var sugHtml=sugs.map(function(s){return '<div class="csug" onclick="sendSug(\''+s.replace(/'/g,"\\'")+'\')">'+escHtml(s)+'</div>';}).join('');
 
-  // FIX #8: Chat bar bottom padding forced (inline style) + flex layout
-  v.innerHTML = `
-    <div class="nav" style="flex-shrink:0">
-      <div style="width:34px;flex-shrink:0"></div>
-      <div class="nav-title" style="position:static;transform:none;flex:1;text-align:center">${t('butlerName')}</div>
-      <div class="nbtn" onclick="showAIConfig()">${ic('cog',14)}</div>
-    </div>
-    ${noBanner}
-    <div style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden">
-      <div class="chat-body" id="chat-body" style="flex:1;overflow-y:auto;padding:12px 14px 8px;display:flex;flex-direction:column;gap:9px">${welcome}</div>
-      <div class="csug-wrap" style="flex-shrink:0;overflow-x:auto;padding:5px 12px;display:flex;gap:7px">${sugHtml}</div>
-      <div class="chat-bar" style="flex-shrink:0;display:flex;align-items:flex-end;gap:8px;padding:7px 12px;padding-bottom:calc(env(safe-area-inset-bottom,34px) + 28px);background:var(--glass-bg);backdrop-filter:blur(var(--blur-lg));border-top:0.5px solid var(--glass-border);z-index:10">
-        <button class="cvbtn" onmousedown="startVoice(handleVoiceIntent)" ontouchstart="event.preventDefault();startVoice(handleVoiceIntent)" style="-webkit-user-select:none">${ic('mic',17)}</button>
-        <button class="cvbtn" onclick="sendChatPhoto()" style="transition:opacity .15s" title="${t('sendPhoto')}">${ic('camera',17)}</button>
-        <textarea class="chat-inp-el" id="chat-inp" rows="1" placeholder="${t('aiPh')}" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg()}" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,110)+'px'"></textarea>
-        <button class="csend" id="csend" onclick="sendChatMsg()" style="transition:transform .15s ease">${ic('send',17)}</button>
-      </div>
-    </div>
-  `;
+  // FIX: Chat layout — flex column fills remaining height
+  // nav has no inline padding-top, CSS class handles it
+  // chat-outer uses flex:1 min-height:0 to allow proper shrinking
+  // FIX: chat bar has position:relative so visual viewport JS can reposition it
+  v.innerHTML=
+    '<div class="nav" style="flex-shrink:0">'+
+      '<div style="width:34px;flex-shrink:0"></div>'+
+      '<div class="nav-title" style="position:static;transform:none;flex:1;text-align:center">'+t('butlerName')+'</div>'+
+      '<div class="nbtn" onclick="showAIConfig()">'+ic('cog',14)+'</div>'+
+    '</div>'+
+    noBanner+
+    '<div style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden">'+
+      '<div class="chat-body" id="chat-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 14px 12px">'+welcome+'</div>'+
+      '<div class="csug-wrap" id="csug-wrap" style="flex-shrink:0;overflow-x:auto;-webkit-overflow-scrolling:touch">'+sugHtml+'</div>'+
+      '<div class="chat-bar" id="chat-bar-el" style="flex-shrink:0;padding-bottom:max(calc(env(safe-area-inset-bottom,34px)+4px),10px)">'+
+        '<button class="cvbtn" onmousedown="startVoice(handleVoiceIntent)" ontouchstart="event.preventDefault();startVoice(handleVoiceIntent)" style="-webkit-user-select:none;transition:opacity .15s">'+ic('mic',17)+'</button>'+
+        '<button class="cvbtn" onclick="sendChatPhoto()" style="transition:opacity .15s" title="'+t('sendPhoto')+'">'+ic('camera',17)+'</button>'+
+        '<textarea class="chat-inp-el" id="chat-inp" rows="1" placeholder="'+t('aiPh')+'" onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();sendChatMsg()}" oninput="this.style.height=\'auto\';this.style.height=Math.min(this.scrollHeight,110)+\'px\'"></textarea>'+
+        '<button class="csend" id="csend" onclick="sendChatMsg()" style="transition:transform .15s ease;-webkit-tap-highlight-color:transparent"><svg width="17" height="17" viewBox="0 0 24 24" fill="none">'+IC.send+'</svg></button>'+
+      '</div>'+
+    '</div>';
   scrollChat();
 }
 
-// ----------------------------------------------------------------------
-// 以下为你原有的所有函数，请保持原样，已经在上面的完整代码中全部包含。
-// 由于篇幅限制，此处不再重复。上面提供的完整 app.js 已经包含了所有你之前提供的函数。
-// ----------------------------------------------------------------------
+window.sendChatPhoto=function(){
+  if(!(S.aiConfig.apiKey&&S.aiConfig.endpoint)){toast(t('noCfg'));return;}
+  var inp=document.createElement('input');inp.type='file';inp.accept='image/*';
+  inp.onchange=async function(){
+    var f=inp.files[0];if(!f)return;
+    toast(t('recognizing'),0);
+    var rd=new FileReader();
+    rd.onload=async function(e){
+      var b64=e.target.result;
+      var body=$('#chat-body');
+      if(body){
+        var imgEl=document.createElement('div');imgEl.className='msg msg-u';
+        imgEl.innerHTML='<div class="mbubble" style="padding:4px;background:transparent"><img src="'+b64+'" style="max-width:200px;max-height:200px;border-radius:10px;display:block"></div>';
+        body.appendChild(imgEl);scrollChat();
+      }
+      try{
+        var res=await fetch(S.aiConfig.endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.aiConfig.apiKey},body:JSON.stringify({model:S.aiConfig.model||'gpt-4o',max_tokens:800,messages:[{role:'user',content:[{type:'text',text:'You are a travel assistant. Describe what you see in this image and provide any travel-related insights, tips or recommendations. Reply in the same language as the app ('+(S.lang==='en'?'English':'Chinese')+').'},{type:'image_url',image_url:{url:b64,detail:'high'}}]}]})});
+        if(!res.ok)throw new Error('API '+res.status);
+        var d=await res.json();
+        var reply=(d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content)||'';
+        toast('');
+        var aEl=document.createElement('div');aEl.className='msg msg-a';
+        aEl.innerHTML='<div class="mbubble">'+reply.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>')+'</div>';
+        if(body)body.appendChild(aEl);
+        await fbSaveMsg('assistant',reply);scrollChat();
+      }catch(err){toast('');toast(err.message);}
+    };rd.readAsDataURL(f);
+  };
+  inp.click();
+};
 
-// 注意：你提供的代码中，renderChat 之后原本还有大量其他函数（showWeatherFull, showListsFull, 各种 modal, 设置等），
-// 上面提供的完整代码中已经全部保留。请直接使用上面输出的完整 app.js 文件，不要遗漏任何部分。
+function renderMsg(m){var isU=m.role==='user';var time='';if(m.ts&&m.ts.toDate)time=m.ts.toDate().toLocaleTimeString('zh',{hour:'2-digit',minute:'2-digit'});return '<div class="msg '+(isU?'msg-u':'msg-a')+'"><div class="mbubble">'+(m.content||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>'+(time?'<div class="mmeta">'+time+'</div>':'')+'</div>';}
+function refreshChatMsgs(){var body=$('#chat-body');if(!body)return;if(S.chatHistory.length)body.innerHTML=S.chatHistory.map(renderMsg).join('');scrollChat();}
+function scrollChat(){var b=$('#chat-body');if(b)setTimeout(function(){b.scrollTop=b.scrollHeight;},60);}
+window.sendSug=function(txt){var inp=$('#chat-inp');if(inp){inp.value=txt;sendChatMsg();}};
+window.askAIAbout=function(title){switchTab('chat');setTimeout(function(){sendChatMsg('关于"'+title+'"，给我建议和注意事项');},300);};
+window.sendChatMsg=async function(forceTxt){
+  var inp=$('#chat-inp'),btn=$('#csend'),body=$('#chat-body');
+  var txt=forceTxt||(inp?inp.value.trim():'');if(!txt)return;
+  if(inp){inp.value='';inp.style.height='auto';}if(btn)btn.disabled=true;
+  var uEl=document.createElement('div');uEl.className='msg msg-u';uEl.innerHTML='<div class="mbubble">'+txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>')+'</div>';if(body)body.appendChild(uEl);scrollChat();
+  await fbSaveMsg('user',txt);
+  var typEl=document.createElement('div');typEl.className='typing-wrap';typEl.innerHTML='<div class="typing-bub"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>';if(body)body.appendChild(typEl);scrollChat();
+  var sw=$('#csug-wrap');if(sw)sw.style.display='none';
+  try{
+    var reply=await callAI(txt);typEl.remove();
+    var aEl=document.createElement('div');aEl.className='msg msg-a';aEl.innerHTML='<div class="mbubble">'+reply.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>')+'</div>';
+    if(body)body.appendChild(aEl);await fbSaveMsg('assistant',reply);scrollChat();
+  }catch(e){
+    typEl.remove();var errEl=document.createElement('div');errEl.className='msg msg-a';errEl.innerHTML='<div class="mbubble" style="color:var(--red)">'+escHtml(e.message)+'</div>';if(body)body.appendChild(errEl);scrollChat();if(e.message===t('noCfg'))setTimeout(showAIConfig,600);
+  }
+  if(btn)btn.disabled=false;
+};
+window.showAIConfig=function(){
+  var cfg=S.aiConfig;
+  showModal('<div class="sh"></div><div class="sheet-title">'+t('aiCfg')+'</div>'+
+    '<div style="display:flex;gap:5px;margin-bottom:13px"><div class="chip" onclick="presetAI(\'openai\',this)">OpenAI</div><div class="chip" onclick="presetAI(\'custom\',this)">Custom</div></div>'+
+    '<div class="inp-lbl">'+t('apiEp')+'</div><input class="inp" id="cfg-ep" value="'+escHtml(cfg.endpoint||'')+'" placeholder="https://api.openai.com/v1/chat/completions" style="margin-bottom:9px">'+
+    '<div class="inp-lbl">'+t('apiKey')+'</div><input class="inp" id="cfg-key" type="password" value="'+escHtml(cfg.apiKey||'')+'" placeholder="sk-..." style="margin-bottom:9px">'+
+    '<div class="inp-lbl">'+t('model')+'</div><input class="inp" id="cfg-model" value="'+escHtml(cfg.model||'gpt-4o-mini')+'" style="margin-bottom:13px">'+
+    '<button class="btn btn-p btn-full" onclick="saveAICfg()" style="margin-bottom:7px">'+t('saveCfg')+'</button>'+
+    (cfg.apiKey?'<button class="btn btn-g btn-full" onclick="S.aiConfig={};localStorage.removeItem(\'aiConfig\');closeModal();renderChat()">清除配置</button>':'')+
+    '<div style="font-size:11px;color:var(--t4);text-align:center;margin-top:11px">API Key仅存本设备，不上传</div>');
+};
+window.presetAI=function(p,el){$$('.sheet .chip').forEach(function(c){c.classList.remove('on');});el.classList.add('on');var ep=$('#cfg-ep'),md=$('#cfg-model');if(p==='openai'&&ep&&md){ep.value='https://api.openai.com/v1/chat/completions';md.value='gpt-4o-mini';}};
+window.saveAICfg=function(){var ep=($('#cfg-ep')&&$('#cfg-ep').value.trim())||'',key=($('#cfg-key')&&$('#cfg-key').value.trim())||'',model=($('#cfg-model')&&$('#cfg-model').value.trim())||'gpt-4o-mini';if(!ep||!key){toast('请填写端点和Key');return;}S.aiConfig={endpoint:ep,apiKey:key,model:model};localStorage.setItem('aiConfig',JSON.stringify(S.aiConfig));closeModal();toast(t('aiConfigSaved'));renderChat();};
+window.confirmClearChat=function(){showModal('<div class="sh"></div><div style="text-align:center;padding:9px 0"><div style="font-size:17px;font-weight:700;color:var(--t1);margin-bottom:7px">'+t('confirmClearChat')+'</div><div style="font-size:13px;color:var(--t2);margin-bottom:20px">'+t('confirmClearChatSub')+'</div><button class="btn btn-d btn-full" onclick="S.chatHistory=[];toast(t(\'chatCleared\'));closeModal()" style="margin-bottom:9px">'+t('clearChatConfirmBtn')+'</button><button class="btn btn-g btn-full" onclick="closeModal()">'+t('cancel')+'</button></div>');};
+T['zh-CN'].confirmClearChat='确认清除所有对话？';T['zh-CN'].confirmClearChatSub='此操作不可撤销';T['zh-CN'].clearChatConfirmBtn='确认清除';
+T['zh-TW'].confirmClearChat='確認清除所有對話？';T['zh-TW'].confirmClearChatSub='此操作不可撤銷';T['zh-TW'].clearChatConfirmBtn='確認清除';
+T['en'].confirmClearChat='Clear all messages?';T['en'].confirmClearChatSub='Cannot be undone';T['en'].clearChatConfirmBtn='Clear';
+
+// ── LISTS ─────────────────────────────────────────────
+function renderShoppingPane(){
+  var items=S.shoppingList,en=S.lang==='en';
+  var html='<div style="display:flex;gap:7px;margin-bottom:11px"><input class="inp" id="shop-inp" placeholder="'+(en?'Item…':'物品…')+'" style="flex:1"><button class="btn btn-p" style="padding:9px 13px" onclick="addShoppingItem()">'+ic('plus',14)+'</button></div>';
+  var visible=items.filter(function(i){return i.ownerId===S.memberId||(i.sharedWith&&i.sharedWith.indexOf(S.memberId)>=0);});
+  if(!visible.length)html+='<div style="text-align:center;padding:22px;color:var(--t3)">'+(en?'No items':'暂无物品')+'</div>';
+  else html+='<div class="list">'+visible.map(function(item){return '<div class="list-item'+(item.done?' done':'')+'" style="transition:opacity .15s">'+
+    '<div class="list-check'+(item.done?' checked':'')+'" onclick="toggleShoppingItem(\''+item.id+'\')" style="transition:all .18s ease"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>'+
+    '<span class="list-item-text">'+renderMentions(item.text)+'</span>'+
+    '<div class="list-item-del" onclick="removeShoppingItem(\''+item.id+'\')">'+ic('trash',12)+'</div></div>';}).join('')+'</div>';
+  return html;
+}
+window.addShoppingItem=function(){var inp=$('#shop-inp');if(!inp)return;var text=inp.value.trim();if(!text)return;var sw=[];Object.entries(S.members).forEach(function(e){var id=e[0],m=e[1];if(text.indexOf('@'+m.name)>=0&&id!==S.memberId)sw.push(id);});S.shoppingList.push({id:'s_'+Date.now(),text:text,done:false,ownerId:S.memberId,sharedWith:sw});localStorage.setItem('shoppingList',JSON.stringify(S.shoppingList));inp.value='';var lc=$('#lists-content');if(lc)lc.innerHTML=renderShoppingPane();};
+window.toggleShoppingItem=function(id){var item=S.shoppingList.find(function(i){return i.id===id;});if(item)item.done=!item.done;localStorage.setItem('shoppingList',JSON.stringify(S.shoppingList));var lc=$('#lists-content');if(lc)lc.innerHTML=renderShoppingPane();};
+window.removeShoppingItem=function(id){S.shoppingList=S.shoppingList.filter(function(i){return i.id!==id;});localStorage.setItem('shoppingList',JSON.stringify(S.shoppingList));var lc=$('#lists-content');if(lc)lc.innerHTML=renderShoppingPane();};
+function renderTodoPane(){
+  var phases=['pre','during','post'],pLbl={'pre':t('listPre'),'during':t('listDuring'),'post':t('listPost')};
+  var html='<div style="display:flex;gap:7px;margin-bottom:11px"><input class="inp" id="todo-inp" placeholder="'+(S.lang==='en'?'Task…':'任务…')+'" style="flex:1"><select class="inp" id="todo-ph" style="width:90px">'+phases.map(function(p){return '<option value="'+p+'">'+pLbl[p]+'</option>';}).join('')+'</select><button class="btn btn-p" style="padding:9px 12px" onclick="addTodoItem()">'+ic('plus',12)+'</button></div>';
+  phases.forEach(function(ph){var items=(S.todoList[ph]||[]).filter(function(i){return i.ownerId===S.memberId||(i.sharedWith&&i.sharedWith.indexOf(S.memberId)>=0);});if(!items.length)return;html+='<div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin:7px 0 4px">'+pLbl[ph]+'</div><div class="list" style="margin-bottom:9px">'+items.map(function(i){return '<div class="list-item'+(i.done?' done':'')+'"><div class="list-check'+(i.done?' checked':'')+'" onclick="toggleTodoItem(\''+ph+'\',\''+i.id+'\')" style="transition:all .18s ease"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="list-item-text">'+renderMentions(i.text)+'</span><div class="list-item-del" onclick="removeTodoItem(\''+ph+'\',\''+i.id+'\')">'+ic('trash',12)+'</div></div>';}).join('')+'</div>';});
+  if(phases.every(function(ph){return !(S.todoList[ph]||[]).length;}))html+='<div style="text-align:center;padding:22px;color:var(--t3)">'+(S.lang==='en'?'No tasks':'暂无待办')+'</div>';
+  return html;
+}
+window.addTodoItem=function(){var inp=$('#todo-inp'),ph=$('#todo-ph');if(!inp||!ph)return;var text=inp.value.trim();if(!text)return;var phase=ph.value;var sw=[];Object.entries(S.members).forEach(function(e){var id=e[0],m=e[1];if(text.indexOf('@'+m.name)>=0&&id!==S.memberId)sw.push(id);});if(!S.todoList[phase])S.todoList[phase]=[];S.todoList[phase].push({id:'t_'+Date.now(),text:text,done:false,ownerId:S.memberId,sharedWith:sw});localStorage.setItem('todoList',JSON.stringify(S.todoList));inp.value='';var lc=$('#lists-content');if(lc)lc.innerHTML=renderTodoPane();};
+window.toggleTodoItem=function(ph,id){var items=S.todoList[ph]||[];var item=items.find(function(i){return i.id===id;});if(item)item.done=!item.done;localStorage.setItem('todoList',JSON.stringify(S.todoList));var lc=$('#lists-content');if(lc)lc.innerHTML=renderTodoPane();};
+window.removeTodoItem=function(ph,id){S.todoList[ph]=(S.todoList[ph]||[]).filter(function(i){return i.id!==id;});localStorage.setItem('todoList',JSON.stringify(S.todoList));var lc=$('#lists-content');if(lc)lc.innerHTML=renderTodoPane();};
+function renderPackingPane(){
+  var sugg=getPackSugg(),cats=['clothes','docs','electronics','toiletries'];
+  var catLbls={clothes:t('packingClothes'),docs:t('packingDocs'),electronics:t('packingElectronics'),toiletries:t('packingToiletries')};
+  var html='<div style="font-size:12px;color:var(--t3);margin-bottom:9px;line-height:1.55">'+(S.lang==='en'?'Suggested based on weather & itinerary':'根据天气和行程智能推荐')+'</div>';
+  cats.forEach(function(cat){var items=sugg[cat]||[];if(!items.length)return;html+='<div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;padding:7px 0 3px">'+catLbls[cat]+'</div><div class="list" style="margin-bottom:9px">'+items.map(function(item){var done=S.packingList[item.id]||false;return '<div class="list-item'+(done?' done':'')+'"><div class="list-check'+(done?' checked':'')+'" onclick="togglePacking(\''+item.id+'\')" style="transition:all .18s ease"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="list-item-text">'+escHtml(item.text)+'</span></div>';}).join('')+'</div>';});
+  if(periodConflict())html+='<div class="period-warning" style="margin-top:7px">'+ic('bell',13)+' '+t('periodPacking')+'</div>';
+  return html;
+}
+window.togglePacking=function(id){S.packingList[id]=!S.packingList[id];localStorage.setItem('packingList',JSON.stringify(S.packingList));var lc=$('#lists-content');if(lc)lc.innerHTML=renderPackingPane();};
+
+window.switchListPane=function(p){
+  S._listsPane=p;
+  var lc=$('#lists-content');
+  if(lc){lc.innerHTML=p==='shopping'?renderShoppingPane():p==='todo'?renderTodoPane():renderPackingPane();}
+  else showListsFull(p);
+};
+function renderListsView(){showListsFull();}
+
+// ── SETTINGS ──────────────────────────────────────────
+function renderSet(){
+  var v=$('#v-set');if(!v)return;
+  var af=document.getElementById('gfab-add');if(af)af.remove();
+  var notifsChk=localStorage.getItem('notifsEnabled')!=='false'?'checked':'';
+  var lc=CUR[S.localCurrency]||{f:'',n:S.localCurrency},bc=CUR[S.baseCurrency]||{f:'',n:S.baseCurrency};
+  var rateVal=getRate(S.localCurrency,S.baseCurrency);
+  var rateStr=Object.keys(S.rates).length>0?'1 '+S.localCurrency+' = '+fmtCur(rateVal,S.baseCurrency):t('rateUnavailable');
+  var histSection='';if(S.localTrips.length>0){histSection='<div class="set-ttl">'+t('history')+'</div><div class="set-group">'+S.localTrips.map(function(tr){return '<div class="set-row" onclick="enterTrip(\''+tr.code+'\')"><div style="flex:1"><div style="font-size:15px;color:var(--t1)">'+escHtml(tr.name||'—')+'</div><div style="font-size:11px;color:var(--t3)">'+escHtml(tr.dates||'—')+'</div></div><span class="set-chev">'+ic('chev',14)+'</span></div>';}).join('')+'</div>';}
+
+  var memHtml=Object.entries(S.members).map(function(entry){
+    var id=entry[0],m=entry[1],img=memAvatar(id),isYou=id===S.memberId;
+    var canDelete=(m.joinedVia==='manual'&&!m.claimed&&m.addedBy===S.memberId)||(!isYou&&(S.trip&&S.trip.creatorId===S.memberId)&&m.joinedVia==='manual'&&!m.claimed);
+    return '<div class="set-row" onclick="showMemberEdit(\''+id+'\')">'+
+      (img?'<div style="width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="'+img+'" style="width:100%;height:100%;object-fit:cover"></div>':'<div style="width:30px;height:30px;border-radius:50%;background:'+m.color+';display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0">'+((m.name||'?')[0])+'</div>')+
+      '<span class="set-lbl">'+escHtml(m.name)+'</span>'+
+      (isYou?'<span class="you-tag">'+t('you')+'</span>':'')+'  '+
+      (canDelete?'<div class="member-can-del" onclick="event.stopPropagation();removeMemberConfirm(\''+id+'\')" style="margin-right:4px">'+ic('trash',10)+' '+t('del')+'</div>':'')+
+      '<span class="set-chev">'+ic('chev',14)+'</span>'+
+    '</div>';
+  }).join('');
+
+  // FIX: nav has no inline padding-top — CSS class handles it correctly
+  v.innerHTML=
+    '<div class="nav"><div class="nav-large">'+t('set')+'</div></div>'+
+    '<div class="scroller"><div style="height:10px"></div>'+
+
+    '<div class="set-ttl">'+t('code')+'</div>'+
+    '<div class="set-group"><div class="set-row" style="cursor:default"><div class="set-icon">'+ic('lock',14)+'</div><div class="set-lbl" style="font-family:monospace;letter-spacing:2px;font-weight:700">'+escHtml(S.tripCode||'——')+'</div><div style="display:flex;gap:5px"><div class="nbtn" style="width:26px;height:26px" onclick="copyCode()">'+ic('copy',11)+'</div><div class="nbtn" style="width:26px;height:26px" onclick="shareCode()">'+ic('share',11)+'</div></div></div></div>'+
+
+    '<div class="set-ttl">'+t('members')+'</div>'+
+    '<div class="set-group">'+memHtml+
+      '<div class="set-row" onclick="showAddMember()"><div class="set-icon">'+ic('plus',13)+'</div><span class="set-lbl">'+t('addMember')+'</span></div>'+
+      '<div class="set-row" onclick="showClaimMember()"><div class="set-icon">'+ic('user',13)+'</div><span class="set-lbl">'+t('claimMemberTitle')+'</span></div>'+
+    '</div>'+
+
+    '<div class="set-ttl">'+t('setAppearance')+'</div>'+
+    '<div class="set-group">'+
+      '<div class="set-row" onclick="showAppearanceModal()"><div class="set-icon">'+ic('palette',14)+'</div><div class="set-lbl">'+t('appearance')+'</div><span class="set-val">'+t('appearanceDesc')+'</span><span class="set-chev">'+ic('chev',14)+'</span></div>'+
+    '</div>'+
+
+    '<div class="set-ttl">'+t('setTravel')+'</div>'+
+    '<div class="set-group">'+
+      '<div class="set-row" onclick="showCurrencyModal()"><div class="set-icon">'+ic('wallet',14)+'</div><div class="set-lbl">'+t('currency')+'</div><span class="set-val">'+lc.f+' → '+bc.f+'</span><span class="set-chev">'+ic('chev',14)+'</span></div>'+
+      '<div class="set-row" onclick="showMsgAppModal()"><div class="set-icon">'+ic('msg',14)+'</div><div class="set-lbl">'+t('msgApp')+'</div><span class="set-val">'+escHtml(appL(S.msgApp))+'</span><span class="set-chev">'+ic('chev',14)+'</span></div>'+
+      '<div class="set-row" onclick="showPeriodModal()"><div class="set-icon">'+ic('heart',14)+'</div><div class="set-lbl">'+t('period')+'</div><span class="set-val" style="'+(periodConflict()?'color:var(--red)':'')+'">'+(periodConflict()?(S.lang==='en'?'Conflict!':'注意重叠'):(S.lang==='en'?'OK':'无'))+'</span><span class="set-chev">'+ic('chev',14)+'</span></div>'+
+      '<div class="set-row" onclick="showListsFull()"><div class="set-icon">'+ic('list',14)+'</div><div class="set-lbl">'+t('lists')+'</div><span class="set-chev">'+ic('chev',14)+'</span></div>'+
+    '</div>'+
+
+    '<div class="set-ttl">'+t('notif')+'</div>'+
+    '<div class="set-group">'+
+      '<div class="set-row" style="cursor:default"><div class="set-icon">'+ic('bell',14)+'</div><span class="set-lbl">'+(S.lang==='en'?'Trip Reminders':'行程提醒')+'</span><label class="toggle"><input type="checkbox" '+notifsChk+' onchange="localStorage.setItem(\'notifsEnabled\',this.checked)"><span class="tsl"></span></label></div>'+
+      '<div class="set-row" onclick="reqGeoPermission()"><div class="set-icon">'+ic('map',14)+'</div><span class="set-lbl">'+t('locationAllow')+'</span><span class="set-val">'+(S.geo?'✓':'—')+'</span></div>'+
+    '</div>'+
+
+    '<div class="set-ttl">'+t('aiCfg')+'</div>'+
+    '<div class="set-group">'+
+      '<div class="set-row" onclick="showAIConfig()"><div class="set-icon">'+ic('sliders',14)+'</div><span class="set-lbl">'+t('aiCfg')+'</span><span class="set-val">'+escHtml(S.aiConfig.model||t('notConfigured'))+'</span><span class="set-chev">'+ic('chev',14)+'</span></div>'+
+      '<div class="set-row" onclick="confirmClearChat()"><div class="set-icon">'+ic('trash',14)+'</div><span class="set-lbl">'+t('clearChat')+'</span></div>'+
+    '</div>'+
+
+    '<div class="set-ttl">'+t('setData')+'</div>'+
+    '<div class="set-group">'+
+      '<div class="set-row" onclick="exportTripData()"><div class="set-icon">'+ic('download',14)+'</div><span class="set-lbl">'+t('exportData')+'</span></div>'+
+      '<div class="set-row" onclick="importTripData()"><div class="set-icon">'+ic('upload',14)+'</div><span class="set-lbl">'+t('importData')+'</span></div>'+
+      '<div class="set-row" style="cursor:default"><div class="set-icon">'+ic('lock',14)+'</div><span class="set-lbl">'+t('deviceId')+'</span><span class="set-val" style="font-size:10px;font-family:monospace">'+DEVICE_ID.substring(0,12)+'…</span></div>'+
+    '</div>'+
+
+    histSection+
+
+    '<div class="set-ttl">'+t('about')+'</div>'+
+    '<div class="set-group">'+
+      '<div class="set-row" style="cursor:default"><div class="set-icon">'+ic('globe',14)+'</div><span class="set-lbl">'+t('version')+'</span><span class="set-val">5.2.2</span></div>'+
+      '<div class="set-row" style="cursor:default"><div class="set-icon">'+ic('check',14)+'</div><span class="set-lbl">Firebase</span><span class="set-val">'+(fbApp?t('connected'):t('localMode'))+'</span></div>'+
+    '</div>'+
+
+    '<div style="padding:0 16px 18px"><button class="btn btn-d btn-full" onclick="confirmLeave()" style="margin-top:7px;transition:transform .15s ease" ontouchstart="this.style.transform=\'scale(.97)\'" ontouchend="this.style.transform=\'scale(1)\'">'+t('leave')+'</button></div>'+
+    '</div>';
+}
+
+// Member management
+window.showAddMember=function(){
+  showModal('<div class="sh"></div><div class="sheet-title">'+t('addMember')+'</div>'+
+    '<div style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:13px">'+(S.lang==='en'?'Add a member slot. They can claim it using the 4-char claim code.':'添加成员槽位，朋友可用4位认领码自行认领。')+'</div>'+
+    '<input class="inp" id="nm-name" placeholder="'+t('addMemberPh')+'" style="margin-bottom:13px">'+
+    '<button class="btn btn-p btn-full" onclick="submitAddMember()">'+t('addMember')+'</button>');
+};
+window.submitAddMember=async function(){
+  var name=$('#nm-name')&&$('#nm-name').value.trim();if(!name){toast('请输入名字');return;}
+  var id='u_'+Date.now(),used=Object.values(S.members).map(function(m){return m.color;}),color=COLORS.find(function(c){return used.indexOf(c)<0;})||COLORS[0];
+  var claimCode=gen4();
+  var memberData={name:name,color:color,joinedVia:'manual',addedBy:S.memberId,claimed:false,claimCode:claimCode};
+  if(db&&S.tripCode){var upd={};upd['members.'+id]=Object.assign({},memberData,{addedAt:serverTimestamp()});await updateDoc(doc(db,'trips',S.tripCode),upd);}
+  S.members[id]=memberData;
+  closeModal();renderSet();
+  showModal('<div class="sh"></div><div class="sheet-title">'+t('addMember')+'</div>'+
+    '<div style="text-align:center;padding:10px 0">'+
+      '<div style="font-size:14px;color:var(--t2);margin-bottom:14px">'+(S.lang==='en'?'Member added. Share this claim code with your friend:':'成员已添加，把认领码分享给朋友：')+'</div>'+
+      '<div class="code-disp" style="font-size:32px;letter-spacing:8px;margin-bottom:14px">'+claimCode+'</div>'+
+      '
+'<div class="code-disp" style="font-size:32px;letter-spacing:8px;margin-bottom:14px">'+claimCode+'</div>'+
+      '<div style="font-size:12px;color:var(--t3)">'+t('claimMemberDesc')+'</div>'+
+    '</div>'+
+    '<button class="btn btn-p btn-full" onclick="navigator.clipboard&&navigator.clipboard.writeText(\''+claimCode+'\').then(function(){toast(t(\'codeCopied\'));})">'+ic('copy',14)+' '+t('copy')+'</button>');
+};
+window.removeMemberConfirm=function(id){
+  var m=S.members[id];if(!m)return;
+  var safeId=id.replace(/'/g,"\\'");
+  showModal(
+    '<div class="sh"></div><div class="sheet-title">'+t('removeMember')+'</div>'+
+    '<div style="font-size:14px;color:var(--t2);margin-bottom:16px">'+escHtml(m.name)+' · '+t('removeMemberConfirm')+'</div>'+
+    '<button class="btn btn-d btn-full" onclick="doRemoveMember(\''+safeId+'\')" style="margin-bottom:7px">'+t('removeMember')+'</button>'+
+    '<button class="btn btn-g btn-full" onclick="closeModal()">'+t('cancel')+'</button>'
+  );
+};
+window.doRemoveMember=async function(id){
+  var m=S.members[id];if(!m)return;
+  var canDelete=(m.joinedVia==='manual'&&!m.claimed&&m.addedBy===S.memberId);
+  if(!canDelete){toast('无法删除此成员');closeModal();return;}
+  if(db&&S.tripCode){var upd={};upd['members.'+id]=deleteField();await updateDoc(doc(db,'trips',S.tripCode),upd);}
+  delete S.members[id];closeModal();renderSet();toast(t('deleted'));
+};
+window.showClaimMember=function(){
+  showModal('<div class="sh"></div><div class="sheet-title">'+t('claimMemberTitle')+'</div>'+
+    '<div style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:13px">'+t('claimMemberDesc')+'</div>'+
+    '<input class="inp code-inp" id="claim-inp" maxlength="4" placeholder="XXXX" autocapitalize="characters" style="margin-bottom:13px">'+
+    '<button class="btn btn-p btn-full" onclick="submitClaimMember()">认领</button>');
+  var ci=$('#claim-inp');if(ci)ci.addEventListener('input',function(){this.value=this.value.toUpperCase();});
+};
+window.submitClaimMember=async function(){
+  var code=($('#claim-inp')&&$('#claim-inp').value.trim().toUpperCase())||'';
+  if(code.length<4){toast('请输入完整认领码');return;}
+  var entry=Object.entries(S.members).find(function(e){return e[1].claimCode===code&&!e[1].claimed&&e[1].joinedVia==='manual';});
+  if(!entry){toast('找不到对应成员或已被认领');return;}
+  var oldId=entry[0],m=entry[1];
+  m.claimed=true;m.claimedBy=S.memberId;m.claimDeviceId=DEVICE_ID;
+  if(db&&S.tripCode){var upd={};upd['members.'+oldId+'.claimed']=true;upd['members.'+oldId+'.claimedBy']=S.memberId;await updateDoc(doc(db,'trips',S.tripCode),upd);}
+  S.memberId=oldId;S.memberName=m.name;
+  localStorage.setItem('memberId',oldId);localStorage.setItem('memberName',m.name);
+  closeModal();renderSet();toast('已认领为 '+m.name);
+};
+
+window.showMemberEdit=function(id){
+  var m=S.members[id];if(!m)return;var img=memAvatar(id),isYou=id===S.memberId;
+  var claimSection='';
+  if(!m.claimed&&m.claimCode){
+    var safeCode=escHtml(m.claimCode);
+    claimSection='<div style="text-align:center;margin:13px 0;padding:14px;background:var(--glass-bg);border:0.5px solid var(--glass-border);border-radius:var(--r2)">'+
+      '<div style="font-size:11px;color:var(--t3);margin-bottom:8px">'+t('claimCode')+'</div>'+
+      '<div class="code-disp" style="font-size:28px;letter-spacing:6px;margin-bottom:10px">'+safeCode+'</div>'+
+      '<div style="font-size:11px;color:var(--t3);margin-bottom:10px">'+t('canDeleteMember')+'</div>'+
+      '<button class="btn btn-g btn-full" style="padding:8px;font-size:13px" onclick="navigator.clipboard&&navigator.clipboard.writeText(\''+safeCode+'\').then(function(){toast(t(\'codeCopied\'));})">'+ic('copy',13)+' '+t('copy')+'</button>'+
+    '</div>';
+  }
+  showModal('<div class="sh"></div><div style="display:flex;flex-direction:column;align-items:center;gap:9px;margin-bottom:18px">'+
+    '<div onclick="changeMemberAvatar(\''+id+'\')" style="cursor:pointer;position:relative;transition:opacity .15s" ontouchstart="this.style.opacity=.7" ontouchend="this.style.opacity=1">'+
+      (img?'<div style="width:68px;height:68px;border-radius:50%;overflow:hidden"><img src="'+img+'" style="width:100%;height:100%;object-fit:cover"></div>':'<div style="width:68px;height:68px;border-radius:50%;background:'+m.color+';display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff">'+((m.name||'?')[0])+'</div>')+
+      '<div style="position:absolute;bottom:0;right:0;width:20px;height:20px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg)">'+ic('camera',9)+'</div>'+
+    '</div>'+
+    '<div style="font-size:15px;font-weight:600;color:var(--t1)">'+escHtml(m.name)+(isYou?' ('+t('you')+')':'')+'</div>'+
+  '</div>'+
+  claimSection+
+  (isYou?'<div class="inp-lbl">'+t('editNickname')+'</div><input class="inp" id="mem-name" value="'+escHtml(m.name)+'" style="margin-bottom:13px">'+
+    '<button class="btn btn-p btn-full" style="margin-bottom:7px" onclick="submitMemberEdit(\''+id+'\')">'+t('save')+'</button>':'')+
+  '<button class="btn btn-g btn-full" onclick="changeMemberAvatar(\''+id+'\')">'+ic('camera',13)+' '+t('editAvatar')+'</button>');
+};
+window.changeMemberAvatar=function(id){
+  var inp=document.createElement('input');inp.type='file';inp.accept='image/*';
+  inp.onchange=async function(){var f=inp.files[0];if(!f)return;showLoad();var rd=new FileReader();rd.onload=async function(e){try{var img=new Image();img.onload=function(){var canvas=document.createElement('canvas'),sz=Math.min(img.width,img.height,120);canvas.width=sz;canvas.height=sz;canvas.getContext('2d').drawImage(img,(img.width-sz)/2,(img.height-sz)/2,sz,sz,0,0,sz,sz);S.avatars[id]=canvas.toDataURL('image/jpeg',.7);localStorage.setItem('memberAvatars',JSON.stringify(S.avatars));hideLoad();closeModal();renderSet();toast(t('wallUpdated'));};img.src=e.target.result;}catch(err){hideLoad();toast(t('imgTooLarge'));}};rd.readAsDataURL(f);};
+  inp.click();
+};
+window.submitMemberEdit=async function(id){var name=$('#mem-name')&&$('#mem-name').value.trim();if(!name)return;S.members[id].name=name;if(id===S.memberId){S.memberName=name;localStorage.setItem('memberName',name);}if(db&&S.tripCode){var upd={};upd['members.'+id+'.name']=name;await updateDoc(doc(db,'trips',S.tripCode),upd);}closeModal();renderSet();toast(t('save'));};
+window.showCurrencyModal=function(){
+  var curOpts=Object.keys(CUR).map(function(k){return '<option value="'+k+'">'+CUR[k].f+' '+CUR[k].n+'</option>';}).join('');
+  var rateStr=Object.keys(S.rates).length>0?'1 '+S.localCurrency+' = '+fmtCur(getRate(S.localCurrency,S.baseCurrency),S.baseCurrency):t('rateUnavailable');
+  showModal('<div class="sh"></div><div class="sheet-title">'+t('currency')+'</div>'+
+    '<div style="display:flex;gap:7px;margin-bottom:9px"><div style="flex:1"><div class="inp-lbl">'+t('baseCurrency')+'</div><select class="inp" id="set-base" onchange="S.baseCurrency=this.value">'+curOpts+'</select></div><div style="flex:1"><div class="inp-lbl">'+t('localCurrency')+'</div><select class="inp" id="set-local" onchange="S.localCurrency=this.value">'+curOpts+'</select></div></div>'+
+    '<div style="padding:11px 13px;background:var(--glass-bg);border:0.5px solid var(--glass-border);border-radius:var(--r2);display:flex;align-items:center;gap:9px;margin-bottom:13px"><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--t1)">'+escHtml(rateStr)+'</div>'+(S.fxDate?'<div style="font-size:10px;color:var(--t3)">'+S.fxDate.substring(0,16)+'</div>':'')+
+    '</div><button class="btn btn-g" style="padding:6px 11px;font-size:12px" onclick="doFetchRates()">'+ic('refresh',11)+' '+t('refreshRate')+'</button></div>'+
+    '<button class="btn btn-p btn-full" onclick="saveCurrencySettings()">'+t('save')+'</button>');
+  var sb=$('#set-base'),sl=$('#set-local');if(sb)sb.value=S.baseCurrency;if(sl)sl.value=S.localCurrency;
+};
+window.saveCurrencySettings=function(){localStorage.setItem('baseCurrency',S.baseCurrency);localStorage.setItem('localCurrency',S.localCurrency);if(S.fxBase!==S.baseCurrency){S.rates={};S.fxDate='';}closeModal();renderSet();};
+window.showMsgAppModal=function(){showModal('<div class="sh"></div><div class="sheet-title">'+t('msgApp')+'</div><div class="list">'+MSG_APPS.map(function(a){var app=APPS[a];if(!app)return '';return '<div class="lr" onclick="setMsgApp(\''+a+'\')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+IC[app.i||'msg']+'</svg><span class="lr-lbl">'+escHtml(appL(a))+'</span>'+(S.msgApp===a?'<span style="color:var(--green)">'+ic('check',15)+'</span>':'')+'</div>';}).join('')+'</div>');};
+window.setMsgApp=function(a){S.msgApp=a;localStorage.setItem('msgApp',a);closeModal();renderSet();};
+window.showAppearanceModal=function(){
+  var LL={'zh-CN':'简','zh-TW':'繁','en':'EN'};
+  var langChips=['zh-CN','zh-TW','en'].map(function(l){return '<div class="chip '+(S.lang===l?'on':'')+'" style="font-weight:700;padding:5px 13px;transition:all .18s ease" onclick="setLang(\''+l+'\')">'+LL[l]+'</div>';}).join('');
+  var swatches='<div class="theme-grid">';
+  Object.entries(THEMES).forEach(function(entry){var k=entry[0],th=entry[1];var sty=typeof th.swatch==='string'&&th.swatch.startsWith('linear')?'background:'+th.swatch:'background:'+th.swatch;swatches+='<div class="theme-swatch'+(S.theme===k?' on':'')+'" style="'+sty+';transition:transform .15s ease,box-shadow .15s ease" title="'+th.n+'" onclick="window.applyTheme(\''+k+'\');$$(\'.theme-swatch\').forEach(function(s){s.classList.remove(\'on\')});this.classList.add(\'on\')"></div>';});
+  swatches+='</div>';
+  showModal('<div class="sh"></div><div class="sheet-title">'+t('appearance')+'</div>'+
+    '<div class="inp-lbl">'+t('lang')+'</div><div class="chips" style="margin-bottom:16px">'+langChips+'</div>'+
+    '<div class="inp-lbl">'+t('themes')+'</div><div style="font-size:11px;color:var(--t3);margin-bottom:7px">深色 / 浅色 / 跟随系统</div>'+swatches+
+    '<div style="margin-top:16px"><div class="inp-lbl">'+t('wp')+'</div>'+
+    '<div style="display:flex;gap:7px;margin-top:5px"><button class="btn btn-g" style="flex:1" onclick="pickWallpaper()">'+ic('img',13)+' '+t('pickFromAlbum')+'</button><button class="btn btn-g" style="flex:1" onclick="clearWallpaper()">'+t('resetDefault')+'</button></div></div>');
+};
+window.showPeriodModal=function(){
+  var pd=S.periodData;
+  var preds=getPeriodPreds();
+  var days=getDays();var tripStart=days.length?days[0].date:'',tripEnd=days.length?days[days.length-1].date:'';
+  var conflict=periodConflict();
+  var predHtml=preds.map(function(p,i){
+    var end=new Date(new Date(p.start+'T00:00:00').getTime()+p.days*86400000);
+    var overlap=tripStart&&tripEnd&&new Date(p.start)<=new Date(tripEnd+'T23:59:59')&&end>=new Date(tripStart);
+    return '<div class="lr" style="cursor:default;'+(overlap?'border-left:2px solid var(--red)':'')+'"><span class="lr-lbl">'+(S.lang==='en'?'Cycle '+(i+1):'第'+(i+1)+'次')+'</span><span class="lr-val" style="'+(overlap?'color:var(--red)':'')+'">'+p.start+' – '+end.toISOString().split('T')[0]+'</span></div>';
+  }).join('');
+  var recordList=pd.records.slice(-3).map(function(r,i){return '<div class="lr" style="cursor:default"><span class="lr-lbl">'+r+'</span><div class="nbtn" style="width:24px;height:24px" onclick="removePeriodRecord('+i+')">'+ic('trash',10)+'</div></div>';}).join('');
+  showModal('<div class="sh"></div><div class="sheet-title">'+t('period')+'</div>'+
+    (conflict?'<div class="period-warning" style="margin-bottom:13px">'+ic('bell',12)+' '+t('periodConflict')+'</div>':'')+
+    (predHtml?'<div class="list" style="margin-bottom:13px">'+predHtml+'</div>':'')+
+    '<div class="inp-lbl">'+t('periodLastDate')+'</div><input class="inp" id="period-date" type="date" style="margin-bottom:9px">'+
+    '<div style="display:flex;gap:7px;margin-bottom:13px"><div style="flex:1"><div class="inp-lbl">'+t('periodCycleLen')+'</div><input class="inp" id="period-cycle" type="number" value="'+(pd.cycleLen||28)+'"></div><div style="flex:1"><div class="inp-lbl">'+t('periodDuration')+'</div><input class="inp" id="period-dur" type="number" value="'+(pd.duration||5)+'"></div></div>'+
+    (recordList?'<div class="list" style="margin-bottom:13px">'+recordList+'</div>':'')+
+    '<button class="btn btn-p btn-full" onclick="addPeriodRecord()">'+t('periodAdd')+'</button>');
+};
+function getPeriodPreds(){var pd=S.periodData;if(!pd.records||!pd.records.length)return [];var last=new Date(pd.records[pd.records.length-1]+'T00:00:00'),cl=pd.cycleLen||28,dur=pd.duration||5,r=[];for(var i=0;i<3;i++){r.push({start:new Date(last.getTime()+(i+1)*cl*86400000).toISOString().split('T')[0],days:dur});}return r;}
+window.addPeriodRecord=function(){var d=$('#period-date')&&$('#period-date').value,cy=parseInt($('#period-cycle')&&$('#period-cycle').value)||28,du=parseInt($('#period-dur')&&$('#period-dur').value)||5;if(!d){toast('请选择日期');return;}S.periodData.records.push(d);S.periodData.records.sort();S.periodData.cycleLen=cy;S.periodData.duration=du;localStorage.setItem('periodData',JSON.stringify(S.periodData));closeModal();setTimeout(showPeriodModal,200);};
+window.removePeriodRecord=function(i){S.periodData.records.splice(i,1);localStorage.setItem('periodData',JSON.stringify(S.periodData));closeModal();setTimeout(showPeriodModal,200);};
+window.pickWallpaper=function(){var inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=function(){var f=inp.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(e){try{localStorage.setItem('wallpaper',e.target.result);}catch(err){toast(t('imgTooLarge'));return;}applyWallpaper();closeModal();toast(t('wallUpdated'));};rd.readAsDataURL(f);};inp.click();};
+window.clearWallpaper=function(){localStorage.removeItem('wallpaper');applyWallpaper();toast(t('wallReset'));};
+window.confirmLeave=function(){showModal('<div class="sh"></div><div class="sheet-title">'+t('confirmLeaveTitle')+'</div><div style="font-size:13px;color:var(--t2);margin-bottom:16px">'+t('confirmLeaveMsg')+'</div><button class="btn btn-d btn-full" onclick="leaveTrip()" style="margin-bottom:7px">'+t('confirmLeaveBtn')+'</button><button class="btn btn-g btn-full" onclick="closeModal()">'+t('cancel')+'</button>');};
+window.leaveTrip=function(){S.unsubs.forEach(function(u){u();});S.unsubs=[];['tripCode','memberId','memberName'].forEach(function(k){localStorage.removeItem(k);});S.tripCode=null;S.memberId=null;S.memberName=null;S.trip=null;S.members={};S.expenses=[];S.chatHistory=[];closeModal();var af=document.getElementById('gfab-add');if(af)af.remove();var mf=document.getElementById('gfab-mic');if(mf)mf.remove();renderApp();};
+
+// ── INIT ──────────────────────────────────────────────
+async function init(){
+  if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(e){console.warn('[SW]',e);});
+  var ci=localStorage.getItem('customAppIcons');if(ci){try{S.customAppIcons=JSON.parse(ci);}catch(e){}}
+  window.applyTheme(S.theme);
+  applyWallpaper();
+
+  // Inject base layout styles
+  (function(){
+    var s=document.getElementById('travoo-extra');
+    if(!s){s=document.createElement('style');s.id='travoo-extra';document.head.appendChild(s);}
+    s.textContent=
+      '.view.active{display:flex;flex-direction:column;}'+
+      '#v-chat.active{display:flex;flex-direction:column;}'+
+      '.gfab{position:fixed !important;bottom:calc(58px + env(safe-area-inset-bottom,0px) + 16px) !important;right:20px !important;z-index:90 !important;}'+
+      '.btn{transition:transform .12s ease,opacity .12s ease;-webkit-tap-highlight-color:transparent;}'+
+      '.btn:active{transform:scale(.97);}'+
+      '.nbtn{transition:opacity .12s ease;-webkit-tap-highlight-color:transparent;}'+
+      '.nbtn:active{opacity:.55;}'+
+      '.tab,.tab-center{transition:opacity .12s ease;-webkit-tap-highlight-color:transparent;}'+
+      '.lr{transition:opacity .12s ease;-webkit-tap-highlight-color:transparent;}'+
+      '.wx-full{position:fixed;top:0;left:0;right:0;bottom:0;z-index:600;background:var(--bg);overflow:hidden;}'+
+      '.ptab{transition:all .2s cubic-bezier(.4,0,.2,1) !important;}'+
+      '';
+  })();
+
+  if(S.tripCode&&S.memberId){
+    showLoad();await fbLoad(S.tripCode);
+    try{S.journal=JSON.parse(localStorage.getItem('journal_'+S.tripCode)||'[]');}catch(e){S.journal=[];}
+    hideLoad();
+  }
+  renderApp();
+  requestGeoPermission();
+  if(S.baseCurrency){var fxTs=S.fxDate?new Date(S.fxDate).getTime():0;if(Date.now()-fxTs>4*3600*1000)fetchRates().then(function(){if(S.tab==='home')renderHome();});}
+  if('Notification' in window&&localStorage.getItem('notifsEnabled')!=='false'){if(Notification.permission==='default')Notification.requestPermission();}
+
+  // ── PWA standalone fixes (no !important conflicts) ──────────────────
+  var isPWA=window.matchMedia('(display-mode: standalone)').matches||
+            window.navigator.standalone===true;
+  if(isPWA){
+    // Compact nav on scroll — attach to all tabs
+    function attachCompactNav(tabName){
+      var view=document.getElementById('v-'+tabName);
+      if(!view)return;
+      var nav=view.querySelector('.nav');
+      if(!nav)return;
+      var scrollEl=view.querySelector('.scroller')||view.querySelector('.chat-body');
+      if(!scrollEl)return;
+      // Remove existing listener before adding new one
+      if(scrollEl._compactHandler){
+        scrollEl.removeEventListener('scroll',scrollEl._compactHandler,{passive:true});
+      }
+      scrollEl._compactHandler=function(){
+        if(scrollEl.scrollTop>32)nav.classList.add('compact');
+        else nav.classList.remove('compact');
+      };
+      scrollEl.addEventListener('scroll',scrollEl._compactHandler,{passive:true});
+      scrollEl._compactHandler();
+    }
+
+    // Wrap switchTab to attach compact nav after render
+    var _origSwitchTab=window.switchTab;
+    window.switchTab=function(name,dir){
+      _origSwitchTab(name,dir);
+      // After render, attach compact nav and fix chat bar
+      setTimeout(function(){
+        attachCompactNav(name);
+        _fixChatBar();
+      },120);
+    };
+
+    // Fix chat input bar bottom padding for Safari keyboard avoidance
+    function _fixChatBar(){
+      var bar=document.querySelector('.chat-bar');
+      if(!bar)return;
+      // Use visual viewport if available for keyboard-aware sizing
+      if(window.visualViewport){
+        function onVVResize(){
+          var vv=window.visualViewport;
+          var winH=window.innerHeight;
+          var vvH=vv.height;
+          var kbH=Math.max(0,winH-vvH-vv.offsetTop);
+          var sab=parseFloat(getComputedStyle(document.documentElement)
+            .getPropertyValue('--sab')||'34')||34;
+          var pb=kbH>50?Math.max(6,kbH-50):sab+8;
+          bar.style.paddingBottom=pb+'px';
+          // Scroll chat body to bottom when keyboard appears
+          if(kbH>50){
+            var body=document.getElementById('chat-body');
+            if(body)setTimeout(function(){body.scrollTop=body.scrollHeight;},80);
+          }
+        }
+        // Remove old listener if exists
+        if(window._vvResizeHandler){
+          window.visualViewport.removeEventListener('resize',window._vvResizeHandler);
+        }
+        window._vvResizeHandler=onVVResize;
+        window.visualViewport.addEventListener('resize',onVVResize,{passive:true});
+        onVVResize();
+      } else {
+        // Fallback: static safe area bottom padding
+        var sab=parseFloat(getComputedStyle(document.documentElement)
+          .getPropertyValue('--sab')||'34')||34;
+        bar.style.paddingBottom=(sab+8)+'px';
+      }
+    }
+
+    // Initial attach after first render
+    setTimeout(function(){
+      attachCompactNav(S.tab||'home');
+      _fixChatBar();
+    },300);
+  }
+}
+
+// T key additions
+T['zh-CN'].appearanceDesc='主题 · 语言 · 壁纸';
+T['zh-TW'].appearanceDesc='主題 · 語言 · 桌布';
+T['en'].appearanceDesc='Theme · Language · Wallpaper';
+T['zh-CN'].geoObtained='已获取';T['zh-TW'].geoObtained='已獲取';T['en'].geoObtained='Obtained';
+T['zh-CN'].geoNotObtained='未获取';T['zh-TW'].geoNotObtained='未獲取';T['en'].geoNotObtained='Not obtained';
+T['zh-CN'].confirmClearChat='确认清除所有对话？';T['zh-TW'].confirmClearChat='確認清除所有對話？';T['en'].confirmClearChat='Clear all messages?';
+T['zh-CN'].confirmClearChatSub='此操作不可撤销';T['zh-TW'].confirmClearChatSub='此操作不可撤銷';T['en'].confirmClearChatSub='Cannot be undone';
+T['zh-CN'].clearChatConfirmBtn='确认清除';T['zh-TW'].clearChatConfirmBtn='確認清除';T['en'].clearChatConfirmBtn='Clear';
+init();
