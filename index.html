@@ -84,7 +84,8 @@ html[data-color-mode="light"] #wp:not(.img){display:none}
   padding-bottom:calc(var(--tabh)+28px);scroll-behavior:smooth}
 .scroller::-webkit-scrollbar{display:none}
 
-.nav{flex-shrink:0;padding:calc(env(safe-area-inset-top,44px)+14px) 16px 8px;
+/* FIX: Use class-level padding so all navs get correct safe-area padding */
+.nav{flex-shrink:0;padding:calc(env(safe-area-inset-top,44px)+14px) 20px 8px;
   display:flex;align-items:center;gap:10px;position:relative;z-index:10}
 .nav-title{font-size:17px;font-weight:600;position:absolute;left:50%;transform:translateX(-50%);
   white-space:nowrap;pointer-events:none;color:var(--t1);letter-spacing:-.2px}
@@ -158,6 +159,7 @@ textarea.inp{resize:none;min-height:76px;line-height:1.5}
 .lr-val{font-size:13px;color:var(--t2);flex-shrink:0}
 .lr-chev svg{width:15px;height:15px;stroke:var(--t3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
+/* FIX: set-ttl left padding aligns with icon inside set-group (icon at 16+14=30px from edge) */
 .set-group{margin:0 16px 6px;border-radius:var(--r);overflow:hidden;
   background:var(--glass-bg);backdrop-filter:blur(var(--blur-md)) saturate(var(--sat));-webkit-backdrop-filter:blur(var(--blur-md)) saturate(var(--sat));
   border:0.5px solid var(--glass-border);box-shadow:var(--glass-shadow-sm)}
@@ -171,7 +173,8 @@ textarea.inp{resize:none;min-height:76px;line-height:1.5}
 .set-lbl{flex:1;font-size:15px;color:var(--t1)}
 .set-val{font-size:13px;color:var(--t3);flex-shrink:0;max-width:160px;text-align:right}
 .set-chev svg{width:14px;height:14px;stroke:var(--t3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.set-ttl{font-size:12px;font-weight:600;color:var(--t3);padding:14px 18px 5px;letter-spacing:.3px}
+/* FIX: padding top=14 right=18 bottom=5 left=30 — aligns with icon in set-group */
+.set-ttl{font-size:12px;font-weight:600;color:var(--t3);padding:14px 18px 5px 30px;letter-spacing:.3px}
 
 .chips{display:flex;flex-wrap:wrap;gap:7px}
 .chip{padding:6px 14px;background:var(--glass-bg);border:0.5px solid var(--glass-border);
@@ -560,7 +563,7 @@ input:checked+.tsl::before{transform:translateX(20px);background:var(--bg)}
 .chat-bar{flex-shrink:0;display:flex;align-items:flex-end;gap:8px;
   padding:7px 12px;padding-bottom:max(calc(env(safe-area-inset-bottom,34px)+4px),10px);
   background:var(--glass-bg);backdrop-filter:blur(var(--blur-lg)) saturate(var(--sat));-webkit-backdrop-filter:blur(var(--blur-lg)) saturate(var(--sat));
-  border-top:0.5px solid var(--glass-border);z-index:10}
+  border-top:0.5px solid var(--glass-border);z-index:10;position:relative}
 .chat-inp-el{flex:1;padding:9px 13px;border-radius:20px;
   background:var(--glass-bg2);border:0.5px solid var(--glass-border);
   color:var(--t1);font-size:15px;font-family:inherit;outline:none;
@@ -676,11 +679,26 @@ input:checked+.tsl::before{transform:translateX(20px);background:var(--bg)}
 .you-tag{background:var(--glass-bg2);color:var(--t2);font-size:10px;font-weight:700;padding:2px 8px;border-radius:9px;border:0.5px solid var(--glass-border)}
 .member-can-del{display:inline-flex;align-items:center;gap:3px;font-size:11px;color:var(--red);padding:3px 8px;border-radius:7px;border:0.5px solid rgba(var(--red-rgb),.25);background:rgba(var(--red-rgb),.07);cursor:pointer;transition:all .14s var(--sp)}
 .member-can-del:active{transform:scale(0.9)}
+
+/* ── Compact nav animation (both browser & PWA) ────── */
+.nav{transition:padding-top .22s var(--sp)}
+.nav.compact .nav-large{font-size:17px;letter-spacing:-.2px;text-align:center}
+.nav.compact .nav-title{font-size:15px}
+
 @media all and (display-mode:standalone){
-  /* 修复 PWA 模式顶部遮挡：增加 padding-top 数值 */
-  .nav{padding-top:calc(env(safe-area-inset-top,44px)+30px)}
-  .ob{padding-top:calc(env(safe-area-inset-top,44px)+70px);padding-bottom:calc(env(safe-area-inset-bottom,34px)+36px)}
-  .wx-full-hero{padding-top:calc(env(safe-area-inset-top,44px)+60px)}
+  /* FIX: reduced from +30px to +14px (base CSS already has correct SAI calc) */
+  .nav{padding-top:calc(env(safe-area-inset-top,44px)+14px)}
+  .ob{padding-top:calc(env(safe-area-inset-top,44px)+44px);padding-bottom:calc(env(safe-area-inset-bottom,34px)+36px)}
+  .wx-full-hero{padding-top:calc(env(safe-area-inset-top,44px)+48px)}
+  /* FIX: fill bottom gap (black square below menu bar) */
+  .tabs::after{
+    content:'';position:absolute;left:0;right:0;
+    bottom:calc(-1 * env(safe-area-inset-bottom,0px));
+    height:env(safe-area-inset-bottom,0px);
+    background:var(--glass-bg2);
+    backdrop-filter:blur(72px) saturate(180%);
+    -webkit-backdrop-filter:blur(72px) saturate(180%);
+  }
 }
 </style>
 </head>
