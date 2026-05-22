@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════
-// Travoo v11 20260521-1707 — app.js
+// Travoo v12 20260522 — app.js
 // ═══════════════════════════════════════════════════════
 import { initializeApp }   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import {
@@ -616,7 +616,6 @@ window.showWeatherFull=function(){
       var tH=parseInt(ts.split('T')[1]);
       var tsMs=new Date(ts).getTime();
       if(tsMs<Date.now()-3600000)continue;
-      // Format: two-digit hour only, e.g. 01 / 13
       var lbl=shown===0?(en?'Now':'现在'):String(tH).padStart(2,'0');
       hourlyHtml+='<div class="wx-hour" style="min-width:58px;text-align:center;padding:0 5px;flex-shrink:0">'+
         '<div style="font-size:12px;color:var(--t2);margin-bottom:5px;font-weight:500">'+lbl+'</div>'+
@@ -664,13 +663,15 @@ window.showWeatherFull=function(){
   var clothHtml=clothes.map(function(c){return '<div style="display:inline-flex;align-items:center;gap:6px;padding:8px 13px;background:var(--glass-bg);border:0.5px solid var(--glass-border);border-radius:10px;font-size:13px;color:var(--t1)">'+clothSvg(c[0],14)+' '+escHtml(c[1])+'</div>';}).join('');
 
   var ov=document.createElement('div');ov.className='wx-full';
+  // FIX: overlay nav uses env() directly with +14px for both browser and PWA
   ov.innerHTML=
-    '<div style="position:absolute;top:0;left:0;right:0;z-index:10;padding:calc(var(--sai,0px)+8px) 16px 10px;display:flex;align-items:center;background:var(--glass-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:0.5px solid var(--glass-border)">'+
+    '<div style="position:absolute;top:0;left:0;right:0;z-index:10;padding:calc(env(safe-area-inset-top,44px)+14px) 16px 10px;display:flex;align-items:center;background:var(--glass-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:0.5px solid var(--glass-border)">'+
       '<div class="nbtn" onclick="this.closest(\'.wx-full\').remove()">'+ic('arrowup',15)+'</div>'+
       '<div style="flex:1;text-align:center;font-size:15px;font-weight:700;color:var(--t1)">'+(en?'Weather':'天气')+(S.locationName?' · '+escHtml(S.locationName):'')+'</div>'+
       '<div style="width:34px"></div>'+
     '</div>'+
-    '<div style="overflow-y:auto;-webkit-overflow-scrolling:touch;position:absolute;top:calc(var(--sai,0px)+52px);bottom:0;left:0;right:0">'+
+    // FIX: scroll area top matches nav height (env+14px+~44px button height ≈ +62px total)
+    '<div style="overflow-y:auto;-webkit-overflow-scrolling:touch;position:absolute;top:calc(env(safe-area-inset-top,44px)+62px);bottom:0;left:0;right:0">'+
       '<div style="text-align:center;padding:28px 16px 20px">'+
         '<div style="font-size:80px;font-weight:200;color:var(--t1);line-height:1">'+temp+'°</div>'+
         '<div style="font-size:20px;font-weight:500;color:var(--t2);margin:6px 0">'+wxDesc(cur.weathercode)+'</div>'+
@@ -692,35 +693,64 @@ window.showWeatherFull=function(){
         '</div>':'')+'<div style="height:30px"></div>'+
     '</div>';
   document.body.appendChild(ov);
-  // Animate in
   ov.style.cssText+='transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1)';
   requestAnimationFrame(function(){requestAnimationFrame(function(){ov.style.transform='translateY(0)';});});
 };
 
 // ── LISTS FULL SCREEN ─────────────────────────────────
+// FIX: switchListTabTo — switch tabs without rebuilding the entire overlay
+window.switchListTabTo=function(pane){
+  S._listsPane=pane;
+  var ov=document.getElementById('lists-full-ov');
+  if(!ov){showListsFull(pane);return;}
+  // Update tab highlight
+  ov.querySelectorAll('.ptab[data-pane]').forEach(function(tb){
+    tb.classList.toggle('on',tb.dataset.pane===pane);
+  });
+  // Smooth crossfade content
+  var lc=document.getElementById('lists-content');
+  if(lc){
+    lc.style.transition='opacity .15s ease,transform .15s ease';
+    lc.style.opacity='0';
+    lc.style.transform='translateY(4px)';
+    setTimeout(function(){
+      lc.innerHTML=pane==='shopping'?renderShoppingPane():pane==='todo'?renderTodoPane():renderPackingPane();
+      lc.style.transition='opacity .2s ease,transform .2s ease';
+      lc.style.opacity='1';
+      lc.style.transform='translateY(0)';
+    },150);
+  }
+};
+
 window.showListsFull=function(initPane){
   var pane=initPane||S._listsPane||'shopping';
   S._listsPane=pane;
+  // If overlay exists, just switch pane without rebuilding
   var existing=document.getElementById('lists-full-ov');
+  if(existing&&!initPane){
+    // called without explicit pane — just bring to front
+    return;
+  }
   if(existing)existing.remove();
   var ov=document.createElement('div');
   ov.className='wx-full';ov.id='lists-full-ov';
+  // FIX: tabs use data-pane attribute and switchListTabTo for smooth switching
   var tabs=['shopping','todo','packing'].map(function(k){
-    return '<div class="ptab '+(pane===k?'on':'')+'" onclick="showListsFull(\''+k+'\')" style="transition:all .2s var(--sp,ease)">'+t(k)+'</div>';
+    return '<div class="ptab '+(pane===k?'on':'')+'" data-pane="'+k+'" onclick="switchListTabTo(\''+k+'\')" style="transition:all .2s var(--sp,ease)">'+t(k)+'</div>';
   }).join('');
   var content=pane==='shopping'?renderShoppingPane():pane==='todo'?renderTodoPane():renderPackingPane();
+  // FIX: nav uses env() directly with adequate top padding
   ov.innerHTML=
-    '<div style="position:absolute;top:0;left:0;right:0;z-index:10;padding:calc(var(--sai,0px)+8px) 16px 10px;display:flex;align-items:center;background:var(--glass-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:0.5px solid var(--glass-border)">'+
+    '<div style="position:absolute;top:0;left:0;right:0;z-index:10;padding:calc(env(safe-area-inset-top,44px)+14px) 16px 10px;display:flex;align-items:center;background:var(--glass-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:0.5px solid var(--glass-border)">'+
       '<div class="nbtn" onclick="document.getElementById(\'lists-full-ov\').remove()">'+ic('arrowup',15)+'</div>'+
       '<div style="flex:1;text-align:center;font-size:15px;font-weight:700;color:var(--t1)">'+t('lists')+'</div>'+
       '<div style="width:34px"></div>'+
     '</div>'+
-    '<div style="position:absolute;top:calc(var(--sai,0px)+54px);bottom:0;left:0;right:0;overflow-y:auto;-webkit-overflow-scrolling:touch">'+
+    '<div style="position:absolute;top:calc(env(safe-area-inset-top,44px)+62px);bottom:0;left:0;right:0;overflow-y:auto;-webkit-overflow-scrolling:touch">'+
       '<div class="ptabs" style="margin:12px 16px">'+tabs+'</div>'+
-      '<div id="lists-content" style="padding:0 16px 30px">'+content+'</div>'+
+      '<div id="lists-content" style="padding:0 16px 30px;transition:opacity .2s ease,transform .2s ease">'+content+'</div>'+
     '</div>';
   document.body.appendChild(ov);
-  // Animate in
   ov.style.cssText+='transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1)';
   requestAnimationFrame(function(){requestAnimationFrame(function(){ov.style.transform='translateY(0)';});});
 };
@@ -791,8 +821,7 @@ var _ov=null;
 function showModal(html){
   closeModal();
   var d=document.createElement('div');d.className='ov';
-  // FIX #2: add horizontal padding to sheet so content isn't edge-to-edge
-  d.innerHTML='<div class="sheet" style="padding-left:18px;padding-right:18px">'+html+'</div>';
+  d.innerHTML='<div class="sheet">'+html+'</div>';
   d.addEventListener('click',function(e){if(e.target===d)closeModal();});
   document.body.appendChild(d);_ov=d;
 }
@@ -1003,7 +1032,7 @@ function renderApp(){
   setInterval(checkNotifs,60000);setTimeout(checkNotifs,2000);
   requestGeoPermission();
 
-  // FIX #7: Mic FAB — home tab only, positioned bottom-right above nav
+  // Mic FAB — home tab only, positioned bottom-right above nav
   var mf=document.createElement('button');mf.id='gfab-mic';mf.className='gfab';mf.setAttribute('hidden','');
   mf.innerHTML=ic('mic',21);
   mf.style.cssText='position:fixed;bottom:calc(58px + env(safe-area-inset-bottom,0px) + 16px);right:20px;z-index:90;width:52px;height:52px;border-radius:50%;background:rgba(var(--accent-rgb),.15);border:0.5px solid rgba(var(--accent-rgb),.3);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--accent);transition:transform .15s ease,opacity .15s ease;-webkit-tap-highlight-color:transparent;';
@@ -1061,7 +1090,6 @@ function renderOnboarding(){
     '<div id="v-ob" class="view active anim-in"><div class="ob">'+
       '<div class="ob-logo">'+ic('plane',50)+'</div>'+
       '<div class="ob-brand">'+t('brand')+'</div><div class="ob-sub">'+t('sub')+'</div>'+
-      // FIX #2: added padding to ob-form
       '<div class="ob-form" style="padding:0 8px">'+
         '<div class="inp-lbl" style="text-align:left">'+t('yourName')+'</div>'+
         '<input class="inp" id="ob-name" placeholder="'+t('namePh')+'" autocomplete="off">'+
@@ -1095,9 +1123,8 @@ function _addLocalTrip(code,name,dates){var trips=JSON.parse(localStorage.getIte
 function renderTripList(){
   var cards=S.localTrips.map(function(tr){return '<div class="list" style="margin-bottom:10px;cursor:pointer;transition:opacity .15s" onclick="enterTrip(\''+tr.code+'\')" ontouchstart="this.style.opacity=.7" ontouchend="this.style.opacity=1"><div class="lr"><div style="flex:1"><div style="font-size:16px;font-weight:600;color:var(--t1)">'+escHtml(tr.name||'我的旅行')+'</div><div style="font-size:12px;color:var(--t2)">'+escHtml(tr.dates||'—')+'</div></div><div class="lr-chev">'+ic('chev',14)+'</div></div></div>';}).join('');
   document.getElementById('app').innerHTML=
-    // FIX #1: nav padding-top with SAI
     '<div id="v-tl" class="view active anim-in">'+
-    '<div class="nav" style="padding-top:calc(var(--sai,0px)+4px)"><div class="nav-large">'+t('myTrips')+'</div><div class="nbtn" onclick="renderOnboarding()">'+ic('plus',15)+'</div></div>'+
+    '<div class="nav"><div class="nav-large">'+t('myTrips')+'</div><div class="nbtn" onclick="renderOnboarding()">'+ic('plus',15)+'</div></div>'+
     '<div class="scroller"><div style="height:14px"></div><div class="sec li-anim">'+cards+
     '<div style="text-align:center;padding:16px;cursor:pointer;color:var(--t3);font-size:14px" onclick="renderOnboarding()">+ '+t('newTrip')+'</div></div></div></div>';
 }
@@ -1135,7 +1162,7 @@ function renderHome(){
   var wxHtml=renderWeatherMini();
   var tdHtml=renderTravelDocsWidget();
 
-  // FIX #3: Lists widget on home page
+  // Lists widget on home page
   var listsHtml='<div onclick="showListsFull()" style="margin:0 16px 12px;padding:13px 14px;background:var(--glass-bg);border:0.5px solid var(--glass-border);border-radius:var(--r2);display:flex;align-items:center;gap:11px;cursor:pointer;transition:opacity .15s;-webkit-tap-highlight-color:transparent" ontouchstart="this.style.opacity=.7" ontouchend="this.style.opacity=1">'+
     '<div style="width:30px;height:30px;background:rgba(var(--accent-rgb),.12);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--accent)">'+ic('list',15)+'</div>'+
     '<div style="flex:1"><div style="font-size:14px;font-weight:600;color:var(--t1)">'+t('lists')+'</div>'+
@@ -1187,9 +1214,9 @@ function renderHome(){
     bottomHtml+='</div><button class="btn btn-g btn-full" style="margin-top:9px;transition:transform .15s ease" ontouchstart="this.style.transform=\'scale(.97)\'" ontouchend="this.style.transform=\'scale(1)\'" onclick="switchTab(\'itin\')">'+t('viewFull')+'</button></div>';
   }
 
-  // FIX #1: nav has padding-top with SAI
+  // FIX: nav has no inline padding-top override — CSS class handles it correctly
   v.innerHTML=
-    '<div class="nav" style="padding-top:calc(var(--sai,0px)+4px)">'+
+    '<div class="nav">'+
       '<div style="font-size:12px;font-weight:500;color:var(--t2);flex:1">'+escHtml(trip.name||'')+'</div>'+
       '<div class="nbtn" onclick="showTripCodeModal()">'+ic('share',14)+'</div>'+
     '</div>'+
@@ -1354,7 +1381,7 @@ window.showPhotoGallery=function(startIdx){
       (ph.url?'<img src="'+ph.url+'" alt="">':'<div style="width:100%;height:100%;background:var(--glass-bg2)"></div>')+
     '</div>';}).join('');
     ov.innerHTML=
-      '<div style="position:absolute;top:0;left:0;right:0;z-index:10;padding:calc(var(--sai,0px)+6px) 14px 10px;display:flex;align-items:center;background:linear-gradient(rgba(0,0,0,.6),transparent)">'+
+      '<div style="position:absolute;top:0;left:0;right:0;z-index:10;padding:calc(env(safe-area-inset-top,44px)+6px) 14px 10px;display:flex;align-items:center;background:linear-gradient(rgba(0,0,0,.6),transparent)">'+
         '<div class="nbtn" onclick="this.closest(\'.gallery-ov\').remove()">'+ic('arrowup',15)+'</div>'+
         '<div style="flex:1;text-align:center;font-size:13px;color:rgba(255,255,255,.7)">'+(curr+1)+'/'+photos.length+(p.caption?' · '+escHtml(p.caption):'')+'</div>'+
         '<div class="nbtn" onclick="if(confirm(\'Delete?\'))window._galleryDel()">'+ic('trash',13)+'</div>'+
@@ -1516,9 +1543,9 @@ function renderItin(){
     '<div class="empty" style="min-height:60dvh;cursor:pointer" onclick="showTripEditModal()">'+
       ic('cal',50)+'<div class="empty-ttl">'+t('notPlanned')+'</div><div class="empty-sub">'+t('importDataLabel')+'</div>'+
       '<button class="btn btn-g" style="margin-top:14px;padding:11px 22px" onclick="event.stopPropagation();showTripEditModal()">'+ic('upload',14)+' '+t('importDataLabel')+'</button></div>':'';
-  // FIX #1: nav padding-top with SAI
+  // FIX: no inline padding-top — CSS class handles it
   v.innerHTML=
-    '<div class="nav" style="padding-top:calc(var(--sai,0px)+4px)"><div class="nbtn" onclick="showTripEditModal()">'+ic('edit',14)+'</div><div class="nav-title">'+escHtml((S.trip&&S.trip.name)||t('itin'))+'</div><div class="nbtn" onclick="showAddDayModal()">'+ic('plus',14)+'</div></div>'+
+    '<div class="nav"><div class="nbtn" onclick="showTripEditModal()">'+ic('edit',14)+'</div><div class="nav-title">'+escHtml((S.trip&&S.trip.name)||t('itin'))+'</div><div class="nbtn" onclick="showAddDayModal()">'+ic('plus',14)+'</div></div>'+
     (days.length>0?
       '<div class="day-tabs" id="dtabs">'+tabsHtml+'</div>'+
       '<div class="itin-scroll" id="itin-sl">'+pagesHtml+'</div>':
@@ -1655,11 +1682,10 @@ window.importFromImage=function(){
 // ── EXPENSES ──────────────────────────────────────────
 function renderExp(){
   var v=$('#v-exp');if(!v)return;
-  // FIX #1: nav padding-top with SAI
-  v.innerHTML='<div class="nav" style="padding-top:calc(var(--sai,0px)+4px)"><div class="nav-title">'+t('exp')+'</div><div class="nbtn" onclick="showBudgetModal()">'+ic('sliders',14)+'</div></div>'+
+  // FIX: nav-large for consistency with other tabs, no inline padding-top
+  v.innerHTML='<div class="nav"><div class="nav-large">'+t('exp')+'</div><div class="nbtn" onclick="showBudgetModal()">'+ic('sliders',14)+'</div></div>'+
     '<div class="scroller"><div style="height:12px"></div><div class="sec">'+
       '<div id="exp-summary"></div>'+
-      // FIX #5: ptab wrapper with animation-ready classes
       '<div class="ptabs" style="margin-bottom:12px" id="exp-ptabs">'+
         '<div class="ptab '+(S._expTab==='list'?'on':'')+'" onclick="switchExpTab(\'list\',this)" style="transition:all .2s var(--sp,ease)">'+t('detail')+'</div>'+
         '<div class="ptab '+(S._expTab==='stats'?'on':'')+'" onclick="switchExpTab(\'stats\',this)" style="transition:all .2s var(--sp,ease)">'+t('stats')+'</div>'+
@@ -1669,7 +1695,7 @@ function renderExp(){
       '<div id="exp-stats-pane" style="'+(S._expTab==='stats'?'':'display:none')+'"><div id="exp-stats" class="list"></div></div>'+
       '<div id="exp-settle-pane" style="'+(S._expTab==='settle'?'':'display:none')+'"><div id="exp-settle" class="list"></div></div>'+
     '</div><div style="height:90px"></div></div>';
-  // FIX #7: expense add FAB — positioned bottom-right above nav
+  // Expense add FAB — bottom-right above nav
   var addFab=document.createElement('button');addFab.id='gfab-add';addFab.className='gfab';
   addFab.innerHTML=ic('plus',21);
   addFab.style.cssText='position:fixed;bottom:calc(58px + env(safe-area-inset-bottom,0px) + 16px);right:20px;z-index:90;width:52px;height:52px;border-radius:50%;background:rgba(var(--accent-rgb),.18);border:0.5px solid rgba(var(--accent-rgb),.35);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--accent);transition:transform .15s ease,opacity .15s ease;-webkit-tap-highlight-color:transparent;';
@@ -1680,14 +1706,12 @@ function renderExp(){
   refreshExpList();
 }
 
-// FIX #5: Tab switching with slide animation
 window.switchExpTab=function(tab,el){
   $$('#exp-ptabs .ptab').forEach(function(tb){tb.classList.remove('on');});
   if(el)el.classList.add('on');
   var lp=$('#exp-list-pane'),sp=$('#exp-stats-pane'),pp=$('#exp-settle-pane');
   var panes={list:lp,stats:sp,settle:pp};
   var incoming=panes[tab];
-  // Fade out all visible panes
   [lp,sp,pp].forEach(function(pane){
     if(pane&&pane.style.display!=='none'){
       pane.style.transition='opacity .13s ease,transform .13s ease';
@@ -1947,246 +1971,19 @@ function renderChat(){
     S.chatHistory.map(renderMsg).join('');
   var sugHtml=sugs.map(function(s){return '<div class="csug" onclick="sendSug(\''+s.replace(/'/g,"\\'")+'\')">'+escHtml(s)+'</div>';}).join('');
 
-  // FIX #1 + #8: proper flex layout so input bar never disappears in Safari PWA
+  // FIX: Chat layout — flex column fills remaining height
+  // nav has no inline padding-top, CSS class handles it
+  // chat-outer uses flex:1 min-height:0 to allow proper shrinking
+  // FIX: chat bar has position:relative so visual viewport JS can reposition it
   v.innerHTML=
-    '<div class="nav" style="padding-top:calc(var(--sai,0px)+4px);flex-shrink:0">'+
+    '<div class="nav" style="flex-shrink:0">'+
       '<div style="width:34px;flex-shrink:0"></div>'+
       '<div class="nav-title" style="position:static;transform:none;flex:1;text-align:center">'+t('butlerName')+'</div>'+
       '<div class="nbtn" onclick="showAIConfig()">'+ic('cog',14)+'</div>'+
     '</div>'+
     noBanner+
-    // chat-outer: flex column, fills remaining height, input bar sticks to bottom
     '<div style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden">'+
-      '<div class="chat-body" id="chat-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 14px 12px">'+welcome+'</div>'+
-      '<div class="csug-wrap" id="csug-wrap" style="flex-shrink:0;overflow-x:auto;-webkit-overflow-scrolling:touch">'+sugHtml+'</div>'+
-      // FIX #8: chat bar always visible, proper safe area bottom
-      '<div class="chat-bar" style="flex-shrink:0;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 6px)">'+
-        '<button class="cvbtn" onmousedown="startVoice(handleVoiceIntent)" ontouchstart="event.preventDefault();startVoice(handleVoiceIntent)" style="-webkit-user-select:none;transition:opacity .15s">'+ic('mic',17)+'</button>'+
-        // FIX #8: photo button in chat
-        '<button class="cvbtn" onclick="sendChatPhoto()" style="transition:opacity .15s" title="'+t('sendPhoto')+'">'+ic('camera',17)+'</button>'+
-        '<textarea class="chat-inp-el" id="chat-inp" rows="1" placeholder="'+t('aiPh')+'" onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();sendChatMsg()}" oninput="this.style.height=\'auto\';this.style.height=Math.min(this.scrollHeight,110)+\'px\'"></textarea>'+
-        '<button class="csend" id="csend" onclick="sendChatMsg()" style="transition:transform .15s ease;-webkit-tap-highlight-color:transparent"><svg width="17" height="17" viewBox="0 0 24 24" fill="none">'+IC.send+'</svg></button>'+
-      '</div>'+
-    '</div>';
-  scrollChat();
-}
-
-// FIX #8: Send photo to AI in chat
-window.sendChatPhoto=function(){
-  if(!(S.aiConfig.apiKey&&S.aiConfig.endpoint)){toast(t('noCfg'));return;}
-  var inp=document.createElement('input');inp.type='file';inp.accept='image/*';
-  inp.onchange=async function(){
-    var f=inp.files[0];if(!f)return;
-    toast(t('recognizing'),0);
-    var rd=new FileReader();
-    rd.onload=async function(e){
-      var b64=e.target.result;
-      var body=$('#chat-body');
-      // Show image bubble in chat
-      if(body){
-        var imgEl=document.createElement('div');imgEl.className='msg msg-u';
-        imgEl.innerHTML='<div class="mbubble" style="padding:4px;background:transparent"><img src="'+b64+'" style="max-width:200px;max-height:200px;border-radius:10px;display:block"></div>';
-        body.appendChild(imgEl);scrollChat();
-      }
-      try{
-        var res=await fetch(S.aiConfig.endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.aiConfig.apiKey},body:JSON.stringify({model:S.aiConfig.model||'gpt-4o',max_tokens:800,messages:[{role:'user',content:[{type:'text',text:'You are a travel assistant. Describe what you see in this image and provide any travel-related insights, tips or recommendations. Reply in the same language as the app ('+(S.lang==='en'?'English':'Chinese')+').'},{type:'image_url',image_url:{url:b64,detail:'high'}}]}]})});
-        if(!res.ok)throw new Error('API '+res.status);
-        var d=await res.json();
-        var reply=(d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content)||'';
-        toast('');
-        var aEl=document.createElement('div');aEl.className='msg msg-a';
-        aEl.innerHTML='<div class="mbubble">'+reply.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>')+'</div>';
-        if(body)body.appendChild(aEl);
-        await fbSaveMsg('assistant',reply);scrollChat();
-      }catch(err){toast('');toast(err.message);}
-    };rd.readAsDataURL(f);
-  };
-  inp.click();
-};
-
-function renderMsg(m){var isU=m.role==='user';var time='';if(m.ts&&m.ts.toDate)time=m.ts.toDate().toLocaleTimeString('zh',{hour:'2-digit',minute:'2-digit'});return '<div class="msg '+(isU?'msg-u':'msg-a')+'"><div class="mbubble">'+(m.content||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>'+(time?'<div class="mmeta">'+time+'</div>':'')+'</div>';}
-function refreshChatMsgs(){var body=$('#chat-body');if(!body)return;if(S.chatHistory.length)body.innerHTML=S.chatHistory.map(renderMsg).join('');scrollChat();}
-function scrollChat(){var b=$('#chat-body');if(b)setTimeout(function(){b.scrollTop=b.scrollHeight;},60);}
-window.sendSug=function(txt){var inp=$('#chat-inp');if(inp){inp.value=txt;sendChatMsg();}};
-window.askAIAbout=function(title){switchTab('chat');setTimeout(function(){sendChatMsg('关于"'+title+'"，给我建议和注意事项');},300);};
-window.sendChatMsg=async function(forceTxt){
-  var inp=$('#chat-inp'),btn=$('#csend'),body=$('#chat-body');
-  var txt=forceTxt||(inp?inp.value.trim():'');if(!txt)return;
-  if(inp){inp.value='';inp.style.height='auto';}if(btn)btn.disabled=true;
-  var uEl=document.createElement('div');uEl.className='msg msg-u';uEl.innerHTML='<div class="mbubble">'+txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>')+'</div>';if(body)body.appendChild(uEl);scrollChat();
-  await fbSaveMsg('user',txt);
-  var typEl=document.createElement('div');typEl.className='typing-wrap';typEl.innerHTML='<div class="typing-bub"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>';if(body)body.appendChild(typEl);scrollChat();
-  var sw=$('#csug-wrap');if(sw)sw.style.display='none';
-  try{
-    var reply=await callAI(txt);typEl.remove();
-    var aEl=document.createElement('div');aEl.className='msg msg-a';aEl.innerHTML='<div class="mbubble">'+reply.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>')+'</div>';
-    if(body)body.appendChild(aEl);await fbSaveMsg('assistant',reply);scrollChat();
-  }catch(e){
-    typEl.remove();var errEl=document.createElement('div');errEl.className='msg msg-a';errEl.innerHTML='<div class="mbubble" style="color:var(--red)">'+escHtml(e.message)+'</div>';if(body)body.appendChild(errEl);scrollChat();if(e.message===t('noCfg'))setTimeout(showAIConfig,600);
-  }
-  if(btn)btn.disabled=false;
-};
-window.showAIConfig=function(){
-  var cfg=S.aiConfig;
-  showModal('<div class="sh"></div><div class="sheet-title">'+t('aiCfg')+'</div>'+
-    '<div style="display:flex;gap:5px;margin-bottom:13px"><div class="chip" onclick="presetAI(\'openai\',this)">OpenAI</div><div class="chip" onclick="presetAI(\'custom\',this)">Custom</div></div>'+
-    '<div class="inp-lbl">'+t('apiEp')+'</div><input class="inp" id="cfg-ep" value="'+escHtml(cfg.endpoint||'')+'" placeholder="https://api.openai.com/v1/chat/completions" style="margin-bottom:9px">'+
-    '<div class="inp-lbl">'+t('apiKey')+'</div><input class="inp" id="cfg-key" type="password" value="'+escHtml(cfg.apiKey||'')+'" placeholder="sk-..." style="margin-bottom:9px">'+
-    '<div class="inp-lbl">'+t('model')+'</div><input class="inp" id="cfg-model" value="'+escHtml(cfg.model||'gpt-4o-mini')+'" style="margin-bottom:13px">'+
-    '<button class="btn btn-p btn-full" onclick="saveAICfg()" style="margin-bottom:7px">'+t('saveCfg')+'</button>'+
-    (cfg.apiKey?'<button class="btn btn-g btn-full" onclick="S.aiConfig={};localStorage.removeItem(\'aiConfig\');closeModal();renderChat()">清除配置</button>':'')+
-    '<div style="font-size:11px;color:var(--t4);text-align:center;margin-top:11px">API Key仅存本设备，不上传</div>');
-};
-window.presetAI=function(p,el){$$('.sheet .chip').forEach(function(c){c.classList.remove('on');});el.classList.add('on');var ep=$('#cfg-ep'),md=$('#cfg-model');if(p==='openai'&&ep&&md){ep.value='https://api.openai.com/v1/chat/completions';md.value='gpt-4o-mini';}};
-window.saveAICfg=function(){var ep=($('#cfg-ep')&&$('#cfg-ep').value.trim())||'',key=($('#cfg-key')&&$('#cfg-key').value.trim())||'',model=($('#cfg-model')&&$('#cfg-model').value.trim())||'gpt-4o-mini';if(!ep||!key){toast('请填写端点和Key');return;}S.aiConfig={endpoint:ep,apiKey:key,model:model};localStorage.setItem('aiConfig',JSON.stringify(S.aiConfig));closeModal();toast(t('aiConfigSaved'));renderChat();};
-window.confirmClearChat=function(){showModal('<div class="sh"></div><div style="text-align:center;padding:9px 0"><div style="font-size:17px;font-weight:700;color:var(--t1);margin-bottom:7px">'+t('confirmClearChat')+'</div><div style="font-size:13px;color:var(--t2);margin-bottom:20px">'+t('confirmClearChatSub')+'</div><button class="btn btn-d btn-full" onclick="S.chatHistory=[];toast(t(\'chatCleared\'));closeModal()" style="margin-bottom:9px">'+t('clearChatConfirmBtn')+'</button><button class="btn btn-g btn-full" onclick="closeModal()">'+t('cancel')+'</button></div>');};
-T['zh-CN'].confirmClearChat='确认清除所有对话？';T['zh-CN'].confirmClearChatSub='此操作不可撤销';T['zh-CN'].clearChatConfirmBtn='确认清除';
-T['zh-TW'].confirmClearChat='確認清除所有對話？';T['zh-TW'].confirmClearChatSub='此操作不可撤銷';T['zh-TW'].clearChatConfirmBtn='確認清除';
-T['en'].confirmClearChat='Clear all messages?';T['en'].confirmClearChatSub='Cannot be undone';T['en'].clearChatConfirmBtn='Clear';
-
-// ── LISTS ─────────────────────────────────────────────
-function renderShoppingPane(){
-  var items=S.shoppingList,en=S.lang==='en';
-  var html='<div style="display:flex;gap:7px;margin-bottom:11px"><input class="inp" id="shop-inp" placeholder="'+(en?'Item…':'物品…')+'" style="flex:1"><button class="btn btn-p" style="padding:9px 13px" onclick="addShoppingItem()">'+ic('plus',14)+'</button></div>';
-  var visible=items.filter(function(i){return i.ownerId===S.memberId||(i.sharedWith&&i.sharedWith.indexOf(S.memberId)>=0);});
-  if(!visible.length)html+='<div style="text-align:center;padding:22px;color:var(--t3)">'+(en?'No items':'暂无物品')+'</div>';
-  else html+='<div class="list">'+visible.map(function(item){return '<div class="list-item'+(item.done?' done':'')+'" style="transition:opacity .15s">'+
-    '<div class="list-check'+(item.done?' checked':'')+'" onclick="toggleShoppingItem(\''+item.id+'\')" style="transition:all .18s ease"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>'+
-    '<span class="list-item-text">'+renderMentions(item.text)+'</span>'+
-    '<div class="list-item-del" onclick="removeShoppingItem(\''+item.id+'\')">'+ic('trash',12)+'</div></div>';}).join('')+'</div>';
-  return html;
-}
-window.addShoppingItem=function(){var inp=$('#shop-inp');if(!inp)return;var text=inp.value.trim();if(!text)return;var sw=[];Object.entries(S.members).forEach(function(e){var id=e[0],m=e[1];if(text.indexOf('@'+m.name)>=0&&id!==S.memberId)sw.push(id);});S.shoppingList.push({id:'s_'+Date.now(),text:text,done:false,ownerId:S.memberId,sharedWith:sw});localStorage.setItem('shoppingList',JSON.stringify(S.shoppingList));inp.value='';var lc=$('#lists-content');if(lc)lc.innerHTML=renderShoppingPane();};
-window.toggleShoppingItem=function(id){var item=S.shoppingList.find(function(i){return i.id===id;});if(item)item.done=!item.done;localStorage.setItem('shoppingList',JSON.stringify(S.shoppingList));var lc=$('#lists-content');if(lc)lc.innerHTML=renderShoppingPane();};
-window.removeShoppingItem=function(id){S.shoppingList=S.shoppingList.filter(function(i){return i.id!==id;});localStorage.setItem('shoppingList',JSON.stringify(S.shoppingList));var lc=$('#lists-content');if(lc)lc.innerHTML=renderShoppingPane();};
-function renderTodoPane(){
-  var phases=['pre','during','post'],pLbl={'pre':t('listPre'),'during':t('listDuring'),'post':t('listPost')};
-  var html='<div style="display:flex;gap:7px;margin-bottom:11px"><input class="inp" id="todo-inp" placeholder="'+(S.lang==='en'?'Task…':'任务…')+'" style="flex:1"><select class="inp" id="todo-ph" style="width:90px">'+phases.map(function(p){return '<option value="'+p+'">'+pLbl[p]+'</option>';}).join('')+'</select><button class="btn btn-p" style="padding:9px 12px" onclick="addTodoItem()">'+ic('plus',12)+'</button></div>';
-  phases.forEach(function(ph){var items=(S.todoList[ph]||[]).filter(function(i){return i.ownerId===S.memberId||(i.sharedWith&&i.sharedWith.indexOf(S.memberId)>=0);});if(!items.length)return;html+='<div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin:7px 0 4px">'+pLbl[ph]+'</div><div class="list" style="margin-bottom:9px">'+items.map(function(i){return '<div class="list-item'+(i.done?' done':'')+'"><div class="list-check'+(i.done?' checked':'')+'" onclick="toggleTodoItem(\''+ph+'\',\''+i.id+'\')" style="transition:all .18s ease"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="list-item-text">'+renderMentions(i.text)+'</span><div class="list-item-del" onclick="removeTodoItem(\''+ph+'\',\''+i.id+'\')">'+ic('trash',12)+'</div></div>';}).join('')+'</div>';});
-  if(phases.every(function(ph){return !(S.todoList[ph]||[]).length;}))html+='<div style="text-align:center;padding:22px;color:var(--t3)">'+(S.lang==='en'?'No tasks':'暂无待办')+'</div>';
-  return html;
-}
-window.addTodoItem=function(){var inp=$('#todo-inp'),ph=$('#todo-ph');if(!inp||!ph)return;var text=inp.value.trim();if(!text)return;var phase=ph.value;var sw=[];Object.entries(S.members).forEach(function(e){var id=e[0],m=e[1];if(text.indexOf('@'+m.name)>=0&&id!==S.memberId)sw.push(id);});if(!S.todoList[phase])S.todoList[phase]=[];S.todoList[phase].push({id:'t_'+Date.now(),text:text,done:false,ownerId:S.memberId,sharedWith:sw});localStorage.setItem('todoList',JSON.stringify(S.todoList));inp.value='';var lc=$('#lists-content');if(lc)lc.innerHTML=renderTodoPane();};
-window.toggleTodoItem=function(ph,id){var items=S.todoList[ph]||[];var item=items.find(function(i){return i.id===id;});if(item)item.done=!item.done;localStorage.setItem('todoList',JSON.stringify(S.todoList));var lc=$('#lists-content');if(lc)lc.innerHTML=renderTodoPane();};
-window.removeTodoItem=function(ph,id){S.todoList[ph]=(S.todoList[ph]||[]).filter(function(i){return i.id!==id;});localStorage.setItem('todoList',JSON.stringify(S.todoList));var lc=$('#lists-content');if(lc)lc.innerHTML=renderTodoPane();};
-function renderPackingPane(){
-  var sugg=getPackSugg(),cats=['clothes','docs','electronics','toiletries'];
-  var catLbls={clothes:t('packingClothes'),docs:t('packingDocs'),electronics:t('packingElectronics'),toiletries:t('packingToiletries')};
-  var html='<div style="font-size:12px;color:var(--t3);margin-bottom:9px;line-height:1.55">'+(S.lang==='en'?'Suggested based on weather & itinerary':'根据天气和行程智能推荐')+'</div>';
-  cats.forEach(function(cat){var items=sugg[cat]||[];if(!items.length)return;html+='<div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;padding:7px 0 3px">'+catLbls[cat]+'</div><div class="list" style="margin-bottom:9px">'+items.map(function(item){var done=S.packingList[item.id]||false;return '<div class="list-item'+(done?' done':'')+'"><div class="list-check'+(done?' checked':'')+'" onclick="togglePacking(\''+item.id+'\')" style="transition:all .18s ease"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="list-item-text">'+escHtml(item.text)+'</span></div>';}).join('')+'</div>';});
-  if(periodConflict())html+='<div class="period-warning" style="margin-top:7px">'+ic('bell',13)+' '+t('periodPacking')+'</div>';
-  return html;
-}
-window.togglePacking=function(id){S.packingList[id]=!S.packingList[id];localStorage.setItem('packingList',JSON.stringify(S.packingList));var lc=$('#lists-content');if(lc)lc.innerHTML=renderPackingPane();};
-
-// switchListPane (for legacy modal compatibility)
-window.switchListPane=function(p){
-  S._listsPane=p;
-  var lc=$('#lists-content');
-  if(lc){lc.innerHTML=p==='shopping'?renderShoppingPane():p==='todo'?renderTodoPane():renderPackingPane();}
-  else showListsFull(p);
-};
-function renderListsView(){showListsFull();}
-
-// ── SETTINGS ──────────────────────────────────────────
-function renderSet(){
-  var v=$('#v-set');if(!v)return;
-  var af=document.getElementById('gfab-add');if(af)af.remove();
-  var notifsChk=localStorage.getItem('notifsEnabled')!=='false'?'checked':'';
-  var lc=CUR[S.localCurrency]||{f:'',n:S.localCurrency},bc=CUR[S.baseCurrency]||{f:'',n:S.baseCurrency};
-  var rateVal=getRate(S.localCurrency,S.baseCurrency);
-  var rateStr=Object.keys(S.rates).length>0?'1 '+S.localCurrency+' = '+fmtCur(rateVal,S.baseCurrency):t('rateUnavailable');
-  var histSection='';if(S.localTrips.length>0){histSection='<div class="set-ttl">'+t('history')+'</div><div class="set-group">'+S.localTrips.map(function(tr){return '<div class="set-row" onclick="enterTrip(\''+tr.code+'\')"><div style="flex:1"><div style="font-size:15px;color:var(--t1)">'+escHtml(tr.name||'—')+'</div><div style="font-size:11px;color:var(--t3)">'+escHtml(tr.dates||'—')+'</div></div><span class="set-chev">'+ic('chev',14)+'</span></div>';}).join('')+'</div>';}
-
-  var memHtml=Object.entries(S.members).map(function(entry){
-    var id=entry[0],m=entry[1],img=memAvatar(id),isYou=id===S.memberId;
-    var canDelete=(m.joinedVia==='manual'&&!m.claimed&&m.addedBy===S.memberId)||(!isYou&&(S.trip&&S.trip.creatorId===S.memberId)&&m.joinedVia==='manual'&&!m.claimed);
-    return '<div class="set-row" onclick="showMemberEdit(\''+id+'\')">'+
-      (img?'<div style="width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="'+img+'" style="width:100%;height:100%;object-fit:cover"></div>':'<div style="width:30px;height:30px;border-radius:50%;background:'+m.color+';display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0">'+((m.name||'?')[0])+'</div>')+
-      '<span class="set-lbl">'+escHtml(m.name)+'</span>'+
-      (isYou?'<span class="you-tag">'+t('you')+'</span>':'')+'  '+
-      (canDelete?'<div class="member-can-del" onclick="event.stopPropagation();removeMemberConfirm(\''+id+'\')" style="margin-right:4px">'+ic('trash',10)+' '+t('del')+'</div>':'')+
-      '<span class="set-chev">'+ic('chev',14)+'</span>'+
-    '</div>';
-  }).join('');
-
-  // FIX #1: nav padding-top with SAI
-  v.innerHTML=
-    '<div class="nav" style="padding-top:calc(var(--sai,0px)+4px)"><div class="nav-large">'+t('set')+'</div></div>'+
-    '<div class="scroller"><div style="height:10px"></div>'+
-
-    '<div class="set-ttl">'+t('code')+'</div>'+
-    '<div class="set-group"><div class="set-row" style="cursor:default"><div class="set-icon">'+ic('lock',14)+'</div><div class="set-lbl" style="font-family:monospace;letter-spacing:2px;font-weight:700">'+escHtml(S.tripCode||'——')+'</div><div style="display:flex;gap:5px"><div class="nbtn" style="width:26px;height:26px" onclick="copyCode()">'+ic('copy',11)+'</div><div class="nbtn" style="width:26px;height:26px" onclick="shareCode()">'+ic('share',11)+'</div></div></div></div>'+
-
-    '<div class="set-ttl">'+t('members')+'</div>'+
-    '<div class="set-group">'+memHtml+
-      '<div class="set-row" onclick="showAddMember()"><div class="set-icon">'+ic('plus',13)+'</div><span class="set-lbl">'+t('addMember')+'</span></div>'+
-      '<div class="set-row" onclick="showClaimMember()"><div class="set-icon">'+ic('user',13)+'</div><span class="set-lbl">'+t('claimMemberTitle')+'</span></div>'+
-    '</div>'+
-
-    '<div class="set-ttl">'+t('setAppearance')+'</div>'+
-    '<div class="set-group">'+
-      '<div class="set-row" onclick="showAppearanceModal()"><div class="set-icon">'+ic('palette',14)+'</div><div class="set-lbl">'+t('appearance')+'</div><span class="set-val">'+t('appearanceDesc')+'</span><span class="set-chev">'+ic('chev',14)+'</span></div>'+
-    '</div>'+
-
-    '<div class="set-ttl">'+t('setTravel')+'</div>'+
-    '<div class="set-group">'+
-      '<div class="set-row" onclick="showCurrencyModal()"><div class="set-icon">'+ic('wallet',14)+'</div><div class="set-lbl">'+t('currency')+'</div><span class="set-val">'+lc.f+' → '+bc.f+'</span><span class="set-chev">'+ic('chev',14)+'</span></div>'+
-      '<div class="set-row" onclick="showMsgAppModal()"><div class="set-icon">'+ic('msg',14)+'</div><div class="set-lbl">'+t('msgApp')+'</div><span class="set-val">'+escHtml(appL(S.msgApp))+'</span><span class="set-chev">'+ic('chev',14)+'</span></div>'+
-      '<div class="set-row" onclick="showPeriodModal()"><div class="set-icon">'+ic('heart',14)+'</div><div class="set-lbl">'+t('period')+'</div><span class="set-val" style="'+(periodConflict()?'color:var(--red)':'')+'">'+(periodConflict()?(S.lang==='en'?'Conflict!':'注意重叠'):(S.lang==='en'?'OK':'无'))+'</span><span class="set-chev">'+ic('chev',14)+'</span></div>'+
-      // FIX #3: lists entry in settings now opens full screen
-      '<div class="set-row" onclick="showListsFull()"><div class="set-icon">'+ic('list',14)+'</div><div class="set-lbl">'+t('lists')+'</div><span class="set-chev">'+ic('chev',14)+'</span></div>'+
-    '</div>'+
-
-    '<div class="set-ttl">'+t('notif')+'</div>'+
-    '<div class="set-group">'+
-      '<div class="set-row" style="cursor:default"><div class="set-icon">'+ic('bell',14)+'</div><span class="set-lbl">'+(S.lang==='en'?'Trip Reminders':'行程提醒')+'</span><label class="toggle"><input type="checkbox" '+notifsChk+' onchange="localStorage.setItem(\'notifsEnabled\',this.checked)"><span class="tsl"></span></label></div>'+
-      '<div class="set-row" onclick="reqGeoPermission()"><div class="set-icon">'+ic('map',14)+'</div><span class="set-lbl">'+t('locationAllow')+'</span><span class="set-val">'+(S.geo?'✓':'—')+'</span></div>'+
-    '</div>'+
-
-    '<div class="set-ttl">'+t('aiCfg')+'</div>'+
-    '<div class="set-group">'+
-      '<div class="set-row" onclick="showAIConfig()"><div class="set-icon">'+ic('sliders',14)+'</div><span class="set-lbl">'+t('aiCfg')+'</span><span class="set-val">'+escHtml(S.aiConfig.model||t('notConfigured'))+'</span><span class="set-chev">'+ic('chev',14)+'</span></div>'+
-      '<div class="set-row" onclick="confirmClearChat()"><div class="set-icon">'+ic('trash',14)+'</div><span class="set-lbl">'+t('clearChat')+'</span></div>'+
-    '</div>'+
-
-    '<div class="set-ttl">'+t('setData')+'</div>'+
-    '<div class="set-group">'+
-      '<div class="set-row" onclick="exportTripData()"><div class="set-icon">'+ic('download',14)+'</div><span class="set-lbl">'+t('exportData')+'</span></div>'+
-      '<div class="set-row" onclick="importTripData()"><div class="set-icon">'+ic('upload',14)+'</div><span class="set-lbl">'+t('importData')+'</span></div>'+
-      '<div class="set-row" style="cursor:default"><div class="set-icon">'+ic('lock',14)+'</div><span class="set-lbl">'+t('deviceId')+'</span><span class="set-val" style="font-size:10px;font-family:monospace">'+DEVICE_ID.substring(0,12)+'…</span></div>'+
-    '</div>'+
-
-    histSection+
-
-    '<div class="set-ttl">'+t('about')+'</div>'+
-    '<div class="set-group">'+
-      '<div class="set-row" style="cursor:default"><div class="set-icon">'+ic('globe',14)+'</div><span class="set-lbl">'+t('version')+'</span><span class="set-val">5.2.1</span></div>'+
-      '<div class="set-row" style="cursor:default"><div class="set-icon">'+ic('check',14)+'</div><span class="set-lbl">Firebase</span><span class="set-val">'+(fbApp?t('connected'):t('localMode'))+'</span></div>'+
-    '</div>'+
-
-    '<div style="padding:0 16px 18px"><button class="btn btn-d btn-full" onclick="confirmLeave()" style="margin-top:7px;transition:transform .15s ease" ontouchstart="this.style.transform=\'scale(.97)\'" ontouchend="this.style.transform=\'scale(1)\'">'+t('leave')+'</button></div>'+
-    '</div>';
-}
-
-// Member management
-window.showAddMember=function(){
-  showModal('<div class="sh"></div><div class="sheet-title">'+t('addMember')+'</div>'+
-    '<div style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:13px">'+(S.lang==='en'?'Add a member slot. They can claim it using the 4-char claim code.':'添加成员槽位，朋友可用4位认领码自行认领。')+'</div>'+
-    '<input class="inp" id="nm-name" placeholder="'+t('addMemberPh')+'" style="margin-bottom:13px">'+
-    '<button class="btn btn-p btn-full" onclick="submitAddMember()">'+t('addMember')+'</button>');
-};
-window.submitAddMember=async function(){
-  var name=$('#nm-name')&&$('#nm-name').value.trim();if(!name){toast('请输入名字');return;}
-  var id='u_'+Date.now(),used=Object.values(S.members).map(function(m){return m.color;}),color=COLORS.find(function(c){return used.indexOf(c)<0;})||COLORS[0];
-  var claimCode=gen4();
-  var memberData={name:name,color:color,joinedVia:'manual',addedBy:S.memberId,claimed:false,claimCode:claimCode};
-  if(db&&S.tripCode){var upd={};upd['members.'+id]=Object.assign({},memberData,{addedAt:serverTimestamp()});await updateDoc(doc(db,'trips',S.tripCode),upd);}
-  S.members[id]=memberData;
-  closeModal();renderSet();
-  showModal('<div class="sh"></div><div class="sheet-title">'+t('addMember')+'</div>'+
-    '<div style="text-align:center;padding:10px 0">'+
-      '<div style="font-size:14px;color:var(--t2);margin-bottom:14px">'+(S.lang==='en'?'Member added. Share this claim code with your friend:':'成员已添加，把认领码分享给朋友：')+'</div>'+
+      '<div class="chat-body" id="chat-body" style=...
       '<div class="code-disp" style="font-size:32px;letter-spacing:8px;margin-bottom:14px">'+claimCode+'</div>'+
       '<div style="font-size:12px;color:var(--t3)">'+t('claimMemberDesc')+'</div>'+
     '</div>'+
@@ -2229,10 +2026,8 @@ window.submitClaimMember=async function(){
   closeModal();renderSet();toast('已认领为 '+m.name);
 };
 
-// FIX #9 (Q10): showMemberEdit — show claim code if member is unclaimed
 window.showMemberEdit=function(id){
   var m=S.members[id];if(!m)return;var img=memAvatar(id),isYou=id===S.memberId;
-  // Show claim code section for unclaimed members (every time, not just first time)
   var claimSection='';
   if(!m.claimed&&m.claimCode){
     var safeCode=escHtml(m.claimCode);
@@ -2320,27 +2115,21 @@ async function init(){
   window.applyTheme(S.theme);
   applyWallpaper();
 
-  // FIX #1 #6 #8: Inject essential styles for PWA layout correctness
+  // Inject base layout styles
   (function(){
     var s=document.getElementById('travoo-extra');
     if(!s){s=document.createElement('style');s.id='travoo-extra';document.head.appendChild(s);}
     s.textContent=
-      // Ensure views fill correctly as flex columns
       '.view.active{display:flex;flex-direction:column;}'+
-      // Chat layout — critical for input bar visibility in Safari PWA
       '#v-chat.active{display:flex;flex-direction:column;}'+
-      // FAB above nav bar — override any CSS if needed
       '.gfab{position:fixed !important;bottom:calc(58px + env(safe-area-inset-bottom,0px) + 16px) !important;right:20px !important;z-index:90 !important;}'+
-      // Smooth button feedback
       '.btn{transition:transform .12s ease,opacity .12s ease;-webkit-tap-highlight-color:transparent;}'+
       '.btn:active{transform:scale(.97);}'+
       '.nbtn{transition:opacity .12s ease;-webkit-tap-highlight-color:transparent;}'+
       '.nbtn:active{opacity:.55;}'+
       '.tab,.tab-center{transition:opacity .12s ease;-webkit-tap-highlight-color:transparent;}'+
       '.lr{transition:opacity .12s ease;-webkit-tap-highlight-color:transparent;}'+
-      // Fullscreen overlay slide-in
-      '.wx-full{position:fixed;top:0;left:0;right:0;bottom:0;z-index:200;background:var(--bg);overflow:hidden;}'+
-      // PTabs transition
+      '.wx-full{position:fixed;top:0;left:0;right:0;bottom:0;z-index:600;background:var(--bg);overflow:hidden;}'+
       '.ptab{transition:all .2s cubic-bezier(.4,0,.2,1) !important;}'+
       '';
   })();
@@ -2355,99 +2144,83 @@ async function init(){
   if(S.baseCurrency){var fxTs=S.fxDate?new Date(S.fxDate).getTime():0;if(Date.now()-fxTs>4*3600*1000)fetchRates().then(function(){if(S.tab==='home')renderHome();});}
   if('Notification' in window&&localStorage.getItem('notifsEnabled')!=='false'){if(Notification.permission==='default')Notification.requestPermission();}
 
-
-// 修复 PWA 模式全部布局问题（强制覆盖 + 底部遮挡彻底解决）
-if (window.matchMedia('(display-mode: standalone)').matches) {
-  var style = document.createElement('style');
-  style.textContent = `
-    /* 导航栏压缩效果 */
-    .nav {
-      padding-top: calc(env(safe-area-inset-top,44px) + 12px) !important;
-      transition: all 0.22s cubic-bezier(0.2, 0.9, 0.4, 1.1) !important;
-    }
-    .nav.compact {
-      padding-top: calc(env(safe-area-inset-top,44px) + 6px) !important;
-    }
-    .nav.compact .nav-large {
-      font-size: 17px !important;
-      text-align: center !important;
-    }
-    /* 登录页 */
-    .ob {
-      padding-top: calc(env(safe-area-inset-top,44px) + 60px) !important;
-    }
-    /* ========== 底部遮挡关键修复 ========== */
-    /* 聊天输入栏：增加底部内边距 + 背景 */
-    .chat-bar {
-      padding-bottom: calc(env(safe-area-inset-bottom,34px) + 28px) !important;
-      background: var(--glass-bg) !important;
-      border-top: 0.5px solid var(--glass-border) !important;
-      margin-bottom: 0 !important;
-    }
-    /* 设置页面滚动区域：底部留出足够空间让退出按钮完全可见 */
-    .scroller {
-      padding-bottom: calc(var(--tabh) + 100px) !important;
-    }
-    /* 聊天内容区域：最后一条消息不会被输入栏遮挡 */
-    .chat-body {
-      padding-bottom: 20px !important;
-    }
-    /* 全屏弹窗滚动区域 */
-    .wx-full > div:last-child,
-    .gallery-ov > div:last-child {
-      top: calc(env(safe-area-inset-top,44px) + 56px) !important;
-      padding-bottom: calc(env(safe-area-inset-bottom,34px) + 30px) !important;
-    }
-    /* 其他微调 */
-    .sheet {
-      padding-left: max(env(safe-area-inset-left,0px) + 18px, 18px) !important;
-      padding-right: max(env(safe-area-inset-right,0px) + 18px, 18px) !important;
-    }
-  `;
-  document.head.appendChild(style);
-
-  // 额外强制设置聊天页滚动区域和输入栏可见性（使用JS动态调整）
-  function fixBottomBar() {
-    var chatBar = document.querySelector('.chat-bar');
-    if (chatBar) {
-      var sab = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sab').trim() || '34');
-      chatBar.style.setProperty('padding-bottom', (sab + 28) + 'px', 'important');
-    }
-    var scroller = document.querySelector('.scroller');
-    if (scroller && document.querySelector('#v-set.active')) {
-      var tabh = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--tabh').trim() || '88');
-      scroller.style.setProperty('padding-bottom', (tabh + 100) + 'px', 'important');
-    }
-  }
-
-  // 监听视图切换，每次切换后重新调整
-  var origSwitch = window.switchTab;
-  window.switchTab = function(name, dir) {
-    origSwitch(name, dir);
-    setTimeout(function() {
-      fixBottomBar();
-      // 滚动压缩导航栏
-      var activeView = document.querySelector('.view.active');
-      var scrollEl = activeView ? (activeView.querySelector('.scroller') || activeView.querySelector('.chat-body')) : null;
-      var nav = activeView ? activeView.querySelector('.nav') : null;
-      if (scrollEl && nav) {
-        var onScroll = function() {
-          if (scrollEl.scrollTop > 28) nav.classList.add('compact');
-          else nav.classList.remove('compact');
-        };
-        scrollEl.addEventListener('scroll', onScroll, { passive: true });
-        onScroll();
+  // ── PWA standalone fixes (no !important conflicts) ──────────────────
+  var isPWA=window.matchMedia('(display-mode: standalone)').matches||
+            window.navigator.standalone===true;
+  if(isPWA){
+    // Compact nav on scroll — attach to all tabs
+    function attachCompactNav(tabName){
+      var view=document.getElementById('v-'+tabName);
+      if(!view)return;
+      var nav=view.querySelector('.nav');
+      if(!nav)return;
+      var scrollEl=view.querySelector('.scroller')||view.querySelector('.chat-body');
+      if(!scrollEl)return;
+      // Remove existing listener before adding new one
+      if(scrollEl._compactHandler){
+        scrollEl.removeEventListener('scroll',scrollEl._compactHandler,{passive:true});
       }
-    }, 100);
-  };
-  fixBottomBar();
-}
-  
-  
-  
-  
-  
+      scrollEl._compactHandler=function(){
+        if(scrollEl.scrollTop>32)nav.classList.add('compact');
+        else nav.classList.remove('compact');
+      };
+      scrollEl.addEventListener('scroll',scrollEl._compactHandler,{passive:true});
+      scrollEl._compactHandler();
+    }
 
+    // Wrap switchTab to attach compact nav after render
+    var _origSwitchTab=window.switchTab;
+    window.switchTab=function(name,dir){
+      _origSwitchTab(name,dir);
+      // After render, attach compact nav and fix chat bar
+      setTimeout(function(){
+        attachCompactNav(name);
+        _fixChatBar();
+      },120);
+    };
+
+    // Fix chat input bar bottom padding for Safari keyboard avoidance
+    function _fixChatBar(){
+      var bar=document.querySelector('.chat-bar');
+      if(!bar)return;
+      // Use visual viewport if available for keyboard-aware sizing
+      if(window.visualViewport){
+        function onVVResize(){
+          var vv=window.visualViewport;
+          var winH=window.innerHeight;
+          var vvH=vv.height;
+          var kbH=Math.max(0,winH-vvH-vv.offsetTop);
+          var sab=parseFloat(getComputedStyle(document.documentElement)
+            .getPropertyValue('--sab')||'34')||34;
+          var pb=kbH>50?Math.max(6,kbH-50):sab+8;
+          bar.style.paddingBottom=pb+'px';
+          // Scroll chat body to bottom when keyboard appears
+          if(kbH>50){
+            var body=document.getElementById('chat-body');
+            if(body)setTimeout(function(){body.scrollTop=body.scrollHeight;},80);
+          }
+        }
+        // Remove old listener if exists
+        if(window._vvResizeHandler){
+          window.visualViewport.removeEventListener('resize',window._vvResizeHandler);
+        }
+        window._vvResizeHandler=onVVResize;
+        window.visualViewport.addEventListener('resize',onVVResize,{passive:true});
+        onVVResize();
+      } else {
+        // Fallback: static safe area bottom padding
+        var sab=parseFloat(getComputedStyle(document.documentElement)
+          .getPropertyValue('--sab')||'34')||34;
+        bar.style.paddingBottom=(sab+8)+'px';
+      }
+    }
+
+    // Initial attach after first render
+    setTimeout(function(){
+      attachCompactNav(S.tab||'home');
+      _fixChatBar();
+    },300);
+  }
 }
 
 // T key additions
@@ -2456,7 +2229,7 @@ T['zh-TW'].appearanceDesc='主題 · 語言 · 桌布';
 T['en'].appearanceDesc='Theme · Language · Wallpaper';
 T['zh-CN'].geoObtained='已获取';T['zh-TW'].geoObtained='已獲取';T['en'].geoObtained='Obtained';
 T['zh-CN'].geoNotObtained='未获取';T['zh-TW'].geoNotObtained='未獲取';T['en'].geoNotObtained='Not obtained';
-T['zh-CN'].confirmClearChat='确认清除？';T['zh-TW'].confirmClearChat='確認清除？';T['en'].confirmClearChat='Clear all?';
-T['zh-CN'].confirmClearChatSub='不可撤销';T['zh-TW'].confirmClearChatSub='不可撤銷';T['en'].confirmClearChatSub='Cannot be undone';
-T['zh-CN'].clearChatConfirmBtn='清除';T['zh-TW'].clearChatConfirmBtn='清除';T['en'].clearChatConfirmBtn='Clear';
+T['zh-CN'].confirmClearChat='确认清除所有对话？';T['zh-TW'].confirmClearChat='確認清除所有對話？';T['en'].confirmClearChat='Clear all messages?';
+T['zh-CN'].confirmClearChatSub='此操作不可撤销';T['zh-TW'].confirmClearChatSub='此操作不可撤銷';T['en'].confirmClearChatSub='Cannot be undone';
+T['zh-CN'].clearChatConfirmBtn='确认清除';T['zh-TW'].clearChatConfirmBtn='確認清除';T['en'].clearChatConfirmBtn='Clear';
 init();
