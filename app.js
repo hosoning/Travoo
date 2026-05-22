@@ -1971,11 +1971,7 @@ function renderChat(){
     S.chatHistory.map(renderMsg).join('');
   var sugHtml=sugs.map(function(s){return '<div class="csug" onclick="sendSug(\''+s.replace(/'/g,"\\'")+'\')">'+escHtml(s)+'</div>';}).join('');
 
-  // FIX: Chat layout — flex column fills remaining height
-  // nav has no inline padding-top, CSS class handles it
-  // chat-outer uses flex:1 min-height:0 to allow proper shrinking
-  // FIX: chat bar has position:relative so visual viewport JS can reposition it
-  v.innerHTML=
+  v.innerHTML =
     '<div class="nav" style="flex-shrink:0">'+
       '<div style="width:34px;flex-shrink:0"></div>'+
       '<div class="nav-title" style="position:static;transform:none;flex:1;text-align:center">'+t('butlerName')+'</div>'+
@@ -1983,22 +1979,17 @@ function renderChat(){
     '</div>'+
     noBanner+
     '<div style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden">'+
-      '<div class="chat-body" id="chat-body" style=...
-      '<div class="code-disp" style="font-size:32px;letter-spacing:8px;margin-bottom:14px">'+claimCode+'</div>'+
-      '<div style="font-size:12px;color:var(--t3)">'+t('claimMemberDesc')+'</div>'+
-    '</div>'+
-    '<button class="btn btn-p btn-full" onclick="navigator.clipboard&&navigator.clipboard.writeText(\''+claimCode+'\').then(function(){toast(t(\'codeCopied\'));})">'+ic('copy',14)+' '+t('copy')+'</button>');
-};
-window.removeMemberConfirm=function(id){
-  var m=S.members[id];if(!m)return;
-  var safeId=id.replace(/'/g,"\\'");
-  showModal(
-    '<div class="sh"></div><div class="sheet-title">'+t('removeMember')+'</div>'+
-    '<div style="font-size:14px;color:var(--t2);margin-bottom:16px">'+escHtml(m.name)+' · '+t('removeMemberConfirm')+'</div>'+
-    '<button class="btn btn-d btn-full" onclick="doRemoveMember(\''+safeId+'\')" style="margin-bottom:7px">'+t('removeMember')+'</button>'+
-    '<button class="btn btn-g btn-full" onclick="closeModal()">'+t('cancel')+'</button>'
-  );
-};
+      '<div class="chat-body" id="chat-body" style="flex:1;overflow-y:auto;padding:12px 14px 8px;display:flex;flex-direction:column;gap:9px">'+welcome+'</div>'+
+      '<div class="csug-wrap" style="flex-shrink:0;overflow-x:auto;padding:5px 12px;display:flex;gap:7px">'+sugHtml+'</div>'+
+      '<div class="chat-bar" style="flex-shrink:0;display:flex;align-items:flex-end;gap:8px;padding:7px 12px;padding-bottom:max(calc(env(safe-area-inset-bottom,34px)+4px),10px);background:var(--glass-bg);backdrop-filter:blur(var(--blur-lg));border-top:0.5px solid var(--glass-border);z-index:10">'+
+        '<button class="cvbtn" onmousedown="startVoice(handleVoiceIntent)" ontouchstart="event.preventDefault();startVoice(handleVoiceIntent)" style="-webkit-user-select:none">'+ic('mic',17)+'</button>'+
+        '<button class="cvbtn" onclick="sendChatPhoto()" style="transition:opacity .15s" title="'+t('sendPhoto')+'">'+ic('camera',17)+'</button>'+
+        '<textarea class="chat-inp-el" id="chat-inp" rows="1" placeholder="'+t('aiPh')+'" onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();sendChatMsg()}" oninput="this.style.height=\'auto\';this.style.height=Math.min(this.scrollHeight,110)+\'px\'"></textarea>'+
+        '<button class="csend" id="csend" onclick="sendChatMsg()" style="transition:transform .15s ease">'+ic('send',17)+'</button>'+
+      '</div>'+
+    '</div>';
+  scrollChat();
+}
 window.doRemoveMember=async function(id){
   var m=S.members[id];if(!m)return;
   var canDelete=(m.joinedVia==='manual'&&!m.claimed&&m.addedBy===S.memberId);
