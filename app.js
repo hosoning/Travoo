@@ -2208,7 +2208,7 @@ window.submitAddMember=async function(){
     '<div style="text-align:center;padding:10px 0">'+
       '<div style="font-size:14px;color:var(--t2);margin-bottom:14px">'+(S.lang==='en'?'Member added. Share this claim code with your friend:':'成员已添加，把认领码分享给朋友：')+'</div>'+
       '<div class="code-disp" style="font-size:32px;letter-spacing:8px;margin-bottom:14px">'+claimCode+'</div>'+
-      '
+      
 '<div class="code-disp" style="font-size:32px;letter-spacing:8px;margin-bottom:14px">'+claimCode+'</div>'+
       '<div style="font-size:12px;color:var(--t3)">'+t('claimMemberDesc')+'</div>'+
     '</div>'+
