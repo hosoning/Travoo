@@ -2446,6 +2446,39 @@ async function init(){
       _fixChatBar();
     },300);
   }
+  
+  // PWA 模式专用样式修复（顶部/底部/左右安全区）
+  if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+    var pwaStyle = document.createElement('style');
+    pwaStyle.textContent = `
+      .nav {
+        padding-left: max(env(safe-area-inset-left,0px) + 16px, 16px) !important;
+        padding-right: max(env(safe-area-inset-right,0px) + 16px, 16px) !important;
+        padding-top: calc(env(safe-area-inset-top,44px) + 8px) !important;
+      }
+      .chat-bar {
+        padding-bottom: calc(env(safe-area-inset-bottom,34px) + 28px) !important;
+      }
+      .scroller {
+        padding-bottom: calc(var(--tabh) + 80px) !important;
+      }
+      .ob {
+        padding-left: max(env(safe-area-inset-left,0px) + 30px, 30px) !important;
+        padding-right: max(env(safe-area-inset-right,0px) + 30px, 30px) !important;
+        padding-top: calc(env(safe-area-inset-top,44px) + 44px) !important;
+      }
+      .wx-full > div:first-child,
+      .gallery-ov > div:first-child {
+        padding-top: calc(env(safe-area-inset-top,44px) + 12px) !important;
+      }
+      .wx-full > div:last-child,
+      .gallery-ov > div:last-child {
+        top: calc(env(safe-area-inset-top,44px) + 56px) !important;
+        padding-bottom: calc(env(safe-area-inset-bottom,34px) + 20px) !important;
+      }
+    `;
+    document.head.appendChild(pwaStyle);
+  }
 }
 
 // T key additions
