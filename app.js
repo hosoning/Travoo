@@ -2196,24 +2196,33 @@ window.showAddMember=function(){
     '<input class="inp" id="nm-name" placeholder="'+t('addMemberPh')+'" style="margin-bottom:13px">'+
     '<button class="btn btn-p btn-full" onclick="submitAddMember()">'+t('addMember')+'</button>');
 };
-window.submitAddMember=async function(){
-  var name=$('#nm-name')&&$('#nm-name').value.trim();if(!name){toast('请输入名字');return;}
-  var id='u_'+Date.now(),used=Object.values(S.members).map(function(m){return m.color;}),color=COLORS.find(function(c){return used.indexOf(c)<0;})||COLORS[0];
-  var claimCode=gen4();
-  var memberData={name:name,color:color,joinedVia:'manual',addedBy:S.memberId,claimed:false,claimCode:claimCode};
-  if(db&&S.tripCode){var upd={};upd['members.'+id]=Object.assign({},memberData,{addedAt:serverTimestamp()});await updateDoc(doc(db,'trips',S.tripCode),upd);}
-  S.members[id]=memberData;
-  closeModal();renderSet();
-  showModal('<div class="sh"></div><div class="sheet-title">'+t('addMember')+'</div>'+
-    '<div style="text-align:center;padding:10px 0">'+
-      '<div style="font-size:14px;color:var(--t2);margin-bottom:14px">'+(S.lang==='en'?'Member added. Share this claim code with your friend:':'成员已添加，把认领码分享给朋友：')+'</div>'+
-      '<div class="code-disp" style="font-size:32px;letter-spacing:8px;margin-bottom:14px">'+claimCode+'</div>'+
-      
-'<div class="code-disp" style="font-size:32px;letter-spacing:8px;margin-bottom:14px">'+claimCode+'</div>'+
-      '<div style="font-size:12px;color:var(--t3)">'+t('claimMemberDesc')+'</div>'+
-    '</div>'+
-    '<button class="btn btn-p btn-full" onclick="navigator.clipboard&&navigator.clipboard.writeText(\''+claimCode+'\').then(function(){toast(t(\'codeCopied\'));})">'+ic('copy',14)+' '+t('copy')+'</button>');
+window.submitAddMember = async function(){
+  var name = $('#nm-name') && $('#nm-name').value.trim();
+  if (!name) { toast('请输入名字'); return; }
+  var id = 'u_' + Date.now();
+  var used = Object.values(S.members).map(function(m){ return m.color; });
+  var color = COLORS.find(function(c){ return used.indexOf(c) < 0; }) || COLORS[0];
+  var claimCode = gen4();
+  var memberData = { name: name, color: color, joinedVia: 'manual', addedBy: S.memberId, claimed: false, claimCode: claimCode };
+  if (db && S.tripCode) {
+    var upd = {};
+    upd['members.' + id] = Object.assign({}, memberData, { addedAt: serverTimestamp() });
+    await updateDoc(doc(db, 'trips', S.tripCode), upd);
+  }
+  S.members[id] = memberData;
+  closeModal();
+  renderSet();
+  showModal(
+    '<div class="sh"></div><div class="sheet-title">' + t('addMember') + '</div>' +
+    '<div style="text-align:center;padding:10px 0">' +
+      '<div style="font-size:14px;color:var(--t2);margin-bottom:14px">' + (S.lang === 'en' ? 'Member added. Share this claim code with your friend:' : '成员已添加，把认领码分享给朋友：') + '</div>' +
+      '<div class="code-disp" style="font-size:32px;letter-spacing:8px;margin-bottom:14px">' + claimCode + '</div>' +
+      '<div style="font-size:12px;color:var(--t3)">' + t('claimMemberDesc') + '</div>' +
+    '</div>' +
+    '<button class="btn btn-p btn-full" onclick="navigator.clipboard && navigator.clipboard.writeText(\'' + claimCode + '\').then(function(){ toast(t(\'codeCopied\')); })">' + ic('copy', 14) + ' ' + t('copy') + '</button>'
+  );
 };
+
 window.removeMemberConfirm=function(id){
   var m=S.members[id];if(!m)return;
   var safeId=id.replace(/'/g,"\\'");
