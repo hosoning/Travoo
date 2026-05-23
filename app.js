@@ -2420,26 +2420,39 @@ async function init(){
     };
 
     // Fix chat input bar bottom padding for Safari keyboard avoidance
-    function _fixChatBar(){
-      var bar=document.querySelector('.chat-bar');
-      if(!bar)return;
-      // Use visual viewport if available for keyboard-aware sizing
-      if(window.visualViewport){
-        function onVVResize(){
-          var vv=window.visualViewport;
-          var winH=window.innerHeight;
-          var vvH=vv.height;
-          var kbH=Math.max(0,winH-vvH-vv.offsetTop);
-          var sab=parseFloat(getComputedStyle(document.documentElement)
-            .getPropertyValue('--sab')||'34')||34;
-          var pb=kbH>50?Math.max(6,kbH-50):sab+8;
-          bar.style.paddingBottom=pb+'px';
-          // Scroll chat body to bottom when keyboard appears
-          if(kbH>50){
-            var body=document.getElementById('chat-body');
-            if(body)setTimeout(function(){body.scrollTop=body.scrollHeight;},80);
-          }
-        }
+    function _fixChatBar() {
+  var bar = document.querySelector('.chat-bar');
+  if (!bar) return;
+  
+  // 直接设置固定的底部内边距，避开底部安全区（小黑条）
+  var safeBottom = 34; // 默认安全区高度
+  try {
+    var sab = getComputedStyle(document.documentElement).getPropertyValue('--sab');
+    if (sab) safeBottom = parseInt(sab) || 34;
+  } catch(e) {}
+  
+  // 强制给输入栏的父容器加一个底部填充，确保输入栏完全可见
+  var container = bar.parentElement;
+  if (container && container.style) {
+    container.style.paddingBottom = safeBottom + 'px';
+  }
+  
+  // 输入栏本身也要增加内边距，避免内容贴底
+  bar.style.paddingBottom = (safeBottom + 16) + 'px';
+  
+  // 滚动区域底部留出空间，让最后一条消息在输入栏上方
+  var chatBody = document.querySelector('.chat-body');
+  if (chatBody) {
+    chatBody.style.paddingBottom = '80px';
+  }
+  
+  // 强制滚动到底部
+  setTimeout(function() {
+    var b = document.querySelector('.chat-body');
+    if (b) b.scrollTop = b.scrollHeight;
+  }, 50);
+}
+
         // Remove old listener if exists
         if(window._vvResizeHandler){
           window.visualViewport.removeEventListener('resize',window._vvResizeHandler);
