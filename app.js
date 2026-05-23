@@ -1958,39 +1958,45 @@ window.submitExpense=function(){
 
 // ── CHAT ──────────────────────────────────────────────
 function renderChat(){
-  var v=$('#v-chat');if(!v)return;
-  var hasCfg=!!(S.aiConfig.apiKey&&S.aiConfig.endpoint);
-  var sugs=[t('chatSug1'),t('chatSug2'),t('chatSug3'),t('chatSug4'),t('chatSug5')];
-  var noBanner='';if(!hasCfg){noBanner='<div style="margin:0 14px 10px;padding:13px;background:rgba(var(--orange-rgb),.07);border:0.5px solid rgba(var(--orange-rgb),.22);border-radius:var(--r2);flex-shrink:0"><div style="font-size:13px;font-weight:700;color:var(--orange);margin-bottom:4px">'+t('noCfg')+'</div><div style="font-size:12px;color:var(--t2);margin-bottom:9px">'+t('noCfgSub')+'</div><button class="btn btn-g" style="padding:7px 14px;font-size:12px" onclick="showAIConfig()">'+t('cfgAI')+'</button></div>';}
-  var welcome=S.chatHistory.length===0?
-    '<div style="text-align:center;padding:28px 18px">'+
-      '<div style="width:60px;height:60px;background:var(--glass-bg2);border:0.5px solid var(--glass-border);border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 13px">'+ic('chat',26)+'</div>'+
-      '<div style="font-size:16px;font-weight:600;margin-bottom:5px;color:var(--t1)">'+t('aiWelcome')+'</div>'+
-      '<div style="font-size:13px;color:var(--t2);line-height:1.65;white-space:pre-line">'+t('aiWelcomeSub')+'</div>'+
-    '</div>':
+  var v = $('#v-chat');
+  if (!v) return;
+  var hasCfg = !!(S.aiConfig.apiKey && S.aiConfig.endpoint);
+  var sugs = [t('chatSug1'), t('chatSug2'), t('chatSug3'), t('chatSug4'), t('chatSug5')];
+  var noBanner = '';
+  if (!hasCfg) {
+    noBanner = '<div style="margin:0 14px 10px;padding:13px;background:rgba(var(--orange-rgb),.07);border:0.5px solid rgba(var(--orange-rgb),.22);border-radius:var(--r2);flex-shrink:0">' +
+      '<div style="font-size:13px;font-weight:700;color:var(--orange);margin-bottom:4px">' + t('noCfg') + '</div>' +
+      '<div style="font-size:12px;color:var(--t2);margin-bottom:9px">' + t('noCfgSub') + '</div>' +
+      '<button class="btn btn-g" style="padding:7px 14px;font-size:12px" onclick="showAIConfig()">' + t('cfgAI') + '</button>' +
+    '</div>';
+  }
+  var welcome = S.chatHistory.length === 0 ?
+    '<div style="text-align:center;padding:28px 18px">' +
+      '<div style="width:60px;height:60px;background:var(--glass-bg2);border:0.5px solid var(--glass-border);border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 13px">' + ic('chat', 26) + '</div>' +
+      '<div style="font-size:16px;font-weight:600;margin-bottom:5px;color:var(--t1)">' + t('aiWelcome') + '</div>' +
+      '<div style="font-size:13px;color:var(--t2);line-height:1.65;white-space:pre-line">' + t('aiWelcomeSub') + '</div>' +
+    '</div>' :
     S.chatHistory.map(renderMsg).join('');
-  var sugHtml=sugs.map(function(s){return '<div class="csug" onclick="sendSug(\''+s.replace(/'/g,"\\'")+'\')">'+escHtml(s)+'</div>';}).join('');
+  var sugHtml = sugs.map(function(s){
+    return '<div class="csug" onclick="sendSug(\'' + s.replace(/'/g, "\\'") + '\')">' + escHtml(s) + '</div>';
+  }).join('');
 
-  // FIX: Chat layout — flex column fills remaining height
-  // nav has no inline padding-top, CSS class handles it
-  // chat-outer uses flex:1 min-height:0 to allow proper shrinking
-  // FIX: chat bar has position:relative so visual viewport JS can reposition it
-  v.innerHTML=
-    '<div class="nav" style="flex-shrink:0">'+
-      '<div style="width:34px;flex-shrink:0"></div>'+
-      '<div class="nav-title" style="position:static;transform:none;flex:1;text-align:center">'+t('butlerName')+'</div>'+
-      '<div class="nbtn" onclick="showAIConfig()">'+ic('cog',14)+'</div>'+
-    '</div>'+
-    noBanner+
-    '<div style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden">'+
-      '<div class="chat-body" id="chat-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 14px 12px">'+welcome+'</div>'+
-      '<div class="csug-wrap" id="csug-wrap" style="flex-shrink:0;overflow-x:auto;-webkit-overflow-scrolling:touch">'+sugHtml+'</div>'+
-      '<div class="chat-bar" id="chat-bar-el" style="flex-shrink:0;padding-bottom:max(calc(env(safe-area-inset-bottom,34px)+4px),10px)">'+
-        '<button class="cvbtn" onmousedown="startVoice(handleVoiceIntent)" ontouchstart="event.preventDefault();startVoice(handleVoiceIntent)" style="-webkit-user-select:none;transition:opacity .15s">'+ic('mic',17)+'</button>'+
-        '<button class="cvbtn" onclick="sendChatPhoto()" style="transition:opacity .15s" title="'+t('sendPhoto')+'">'+ic('camera',17)+'</button>'+
-        '<textarea class="chat-inp-el" id="chat-inp" rows="1" placeholder="'+t('aiPh')+'" onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();sendChatMsg()}" oninput="this.style.height=\'auto\';this.style.height=Math.min(this.scrollHeight,110)+\'px\'"></textarea>'+
-        '<button class="csend" id="csend" onclick="sendChatMsg()" style="transition:transform .15s ease;-webkit-tap-highlight-color:transparent"><svg width="17" height="17" viewBox="0 0 24 24" fill="none">'+IC.send+'</svg></button>'+
-      '</div>'+
+  v.innerHTML =
+    '<div class="nav" style="flex-shrink:0">' +
+      '<div style="width:34px;flex-shrink:0"></div>' +
+      '<div class="nav-title" style="position:static;transform:none;flex:1;text-align:center">' + t('butlerName') + '</div>' +
+      '<div class="nbtn" onclick="showAIConfig()">' + ic('cog', 14) + '</div>' +
+    '</div>' +
+    noBanner +
+    '<div style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden">' +
+      '<div class="chat-body" id="chat-body" style="flex:1;overflow-y:auto;padding:12px 14px 8px;display:flex;flex-direction:column;gap:9px">' + welcome + '</div>' +
+      '<div class="csug-wrap" style="flex-shrink:0;overflow-x:auto;padding:5px 12px;display:flex;gap:7px">' + sugHtml + '</div>' +
+      '<div class="chat-bar" style="flex-shrink:0;display:flex;align-items:flex-end;gap:8px;padding:7px 12px;padding-bottom:calc(env(safe-area-inset-bottom,34px) + 28px);background:var(--glass-bg);backdrop-filter:blur(var(--blur-lg));border-top:0.5px solid var(--glass-border);z-index:10">' +
+        '<button class="cvbtn" onmousedown="startVoice(handleVoiceIntent)" ontouchstart="event.preventDefault();startVoice(handleVoiceIntent)" style="-webkit-user-select:none">' + ic('mic', 17) + '</button>' +
+        '<button class="cvbtn" onclick="sendChatPhoto()" style="transition:opacity .15s" title="' + t('sendPhoto') + '">' + ic('camera', 17) + '</button>' +
+        '<textarea class="chat-inp-el" id="chat-inp" rows="1" placeholder="' + t('aiPh') + '" onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();sendChatMsg()}" oninput="this.style.height=\'auto\';this.style.height=Math.min(this.scrollHeight,110)+\'px\'"></textarea>' +
+        '<button class="csend" id="csend" onclick="sendChatMsg()" style="transition:transform .15s ease">' + ic('send', 17) + '</button>' +
+      '</div>' +
     '</div>';
   scrollChat();
 }
