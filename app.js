@@ -2473,7 +2473,7 @@ async function init(){
       attachCompactNav(S.tab||'home');
       _fixChatBar();
     },300);
-  }
+  };
   
   // PWA 模式专用样式修复（顶部/底部/左右安全区）
   if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
