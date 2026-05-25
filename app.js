@@ -2490,6 +2490,41 @@ async function init(){
   }
 }
 
+// 动态修复可视区域高度（解决浏览器工具栏遮挡 + 底部小黑条）
+  function setViewportHeight() {
+    var vv = window.visualViewport;
+    if (vv) {
+      // 将 #app 的高度设置为 visualViewport 的实际高度（像素）
+      var app = document.getElementById('app');
+      if (app) {
+        app.style.height = vv.height + 'px';
+        // 同时更新所有全屏弹窗的高度（如果有）
+        var fulls = document.querySelectorAll('.wx-full, .gallery-ov');
+        fulls.forEach(function(el) {
+          el.style.height = vv.height + 'px';
+        });
+      }
+    } else {
+      // 回退：使用 100dvh（但不如 visualViewport 精确）
+      document.documentElement.style.setProperty('--app-height', window.innerHeight + 'px');
+    }
+    // 调用已有的输入栏修复函数
+    if (typeof _fixChatBar === 'function') _fixChatBar();
+  }
+
+  // 监听 visualViewport 的 resize 事件（键盘弹出/收起、地址栏变化）
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', setViewportHeight);
+    // 同时监听普通窗口大小变化
+    window.addEventListener('resize', setViewportHeight);
+  } else {
+    window.addEventListener('resize', setViewportHeight);
+  }
+  // 初始调用一次
+  setViewportHeight();
+
+
+
 // T key additions
 T['zh-CN'].appearanceDesc='主题 · 语言 · 壁纸';
 T['zh-TW'].appearanceDesc='主題 · 語言 · 桌布';
