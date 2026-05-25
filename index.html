@@ -538,7 +538,8 @@ input:checked+.tsl::before{transform:translateX(20px);background:var(--bg)}
 .list-item-del svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 
 .chat-outer{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
-.chat-body{flex:1;min-height:0;overflow-y:auto;padding:12px 14px 8px;
+/* 修改 chat-body 底部内边距增加至 28px，确保最后一条消息不被输入栏遮挡 */
+.chat-body{flex:1;min-height:0;overflow-y:auto;padding:12px 14px 28px;
   display:flex;flex-direction:column;gap:9px;-webkit-overflow-scrolling:touch}
 .chat-body::-webkit-scrollbar{display:none}
 .msg{max-width:82%;animation:msgIn .28s var(--sp) both;will-change:opacity,transform}
@@ -560,10 +561,11 @@ input:checked+.tsl::before{transform:translateX(20px);background:var(--bg)}
 .tdot:nth-child(3){animation-delay:.32s}
 @keyframes tdAnim{0%,100%{transform:scale(0.7);opacity:.35}50%{transform:scale(1.1);opacity:1}}
 
+/* 修改 chat-bar 底部内边距增大至 env+24px，移除 position:relative 避免干扰 */
 .chat-bar{flex-shrink:0;display:flex;align-items:flex-end;gap:8px;
-  padding:7px 12px;padding-bottom:max(calc(env(safe-area-inset-bottom,34px)+4px),10px);
-  background:var(--glass-bg);backdrop-filter:blur(var(--blur-lg)) saturate(var(--sat));-webkit-backdrop-filter:blur(var(--blur-lg)) saturate(var(--sat));
-  border-top:0.5px solid var(--glass-border);z-index:10;position:relative}
+  padding:7px 12px;padding-bottom:max(calc(env(safe-area-inset-bottom,34px)+24px),24px);
+  background:var(--glass-bg);backdrop-filter:blur(var(--blur-lg));-webkit-backdrop-filter:blur(var(--blur-lg));
+  border-top:0.5px solid var(--glass-border);z-index:10}
 .chat-inp-el{flex:1;padding:9px 13px;border-radius:20px;
   background:var(--glass-bg2);border:0.5px solid var(--glass-border);
   color:var(--t1);font-size:15px;font-family:inherit;outline:none;
