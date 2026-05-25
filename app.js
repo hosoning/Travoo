@@ -2447,20 +2447,7 @@ async function init(){
       }, 50);
     }
 
-        // Remove old listener if exists
-        if(window._vvResizeHandler){
-          window.visualViewport.removeEventListener('resize',window._vvResizeHandler);
-        }
-        window._vvResizeHandler=onVVResize;
-        window.visualViewport.addEventListener('resize',onVVResize,{passive:true});
-        onVVResize();
-      } else {
-        // Fallback: static safe area bottom padding
-        var sab=parseFloat(getComputedStyle(document.documentElement)
-          .getPropertyValue('--sab')||'34')||34;
-        bar.style.paddingBottom=(sab+8)+'px';
-      }
-    }
+       
 
     // Initial attach after first render
     setTimeout(function(){
