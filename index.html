@@ -709,12 +709,28 @@ input:checked+.tsl::before{transform:translateX(20px);background:var(--bg)}
 <div id="app"></div>
 <script type="module" src="app.js"></script>
 <script>
-window.addEventListener('error',function(e){
+function _travooShowLoadError(msg){
   var a=document.getElementById('app');
   if(!a||a.children.length>0)return;
   a.style.cssText='display:flex;align-items:center;justify-content:center;height:100%;padding:22px;text-align:center';
-  a.innerHTML='<div style="color:rgba(255,255,255,.8);font-size:13px;background:rgba(255,255,255,.06);padding:18px 22px;border-radius:16px;border:1px solid rgba(255,255,255,.1);max-width:360px"><div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:9px">启动错误</div>'+e.message+'<br><small style="opacity:.5">Line '+e.lineno+'</small></div>';
-});
+  a.innerHTML='<div style="color:rgba(255,255,255,.8);font-size:13px;background:rgba(255,255,255,.06);padding:18px 22px;border-radius:16px;border:1px solid rgba(255,255,255,.1);max-width:360px">'+
+    '<div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:9px">启动错误</div>'+
+    '<div style="margin-bottom:14px">'+msg+'</div>'+
+    '<button onclick="location.reload()" style="background:#fff;color:#000;border:0;border-radius:10px;padding:9px 18px;font-size:13px;font-weight:600">重新整理</button>'+
+    '</div>';
+}
+// Resource-loading failures (e.g. app.js or one of its imports can't be
+// reached — blocked CDN, dead network) fire a non-bubbling 'error' event,
+// so this MUST be registered on the capture phase to ever see them.
+window.addEventListener('error',function(e){
+  _travooShowLoadError((e.message||'加载失败')+(e.lineno?('<br><small style="opacity:.5">Line '+e.lineno+'</small>'):''));
+},true);
+// Fallback watchdog: if nothing has rendered into #app after a few seconds
+// (silent network stall, CSP block, etc. that doesn't fire an error event),
+// tell the user instead of leaving a blank, unresponsive screen.
+setTimeout(function(){
+  _travooShowLoadError('内容加载超时，请检查网络连线（部分网络无法连线 Google/Firebase 服务）后重试。');
+},9000);
 </script>
 </body>
 </html>

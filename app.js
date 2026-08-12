@@ -1,15 +1,38 @@
 // ═══════════════════════════════════════════════════════
 // Travoo v12 20260522 — app.js
 // ═══════════════════════════════════════════════════════
-import { initializeApp }   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import {
-  getFirestore, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc,
-  deleteField, collection, onSnapshot, query, orderBy, limit, serverTimestamp
-} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+// NOTE: Firebase SDK is loaded dynamically (not via static `import`) so that
+// a network that can't reach gstatic.com (blocked CDN, flaky mobile data,
+// ad-block, corporate proxy, etc.) does not take down the whole app. A
+// static `import` failure kills the entire module — nothing renders at all,
+// not even the offline/local-mode UI the rest of this file already supports.
+var initializeApp, getFirestore, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc,
+    deleteField, collection, onSnapshot, query, orderBy, limit, serverTimestamp;
 
 const FB_CFG={apiKey:"AIzaSyCyimwLDWNx92ihDmdHTdFSw4A8g34lPWI",authDomain:"travoo-com.firebaseapp.com",projectId:"travoo-com",storageBucket:"travoo-com.firebasestorage.app",messagingSenderId:"544581218382",appId:"1:544581218382:web:cb0511ab135f15a252931f"};
 var fbApp,db;
-try{if(FB_CFG.apiKey){fbApp=initializeApp(FB_CFG);db=getFirestore(fbApp);}}catch(e){console.warn('[FB]',e.message);}
+var fbReadyPromise=(async function(){
+  try{
+    if(!FB_CFG.apiKey)return;
+    var timeout=new Promise(function(_,reject){setTimeout(function(){reject(new Error('Firebase SDK load timed out'));},8000);});
+    var mods=await Promise.race([
+      Promise.all([
+        import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'),
+        import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js')
+      ]),
+      timeout
+    ]);
+    var appMod=mods[0],fsMod=mods[1];
+    initializeApp=appMod.initializeApp;
+    getFirestore=fsMod.getFirestore;doc=fsMod.doc;getDoc=fsMod.getDoc;setDoc=fsMod.setDoc;
+    addDoc=fsMod.addDoc;updateDoc=fsMod.updateDoc;deleteDoc=fsMod.deleteDoc;deleteField=fsMod.deleteField;
+    collection=fsMod.collection;onSnapshot=fsMod.onSnapshot;query=fsMod.query;orderBy=fsMod.orderBy;
+    limit=fsMod.limit;serverTimestamp=fsMod.serverTimestamp;
+    fbApp=initializeApp(FB_CFG);db=getFirestore(fbApp);
+  }catch(e){
+    console.warn('[FB] SDK unavailable, continuing in local-only mode:',e.message);
+  }
+})();
 if(!localStorage.getItem('deviceId')) localStorage.setItem('deviceId','dev_'+Math.random().toString(36).substr(2,9)+Date.now().toString(36));
 var DEVICE_ID=localStorage.getItem('deviceId');
 
@@ -325,17 +348,19 @@ async function compressImage(dataUrl,maxDim,quality){
 
 // ── FIREBASE ──────────────────────────────────────────
 async function fbLoad(code){
-  if(!db){var raw=localStorage.getItem('lt_'+code);if(raw){var d=JSON.parse(raw);S.trip=d;S.members=d.members||{};return true;}return false;}
+  await fbReadyPromise;
+  if(!db){var raw=localStorage.getItem('lt_'+code);if(raw){var d=JSON.parse(raw);S.trip=d;S.members=d.members||{};return true;}S.fbOffline=true;return false;}
   try{var snap=await getDoc(doc(db,'trips',code));if(!snap.exists())return false;S.trip=snap.data();S.members=S.trip.members||{};return true;}
   catch(e){toast('网络错误：'+e.message);return false;}
 }
 async function fbCreate(code,name){
+  await fbReadyPromise;
   var mid='u_'+Date.now(),color=COLORS[0],members={};
   members[mid]={name:name,color:color,joinedVia:'invite',addedBy:null,claimed:true};
   var data={code:code,name:'我的旅行',dates:'',creatorId:mid,members:members,days:[],msgApp:'wechat'};
   S.trip=data;S.members=members;
   if(db){var fd=JSON.parse(JSON.stringify(data));fd.createdAt=serverTimestamp();await setDoc(doc(db,'trips',code),fd);}
-  else{try{localStorage.setItem('lt_'+code,JSON.stringify(data));}catch(e){}}
+  else{try{localStorage.setItem('lt_'+code,JSON.stringify(data));}catch(e){}S.fbOffline=true;}
   return {memberId:mid,color:color};
 }
 async function fbJoin(code,name){
@@ -1108,14 +1133,22 @@ window.handleJoin=async function(){
   if(code.length<6){var ci=$('#ob-code');if(ci){ci.classList.add('shake');setTimeout(function(){ci.classList.remove('shake');},400);}return;}
   if(!name){toast('请输入你的名字');return;}
   showLoad();
-  try{var ok=await fbLoad(code);if(!ok){hideLoad();toast('找不到此行程码');return;}var r=await fbJoin(code,name);_saveSession(code,r.memberId,name);hideLoad();renderApp();}
+  try{
+    var ok=await fbLoad(code);
+    if(!ok){
+      hideLoad();
+      toast(S.fbOffline?'无法连接服务器，请检查网络后重试':'找不到此行程码');
+      return;
+    }
+    var r=await fbJoin(code,name);_saveSession(code,r.memberId,name);hideLoad();renderApp();
+  }
   catch(e){hideLoad();toast('错误：'+e.message);}
 };
 window.handleCreate=async function(){
   var name=($('#ob-name')&&$('#ob-name').value.trim())||'';
   if(!name){toast('请先输入你的名字');return;}
   showLoad();
-  try{var code=genCode();var r=await fbCreate(code,name);_saveSession(code,r.memberId,name);_addLocalTrip(code,'我的旅行','');hideLoad();renderApp();setTimeout(function(){toast('行程码：'+code);},400);}
+  try{var code=genCode();var r=await fbCreate(code,name);_saveSession(code,r.memberId,name);_addLocalTrip(code,'我的旅行','');hideLoad();renderApp();setTimeout(function(){toast(S.fbOffline?'无法连接服务器，此行程仅保存在本机，朋友暂时无法加入':('行程码：'+code));},400);}
   catch(e){hideLoad();toast('错误：'+e.message);}
 };
 function _saveSession(code,mid,name){S.tripCode=code;S.memberId=mid;S.memberName=name;localStorage.setItem('tripCode',code);localStorage.setItem('memberId',mid);localStorage.setItem('memberName',name);}
