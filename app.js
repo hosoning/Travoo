@@ -2493,13 +2493,13 @@ async function init(){
   if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
     var pwaStyle = document.createElement('style');
     pwaStyle.textContent = `
-      .nav {
-        padding-left: max(env(safe-area-inset-left,0px) + 16px, 16px) !important;
-        padding-right: max(env(safe-area-inset-right,0px) + 16px, 16px) !important;
-        padding-top: calc(env(safe-area-inset-top,44px) + 8px) !important;
-      }
       .chat-bar {
-        padding-bottom: calc(env(safe-area-inset-bottom,34px) + 28px) !important;
+        /* No !important: _fixChatBar() below recalculates this from the live
+           safe-area value on resize/keyboard show and sets it inline, which
+           must be able to win. An !important here made that JS permanently
+           dead in standalone mode while it kept working fine in the browser
+           tab, which is why the chat input padding looked wrong only in PWA. */
+        padding-bottom: calc(env(safe-area-inset-bottom,34px) + 28px);
       }
       .scroller {
         padding-bottom: calc(var(--tabh) + 80px) !important;

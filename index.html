@@ -688,8 +688,11 @@ input:checked+.tsl::before{transform:translateX(20px);background:var(--bg)}
 .nav.compact .nav-title{font-size:15px}
 
 @media all and (display-mode:standalone){
-  /* FIX: reduced from +30px to +14px (base CSS already has correct SAI calc) */
-  .nav{padding-top:calc(env(safe-area-inset-top,44px)+14px)}
+  /* .nav padding-top intentionally NOT overridden here — it already uses the
+     base class's calc(env(safe-area-inset-top,44px)+14px) (see .nav rule
+     above). A duplicate app.js-injected !important rule used to silently
+     force +8px in PWA mode instead; that override has been removed so this
+     single value is the actual source of truth in both browser and PWA. */
   .ob{padding-top:calc(env(safe-area-inset-top,44px)+44px);padding-bottom:calc(env(safe-area-inset-bottom,34px)+36px)}
   .wx-full-hero{padding-top:calc(env(safe-area-inset-top,44px)+48px)}
   /* FIX: fill bottom gap (black square below menu bar) */
