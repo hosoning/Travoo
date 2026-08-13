@@ -695,14 +695,16 @@ input:checked+.tsl::before{transform:translateX(20px);background:var(--bg)}
      single value is the actual source of truth in both browser and PWA. */
   .ob{padding-top:calc(env(safe-area-inset-top,44px)+44px);padding-bottom:calc(env(safe-area-inset-bottom,34px)+36px)}
   .wx-full-hero{padding-top:calc(env(safe-area-inset-top,44px)+48px)}
-  /* FIX: fill bottom gap (black square below menu bar) */
+  /* Extend the bar's backdrop past the visual viewport edge. iOS standalone
+     can position fixed content above the home-indicator region even when
+     safe-area padding is present, so an env()-sized extension is not enough. */
   .tabs::after{
     content:'';position:absolute;left:0;right:0;
-    bottom:calc(-1 * env(safe-area-inset-bottom,0px));
-    height:env(safe-area-inset-bottom,0px);
+    top:100%;height:100px;
     background:var(--glass-bg2);
     backdrop-filter:blur(72px) saturate(180%);
     -webkit-backdrop-filter:blur(72px) saturate(180%);
+    pointer-events:none;
   }
 }
 </style>
