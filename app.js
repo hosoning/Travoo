@@ -7,7 +7,8 @@
 // static `import` failure kills the entire module — nothing renders at all,
 // not even the offline/local-mode UI the rest of this file already supports.
 var initializeApp, getFirestore, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc,
-    deleteField, collection, onSnapshot, query, orderBy, limit, serverTimestamp;
+    deleteField, collection, onSnapshot, query, orderBy, limit, serverTimestamp,
+    getDocs, writeBatch;
 
 const FB_CFG={apiKey:"AIzaSyCyimwLDWNx92ihDmdHTdFSw4A8g34lPWI",authDomain:"travoo-com.firebaseapp.com",projectId:"travoo-com",storageBucket:"travoo-com.firebasestorage.app",messagingSenderId:"544581218382",appId:"1:544581218382:web:cb0511ab135f15a252931f"};
 var fbApp,db;
@@ -27,7 +28,7 @@ var fbReadyPromise=(async function(){
     getFirestore=fsMod.getFirestore;doc=fsMod.doc;getDoc=fsMod.getDoc;setDoc=fsMod.setDoc;
     addDoc=fsMod.addDoc;updateDoc=fsMod.updateDoc;deleteDoc=fsMod.deleteDoc;deleteField=fsMod.deleteField;
     collection=fsMod.collection;onSnapshot=fsMod.onSnapshot;query=fsMod.query;orderBy=fsMod.orderBy;
-    limit=fsMod.limit;serverTimestamp=fsMod.serverTimestamp;
+    limit=fsMod.limit;serverTimestamp=fsMod.serverTimestamp;getDocs=fsMod.getDocs;writeBatch=fsMod.writeBatch;
     fbApp=initializeApp(FB_CFG);db=getFirestore(fbApp);
   }catch(e){
     console.warn('[FB] SDK unavailable, continuing in local-only mode:',e.message);
@@ -213,7 +214,7 @@ var S={
   memberName:   localStorage.getItem('memberName')    ||null,
   trip:null,members:{},expenses:[],chatHistory:[],
   aiConfig:     JSON.parse(localStorage.getItem('aiConfig')     ||'{}'),
-  tab:'home',unsubs:[],geo:null,locationName:'',
+  tab:'home',unsubs:[],notifTimer:null,geo:null,locationName:'',
   tokenUsed:    +(localStorage.getItem('tokenUsed')   ||0),
   tokenBudget:  +(localStorage.getItem('tokenBudget') ||4000),
   msgApp:       localStorage.getItem('msgApp')        ||'wechat',
@@ -303,6 +304,13 @@ function genCode(){var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r='';for(var i=0;i<6
 function gen4(){var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r='';for(var i=0;i<4;i++)r+=c[Math.floor(Math.random()*c.length)];return r;}
 function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function getDays(){return (S.trip&&S.trip.days)||[];}
+function tripStoreKey(kind){return kind+'_'+(S.tripCode||'none');}
+function saveLocalCollection(kind,value){try{localStorage.setItem(tripStoreKey(kind),JSON.stringify(value));}catch(e){console.warn('[LOCAL]',e.message);}}
+function loadLocalCollections(){
+  try{S.expenses=JSON.parse(localStorage.getItem(tripStoreKey('expenses'))||'[]');}catch(e){S.expenses=[];}
+  try{S.travelDocs=JSON.parse(localStorage.getItem(tripStoreKey('travelDocs'))||'[]');}catch(e){S.travelDocs=[];}
+  try{S.photoBoard=JSON.parse(localStorage.getItem(tripStoreKey('photoBoard'))||'[]');}catch(e){S.photoBoard=[];}
+}
 function allItems(){return getDays().reduce(function(a,d){return a.concat(d.items||[]);},[]); }
 function findItem(id){return allItems().find(function(i){return i.id===id;});}
 function fmtMoney(n){if(n==null)return '';if(n===0)return t('free');return Number.isInteger(n)?'¥'+n:'¥'+n.toFixed(1);}
@@ -379,23 +387,23 @@ async function fbSaveDays(days){
 async function fbAddExpense(data){
   var exp=Object.assign({memberId:S.memberId,createdAt:new Date().toISOString()},data);
   if(db&&S.tripCode){await addDoc(collection(db,'trips',S.tripCode,'expenses'),Object.assign({},exp,{createdAt:serverTimestamp()}));}
-  else{S.expenses.unshift(Object.assign({id:'loc_'+Date.now()},exp));refreshExpList();}
+  else{S.expenses.unshift(Object.assign({id:'loc_'+Date.now()},exp));saveLocalCollection('expenses',S.expenses);refreshExpList();}
 }
 async function fbUpdateExpense(id,data){
   if(db&&S.tripCode){await updateDoc(doc(db,'trips',S.tripCode,'expenses',id),data);}
-  else{var idx=S.expenses.findIndex(function(e){return e.id===id;});if(idx>=0)Object.assign(S.expenses[idx],data);refreshExpList();}
+  else{var idx=S.expenses.findIndex(function(e){return e.id===id;});if(idx>=0)Object.assign(S.expenses[idx],data);saveLocalCollection('expenses',S.expenses);refreshExpList();}
 }
 async function fbDelExpense(id){
   if(db&&S.tripCode){await deleteDoc(doc(db,'trips',S.tripCode,'expenses',id));}
-  else{S.expenses=S.expenses.filter(function(e){return e.id!==id;});refreshExpList();}
+  else{S.expenses=S.expenses.filter(function(e){return e.id!==id;});saveLocalCollection('expenses',S.expenses);refreshExpList();}
 }
 async function fbSaveTravelDoc(d){
   if(db&&S.tripCode){var ref=await addDoc(collection(db,'trips',S.tripCode,'travelDocs'),Object.assign({memberId:S.memberId,createdAt:serverTimestamp()},d));return ref.id;}
-  else{var id='td_'+Date.now();S.travelDocs.push(Object.assign({id:id,memberId:S.memberId},d));return id;}
+  else{var id='td_'+Date.now();S.travelDocs.push(Object.assign({id:id,memberId:S.memberId},d));saveLocalCollection('travelDocs',S.travelDocs);return id;}
 }
 async function fbDelTravelDoc(id){
   if(db&&S.tripCode){await deleteDoc(doc(db,'trips',S.tripCode,'travelDocs',id));}
-  else{S.travelDocs=S.travelDocs.filter(function(d){return d.id!==id;});}
+  else{S.travelDocs=S.travelDocs.filter(function(d){return d.id!==id;});saveLocalCollection('travelDocs',S.travelDocs);}
 }
 async function fbSaveJournal(entry){
   var local=JSON.parse(localStorage.getItem('journal_'+(S.tripCode||'x'))||'[]');
@@ -409,16 +417,18 @@ async function fbSaveJournal(entry){
 }
 async function fbAddPhoto(pd){
   if(db&&S.tripCode){var ref=await addDoc(collection(db,'trips',S.tripCode,'photoBoard'),Object.assign({addedBy:S.memberId,createdAt:serverTimestamp()},pd));S.photoBoard.unshift(Object.assign({id:ref.id},pd));}
-  else{var id='ph_'+Date.now();S.photoBoard.unshift(Object.assign({id:id,addedBy:S.memberId},pd));}
+  else{var id='ph_'+Date.now();S.photoBoard.unshift(Object.assign({id:id,addedBy:S.memberId},pd));saveLocalCollection('photoBoard',S.photoBoard);}
   if(S.tab==='home')renderHome();
 }
 async function fbDelPhoto(id){
   if(db&&S.tripCode){await deleteDoc(doc(db,'trips',S.tripCode,'photoBoard',id));}
   S.photoBoard=S.photoBoard.filter(function(p){return p.id!==id;});
+  if(!db)saveLocalCollection('photoBoard',S.photoBoard);
 }
 
 function subscribeAll(code){
   if(!db)return;
+  S.unsubs.forEach(function(u){u();});S.unsubs=[];
   S.unsubs.push(onSnapshot(doc(db,'trips',code),function(snap){if(!snap.exists())return;S.trip=snap.data();S.members=S.trip.members||{};if(S.tab==='home')renderHome();}));
   S.unsubs.push(onSnapshot(query(collection(db,'trips',code,'expenses'),orderBy('createdAt','desc'),limit(200)),function(snap){S.expenses=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});refreshExpList();}));
   S.unsubs.push(onSnapshot(query(collection(db,'trips',code,'chats',S.memberId,'messages'),orderBy('ts','asc'),limit(60)),function(snap){S.chatHistory=snap.docs.map(function(d){return d.data();});refreshChatMsgs();}));
@@ -464,10 +474,10 @@ window.importTripData=function(){
 // ── ITINERARY PARSER ──────────────────────────────────
 function extractDate(str){
   var wds=['日','一','二','三','四','五','六'],year=new Date().getFullYear();
+  var m2=str.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+  if(m2){var mo2=parseInt(m2[2]),dy2=parseInt(m2[3]);if(mo2>=1&&mo2<=12&&dy2>=1&&dy2<=31){var ds2=m2[1]+'-'+(mo2<10?'0':'')+mo2+'-'+(dy2<10?'0':'')+dy2;var d2=new Date(ds2+'T12:00:00');return {date:ds2,month:String(mo2),day:String(dy2),wd:wds[d2.getDay()]};}}
   var m1=str.match(/(\d{1,2})[\/\-\.](\d{1,2})/);
   if(m1){var mo=parseInt(m1[1]),dy=parseInt(m1[2]);if(mo>=1&&mo<=12&&dy>=1&&dy<=31){var ds=year+'-'+(mo<10?'0':'')+mo+'-'+(dy<10?'0':'')+dy;var d=new Date(ds+'T12:00:00');return {date:ds,month:String(mo),day:String(dy),wd:wds[d.getDay()]};}}
-  var m2=str.match(/(\d{4})[\/\-](\d{2})[\/\-](\d{2})/);
-  if(m2){var ds=m2[1]+'-'+m2[2]+'-'+m2[3];var d=new Date(ds+'T12:00:00');return {date:ds,month:String(parseInt(m2[2])),day:String(parseInt(m2[3])),wd:wds[d.getDay()]};}
   return null;
 }
 function guessType(t2){if(/早餐|午餐|晚餐|食饭|吃饭|餐廳|咖啡|breakfast|lunch|dinner|restaurant/i.test(t2))return 'food';if(/入住|check.?in|酒店|民宿/i.test(t2))return 'checkin';if(/打的|打车|高铁|火车|飞机|地铁|taxi|train|flight/i.test(t2))return 'transport';if(/遊覧|参观|景区|博物|temple|museum|park/i.test(t2))return 'attr';return 'leisure';}
@@ -1054,8 +1064,8 @@ function renderApp(){
   if(S.tripCode){try{S.journal=JSON.parse(localStorage.getItem('journal_'+S.tripCode)||'[]');}catch(e){S.journal=[];}}
   switchTab('home');
   subscribeAll(S.tripCode);
-  setInterval(checkNotifs,60000);setTimeout(checkNotifs,2000);
-  requestGeoPermission();
+  if(S.notifTimer)clearInterval(S.notifTimer);
+  S.notifTimer=setInterval(checkNotifs,60000);setTimeout(checkNotifs,2000);
 
   // Mic FAB — home tab only, positioned bottom-right above nav
   var mf=document.createElement('button');mf.id='gfab-mic';mf.className='gfab';mf.setAttribute('hidden','');
@@ -1151,7 +1161,7 @@ window.handleCreate=async function(){
   try{var code=genCode();var r=await fbCreate(code,name);_saveSession(code,r.memberId,name);_addLocalTrip(code,'我的旅行','');hideLoad();renderApp();setTimeout(function(){toast(S.fbOffline?'无法连接服务器，此行程仅保存在本机，朋友暂时无法加入':('行程码：'+code));},400);}
   catch(e){hideLoad();toast('错误：'+e.message);}
 };
-function _saveSession(code,mid,name){S.tripCode=code;S.memberId=mid;S.memberName=name;localStorage.setItem('tripCode',code);localStorage.setItem('memberId',mid);localStorage.setItem('memberName',name);}
+function _saveSession(code,mid,name){S.tripCode=code;S.memberId=mid;S.memberName=name;localStorage.setItem('tripCode',code);localStorage.setItem('memberId',mid);localStorage.setItem('memberName',name);localStorage.setItem('memberId_'+code,mid);localStorage.setItem('memberName_'+code,name);}
 function _addLocalTrip(code,name,dates){var trips=JSON.parse(localStorage.getItem('localTrips')||'[]');if(!trips.find(function(tt){return tt.code===code;}))trips.push({code:code,name:name,dates:dates});localStorage.setItem('localTrips',JSON.stringify(trips));S.localTrips=trips;}
 function renderTripList(){
   var cards=S.localTrips.map(function(tr){return '<div class="list" style="margin-bottom:10px;cursor:pointer;transition:opacity .15s" onclick="enterTrip(\''+tr.code+'\')" ontouchstart="this.style.opacity=.7" ontouchend="this.style.opacity=1"><div class="lr"><div style="flex:1"><div style="font-size:16px;font-weight:600;color:var(--t1)">'+escHtml(tr.name||'我的旅行')+'</div><div style="font-size:12px;color:var(--t2)">'+escHtml(tr.dates||'—')+'</div></div><div class="lr-chev">'+ic('chev',14)+'</div></div></div>';}).join('');
@@ -1162,9 +1172,9 @@ function renderTripList(){
     '<div style="text-align:center;padding:16px;cursor:pointer;color:var(--t3);font-size:14px" onclick="renderOnboarding()">+ '+t('newTrip')+'</div></div></div></div>';
 }
 window.enterTrip=async function(code){
-  var mid=localStorage.getItem('memberId');if(!mid){renderOnboarding();return;}
-  S.memberId=mid;S.memberName=localStorage.getItem('memberName');S.tripCode=code;localStorage.setItem('tripCode',code);
-  showLoad();var ok=await fbLoad(code);hideLoad();if(!ok){toast('无法加载行程');return;}renderApp();
+  var mid=localStorage.getItem('memberId_'+code);if(!mid){renderOnboarding();return;}
+  S.memberId=mid;S.memberName=localStorage.getItem('memberName_'+code)||'';S.tripCode=code;localStorage.setItem('tripCode',code);localStorage.setItem('memberId',mid);localStorage.setItem('memberName',S.memberName);
+  showLoad();var ok=await fbLoad(code);hideLoad();if(!ok){toast('无法加载行程');return;}if(!db)loadLocalCollections();renderApp();
 };
 
 // ── HOME ──────────────────────────────────────────────
@@ -2100,7 +2110,18 @@ window.showAIConfig=function(){
 };
 window.presetAI=function(p,el){$$('.sheet .chip').forEach(function(c){c.classList.remove('on');});el.classList.add('on');var ep=$('#cfg-ep'),md=$('#cfg-model');if(p==='openai'&&ep&&md){ep.value='https://api.openai.com/v1/chat/completions';md.value='gpt-4o-mini';}};
 window.saveAICfg=function(){var ep=($('#cfg-ep')&&$('#cfg-ep').value.trim())||'',key=($('#cfg-key')&&$('#cfg-key').value.trim())||'',model=($('#cfg-model')&&$('#cfg-model').value.trim())||'gpt-4o-mini';if(!ep||!key){toast('请填写端点和Key');return;}S.aiConfig={endpoint:ep,apiKey:key,model:model};localStorage.setItem('aiConfig',JSON.stringify(S.aiConfig));closeModal();toast(t('aiConfigSaved'));renderChat();};
-window.confirmClearChat=function(){showModal('<div class="sh"></div><div style="text-align:center;padding:9px 0"><div style="font-size:17px;font-weight:700;color:var(--t1);margin-bottom:7px">'+t('confirmClearChat')+'</div><div style="font-size:13px;color:var(--t2);margin-bottom:20px">'+t('confirmClearChatSub')+'</div><button class="btn btn-d btn-full" onclick="S.chatHistory=[];toast(t(\'chatCleared\'));closeModal()" style="margin-bottom:9px">'+t('clearChatConfirmBtn')+'</button><button class="btn btn-g btn-full" onclick="closeModal()">'+t('cancel')+'</button></div>');};
+window.clearChat=async function(){
+  try{
+    if(db&&S.tripCode&&S.memberId){
+      var snap=await getDocs(collection(db,'trips',S.tripCode,'chats',S.memberId,'messages'));
+      for(var i=0;i<snap.docs.length;i+=450){
+        var batch=writeBatch(db);snap.docs.slice(i,i+450).forEach(function(d){batch.delete(d.ref);});await batch.commit();
+      }
+    }
+    S.chatHistory=[];refreshChatMsgs();closeModal();toast(t('chatCleared'));
+  }catch(e){toast(e.message);}
+};
+window.confirmClearChat=function(){showModal('<div class="sh"></div><div style="text-align:center;padding:9px 0"><div style="font-size:17px;font-weight:700;color:var(--t1);margin-bottom:7px">'+t('confirmClearChat')+'</div><div style="font-size:13px;color:var(--t2);margin-bottom:20px">'+t('confirmClearChatSub')+'</div><button class="btn btn-d btn-full" onclick="clearChat()" style="margin-bottom:9px">'+t('clearChatConfirmBtn')+'</button><button class="btn btn-g btn-full" onclick="closeModal()">'+t('cancel')+'</button></div>');};
 T['zh-CN'].confirmClearChat='确认清除所有对话？';T['zh-CN'].confirmClearChatSub='此操作不可撤销';T['zh-CN'].clearChatConfirmBtn='确认清除';
 T['zh-TW'].confirmClearChat='確認清除所有對話？';T['zh-TW'].confirmClearChatSub='此操作不可撤銷';T['zh-TW'].clearChatConfirmBtn='確認清除';
 T['en'].confirmClearChat='Clear all messages?';T['en'].confirmClearChatSub='Cannot be undone';T['en'].clearChatConfirmBtn='Clear';
@@ -2364,7 +2385,8 @@ window.showPeriodModal=function(){
     var overlap=tripStart&&tripEnd&&new Date(p.start)<=new Date(tripEnd+'T23:59:59')&&end>=new Date(tripStart);
     return '<div class="lr" style="cursor:default;'+(overlap?'border-left:2px solid var(--red)':'')+'"><span class="lr-lbl">'+(S.lang==='en'?'Cycle '+(i+1):'第'+(i+1)+'次')+'</span><span class="lr-val" style="'+(overlap?'color:var(--red)':'')+'">'+p.start+' – '+end.toISOString().split('T')[0]+'</span></div>';
   }).join('');
-  var recordList=pd.records.slice(-3).map(function(r,i){return '<div class="lr" style="cursor:default"><span class="lr-lbl">'+r+'</span><div class="nbtn" style="width:24px;height:24px" onclick="removePeriodRecord('+i+')">'+ic('trash',10)+'</div></div>';}).join('');
+  var recordOffset=Math.max(0,pd.records.length-3);
+  var recordList=pd.records.slice(-3).map(function(r,i){return '<div class="lr" style="cursor:default"><span class="lr-lbl">'+r+'</span><div class="nbtn" style="width:24px;height:24px" onclick="removePeriodRecord('+(recordOffset+i)+')">'+ic('trash',10)+'</div></div>';}).join('');
   showModal('<div class="sh"></div><div class="sheet-title">'+t('period')+'</div>'+
     (conflict?'<div class="period-warning" style="margin-bottom:13px">'+ic('bell',12)+' '+t('periodConflict')+'</div>':'')+
     (predHtml?'<div class="list" style="margin-bottom:13px">'+predHtml+'</div>':'')+
@@ -2379,11 +2401,15 @@ window.removePeriodRecord=function(i){S.periodData.records.splice(i,1);localStor
 window.pickWallpaper=function(){var inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=function(){var f=inp.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(e){try{localStorage.setItem('wallpaper',e.target.result);}catch(err){toast(t('imgTooLarge'));return;}applyWallpaper();closeModal();toast(t('wallUpdated'));};rd.readAsDataURL(f);};inp.click();};
 window.clearWallpaper=function(){localStorage.removeItem('wallpaper');applyWallpaper();toast(t('wallReset'));};
 window.confirmLeave=function(){showModal('<div class="sh"></div><div class="sheet-title">'+t('confirmLeaveTitle')+'</div><div style="font-size:13px;color:var(--t2);margin-bottom:16px">'+t('confirmLeaveMsg')+'</div><button class="btn btn-d btn-full" onclick="leaveTrip()" style="margin-bottom:7px">'+t('confirmLeaveBtn')+'</button><button class="btn btn-g btn-full" onclick="closeModal()">'+t('cancel')+'</button>');};
-window.leaveTrip=function(){S.unsubs.forEach(function(u){u();});S.unsubs=[];['tripCode','memberId','memberName'].forEach(function(k){localStorage.removeItem(k);});S.tripCode=null;S.memberId=null;S.memberName=null;S.trip=null;S.members={};S.expenses=[];S.chatHistory=[];closeModal();var af=document.getElementById('gfab-add');if(af)af.remove();var mf=document.getElementById('gfab-mic');if(mf)mf.remove();renderApp();};
+window.leaveTrip=function(){S.unsubs.forEach(function(u){u();});S.unsubs=[];if(S.notifTimer){clearInterval(S.notifTimer);S.notifTimer=null;}['tripCode','memberId','memberName'].forEach(function(k){localStorage.removeItem(k);});S.tripCode=null;S.memberId=null;S.memberName=null;S.trip=null;S.members={};S.expenses=[];S.chatHistory=[];closeModal();var af=document.getElementById('gfab-add');if(af)af.remove();var mf=document.getElementById('gfab-mic');if(mf)mf.remove();renderApp();};
 
 // ── INIT ──────────────────────────────────────────────
 async function init(){
   if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(e){console.warn('[SW]',e);});
+  if(S.tripCode&&S.memberId&&!localStorage.getItem('memberId_'+S.tripCode)){
+    localStorage.setItem('memberId_'+S.tripCode,S.memberId);
+    localStorage.setItem('memberName_'+S.tripCode,S.memberName||'');
+  }
   var ci=localStorage.getItem('customAppIcons');if(ci){try{S.customAppIcons=JSON.parse(ci);}catch(e){}}
   window.applyTheme(S.theme);
   applyWallpaper();
@@ -2409,6 +2435,7 @@ async function init(){
 
   if(S.tripCode&&S.memberId){
     showLoad();await fbLoad(S.tripCode);
+    if(!db)loadLocalCollections();
     try{S.journal=JSON.parse(localStorage.getItem('journal_'+S.tripCode)||'[]');}catch(e){S.journal=[];}
     hideLoad();
   }
