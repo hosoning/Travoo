@@ -1,7 +1,7 @@
 // ── Travoo Service Worker v4 ──────────────────────────────────
 // Bump version number any time you deploy new files.
 // This forces old clients to re-fetch everything.
-const VERSION = 'travoo-v5';
+const VERSION = 'travoo-v6';
 
 // Derive base URL from SW's own location so it works on any path
 // (root domain, GitHub Pages subdir, Cloudflare Pages, etc.)
